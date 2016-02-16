@@ -162,9 +162,9 @@ namespace NControl.MVVM
 			}
 
 			// Execute commands
-			var property = this.GetType().GetRuntimeProperty(propertyName);
-			var propValue = property.GetValue (this);
 			if (_commandExecuteDependencies.ContainsKey (propertyName)) {
+				var property = this.GetType().GetRuntimeProperty(propertyName);
+				var propValue = property.GetValue (this);
 				foreach (var dependantCommand in _commandExecuteDependencies[propertyName])
 					ExecuteCommand (dependantCommand, propValue);
 			}
