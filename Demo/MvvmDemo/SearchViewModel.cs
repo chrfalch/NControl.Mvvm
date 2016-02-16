@@ -37,12 +37,12 @@ namespace MvvmDemo
 		public Command SearchCommand {
 			get {
 				return GetOrCreateCommand (() => {
+
 					Employees.Clear();
 					if(string.IsNullOrEmpty(Query))
 						Employees.AddRange(Employee.EmployeeRepository);
 					else
-						Employees.AddRange(Employee.EmployeeRepository.Where(mn => mn.Name.Contains(Query)));
-
+						Employees.AddRange(Employee.EmployeeRepository.Where(mn => mn.Name.Contains(Query)));					
 				});
 			}
 		}

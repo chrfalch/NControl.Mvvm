@@ -21,7 +21,7 @@ namespace MvvmDemo.Droid
 
 			global::Xamarin.Forms.Forms.Init (this, bundle);
 
-			LoadApplication (new DemoMvvmApp (new DroidPlatform()));
+			LoadApplication (new DemoMvvmApp (new DroidPlatform(this)));
 		}
 	}
 }

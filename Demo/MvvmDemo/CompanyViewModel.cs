@@ -16,7 +16,13 @@ namespace MvvmDemo
 		{
 			await base.InitializeAsync ();
 
+			MvvmApp.Current.ActivityIndicator.UpdateProgress (true, "Loading...");
+
 			Companies.AddRange (Company.CompanyRepository);
+
+			await Task.Delay (1000);
+
+			MvvmApp.Current.ActivityIndicator.UpdateProgress (false);
 		}
 
 		public ObservableCollectionWithAddRange<Company> Companies
