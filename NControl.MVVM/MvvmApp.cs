@@ -28,7 +28,7 @@ namespace NControl.MVVM
 		/// Initializes a new instance of the <see cref="Test.NewSolution.App"/> class.
 		/// </summary>
 		/// <param name="typeResolveProvider">Type resolve provider.</param>
-		public MvvmApp (IMvvmPlatform platformApp)
+		public MvvmApp (IMvvmPlatform platform)
 		{	
 			// Save static for ease of access
 			Current = this;
@@ -39,13 +39,12 @@ namespace NControl.MVVM
 			// Set up presenter and view container
 			Container.RegisterSingleton<IViewContainer, DefaultViewContainer>();
 			Container.RegisterSingleton<IPresenter, DefaultPresenter> ();
-			//Container.RegisterSingleton<IActivityIndicator, DefaultActivityIndicator> ();
-
-			// Initialize platform app
-			platformApp.Initialize();
 
 			// Set up services
 			RegisterServices();
+
+			// Initialize platform app
+			platform.Initialize();
 
 			// Set up views
 			RegisterViews();
