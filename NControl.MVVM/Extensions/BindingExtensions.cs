@@ -24,8 +24,9 @@ namespace NControl.MVVM
 		/// <param name="bindableProperty">Bindable property.</param>
 		/// <param name="viewModelProperty">View model property.</param>
 		public static View BindTo(this View view, BindableProperty bindableProperty, string propertyName, 
-			IValueConverter converter = null){
-			view.SetBinding(bindableProperty, propertyName, converter: converter);
+			IValueConverter converter = null, string stringFormat = null)
+		{
+			view.SetBinding(bindableProperty, propertyName, converter: converter, stringFormat:stringFormat);
 			return view;
 		}
 
@@ -37,9 +38,9 @@ namespace NControl.MVVM
 		/// <param name="bindableProperty">Bindable property.</param>
 		/// <param name="propertyName">Property name.</param>
 		/// <param name="converter">Converter.</param>
-		public static DataTemplate BindTo(this DataTemplate template, BindableProperty bindableProperty, string propertyName, 
-			IValueConverter converter = null){
-			template.SetBinding(bindableProperty, new Binding(propertyName, converter: converter));
+		public static DataTemplate BindTo(this DataTemplate template, BindableProperty bindableProperty, 
+			string propertyName, IValueConverter converter = null, string stringFormat = null){
+			template.SetBinding(bindableProperty, new Binding(propertyName, converter: converter, stringFormat:stringFormat));
 			return template;
 		}
 	}

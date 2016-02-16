@@ -30,7 +30,7 @@ namespace NControl.MVVM.Droid
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NControl.MVVM.Droid.DroidMvvmApp"/> class.
 		/// </summary>
-		public void Initialize ()
+		public virtual void Initialize ()
 		{
 			NControls.Init ();
 

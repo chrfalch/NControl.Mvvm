@@ -21,7 +21,7 @@ namespace NControl.MVVM.iOS
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NControl.MVVM.iOS.TouchMvvmApp"/> class.
 		/// </summary>
-		public void Initialize ()
+		public virtual void Initialize ()
 		{
 			NControls.Init ();
 
