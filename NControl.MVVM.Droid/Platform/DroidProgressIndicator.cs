@@ -1,5 +1,7 @@
 ﻿using System;
 using Android.App;
+using System.Threading;
+using Xamarin.Forms;
 
 namespace NControl.MVVM
 {
@@ -26,18 +28,25 @@ namespace NControl.MVVM
 		/// <param name="title">Title.</param>
 		/// <param name="subtitle">Subtitle.</param>
 		public void UpdateProgress (bool visible, string title = "", string subtitle = "")
-		{
-			if (_progressDialog == null) {
-				_progressDialog = new ProgressDialog (Xamarin.Forms.Forms.Context);
-				_progressDialog.SetCancelable(false);
-			}
+		{			
+			Action updateProgressAction = () => {
+				if (_progressDialog == null) {
+					_progressDialog = new ProgressDialog (Xamarin.Forms.Forms.Context);
+					_progressDialog.SetCancelable(false);
+				}
 
-			_progressDialog.SetMessage(title);
-			if(visible && !_progressDialog.IsShowing)
-				_progressDialog.Show();
+				_progressDialog.SetMessage(title);
+				if(visible && !_progressDialog.IsShowing)
+					_progressDialog.Show();
 
-			if (!visible && _progressDialog.IsShowing)
-				_progressDialog.Hide ();
+				if (!visible && _progressDialog.IsShowing)
+					_progressDialog.Hide ();
+			};
+
+			if (Android.App.Application.SynchronizationContext != SynchronizationContext.Current)
+				Device.BeginInvokeOnMainThread (updateProgressAction);
+			else
+				updateProgressAction ();
 		}
 		#endregion
 	}
