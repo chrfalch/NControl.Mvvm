@@ -7,7 +7,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
-using NControl.MVVM.Droid;
+using NControl.Mvvm.Droid;
 using NControl.Controls.Droid;
 
 namespace MvvmDemo.Droid

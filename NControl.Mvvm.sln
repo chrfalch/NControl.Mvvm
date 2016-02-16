@@ -14,11 +14,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{7531
 		LICENSE.md = LICENSE.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.MVVM", "NControl.MVVM\NControl.MVVM.csproj", "{6AF0AE38-F4D7-4A23-9E9F-4B11DF18ECC7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.Mvvm", "NControl.MVVM\NControl.Mvvm.csproj", "{6AF0AE38-F4D7-4A23-9E9F-4B11DF18ECC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.MVVM.iOS", "NControl.MVVM.iOS\NControl.MVVM.iOS.csproj", "{F1528ACD-1452-4DD4-8227-9CD52879D0E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.Mvvm.iOS", "NControl.MVVM.iOS\NControl.Mvvm.iOS.csproj", "{F1528ACD-1452-4DD4-8227-9CD52879D0E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.MVVM.Droid", "NControl.MVVM.Droid\NControl.MVVM.Droid.csproj", "{967C6CBE-86FA-4907-B153-063A3997B3CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.Mvvm.Droid", "NControl.MVVM.Droid\NControl.Mvvm.Droid.csproj", "{967C6CBE-86FA-4907-B153-063A3997B3CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

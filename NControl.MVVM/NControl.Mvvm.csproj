@@ -7,7 +7,7 @@
     <ProjectGuid>{6AF0AE38-F4D7-4A23-9E9F-4B11DF18ECC7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>NControl.MVVM</RootNamespace>
-    <AssemblyName>NControl.MVVM</AssemblyName>
+    <AssemblyName>NControl.Mvvm</AssemblyName>
     <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -22,7 +22,6 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>

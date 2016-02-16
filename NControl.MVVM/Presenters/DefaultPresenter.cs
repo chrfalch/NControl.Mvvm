@@ -15,7 +15,7 @@ using Xamarin.Forms;
 using System.Linq;
 using System.Reflection;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
 	/// <summary>
 	/// Default presenter.

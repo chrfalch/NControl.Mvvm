@@ -12,7 +12,7 @@ using System;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
 	/// <summary>
 	/// Presentation mode.

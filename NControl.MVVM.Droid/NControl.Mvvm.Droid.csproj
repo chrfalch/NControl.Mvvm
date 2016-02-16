@@ -6,13 +6,13 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{967C6CBE-86FA-4907-B153-063A3997B3CF}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>NControl.MVVM.Droid</RootNamespace>
+    <RootNamespace>NControl.Mvvm.Droid</RootNamespace>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <AndroidResgenClass>Resource</AndroidResgenClass>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
-    <AssemblyName>NControl.MVVM.Droid</AssemblyName>
+    <AssemblyName>NControl.Mvvm.Droid</AssemblyName>
     <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -27,7 +27,6 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -107,9 +106,9 @@
     <Folder Include="Platform\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NControl.MVVM\NControl.MVVM.csproj">
+    <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">
       <Project>{6AF0AE38-F4D7-4A23-9E9F-4B11DF18ECC7}</Project>
-      <Name>NControl.MVVM</Name>
+      <Name>NControl.Mvvm</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -13,7 +13,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Collections.Generic;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
     /// <summary>
     /// Maps an expression like (m => m.SomeProperty) to the property name "SomeProperty"

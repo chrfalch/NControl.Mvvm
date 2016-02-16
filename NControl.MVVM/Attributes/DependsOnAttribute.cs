@@ -11,7 +11,7 @@ WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 using System;
 using System.Collections.Generic;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
     /// <summary>
     /// Depends on attribute.

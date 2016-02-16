@@ -1,5 +1,5 @@
 ﻿using System;
-using NControl.MVVM;
+using NControl.Mvvm;
 using Xamarin.Forms;
 
 namespace MvvmDemo
@@ -21,7 +21,7 @@ namespace MvvmDemo
 				Padding = 15,
 				Spacing = 8,
 				Children = {
-					new Label{Text = "Demo Application for NControl.MVVM" },
+					new Label{Text = "Demo Application for NControl.Mvvm" },
 					new Button { Text = "Close" }.BindTo(Button.CommandProperty, NameOf(vm => vm.CloseCommand)),
 				}
 			};

@@ -16,7 +16,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Reflection;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
 	/// <summary>
 	/// Base view model.

@@ -118,13 +118,13 @@
       <Project>{5DFFC8E3-5C21-49CF-9131-F49943250762}</Project>
       <Name>NControl.MvvmDemo</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\NControl.MVVM.iOS\NControl.MVVM.iOS.csproj">
-      <Project>{F1528ACD-1452-4DD4-8227-9CD52879D0E0}</Project>
-      <Name>NControl.MVVM.iOS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\NControl.MVVM\NControl.MVVM.csproj">
+    <ProjectReference Include="..\..\NControl.MVVM\NControl.Mvvm.csproj">
       <Project>{6AF0AE38-F4D7-4A23-9E9F-4B11DF18ECC7}</Project>
-      <Name>NControl.MVVM</Name>
+      <Name>NControl.Mvvm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NControl.MVVM.iOS\NControl.Mvvm.iOS.csproj">
+      <Project>{F1528ACD-1452-4DD4-8227-9CD52879D0E0}</Project>
+      <Name>NControl.Mvvm.iOS</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

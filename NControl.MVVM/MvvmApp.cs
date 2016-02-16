@@ -12,7 +12,7 @@ using System;
 using Xamarin.Forms;
 using System.Threading.Tasks;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
 	/// <summary>
 	/// Base class for Mvvm apps

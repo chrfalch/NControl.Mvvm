@@ -1,7 +1,7 @@
 ﻿using System;
 using Xamarin.Forms;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
     /// <summary>
     /// Extended listview

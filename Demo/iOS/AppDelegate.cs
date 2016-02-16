@@ -4,7 +4,7 @@ using System.Linq;
 
 using Foundation;
 using UIKit;
-using NControl.MVVM.iOS;
+using NControl.Mvvm.iOS;
 using NControl.Controls.iOS;
 
 namespace MvvmDemo.iOS

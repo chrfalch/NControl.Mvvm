@@ -12,7 +12,7 @@ using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
 	/// <summary>
 	/// Base class with propertynotify changed

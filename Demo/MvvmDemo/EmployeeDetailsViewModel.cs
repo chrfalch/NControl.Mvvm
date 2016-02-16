@@ -1,5 +1,5 @@
 ﻿using System;
-using NControl.MVVM;
+using NControl.Mvvm;
 using System.Threading.Tasks;
 
 namespace MvvmDemo

@@ -16,7 +16,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
     public class ObservableCollectionWithAddRange<T>: ObservableCollection<T>
     {

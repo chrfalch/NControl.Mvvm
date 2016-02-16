@@ -12,7 +12,7 @@ using System;
 using System.Collections.Generic;
 using Xamarin.Forms;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
 	public class DefaultViewContainer: IViewContainer
 	{

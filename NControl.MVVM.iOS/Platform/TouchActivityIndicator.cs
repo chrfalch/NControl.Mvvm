@@ -3,7 +3,7 @@ using BigTed;
 using Foundation;
 using Xamarin.Forms;
 
-namespace NControl.MVVM.iOS
+namespace NControl.Mvvm.iOS
 {
 	/// <summary>
 	/// Touch activity indicator.

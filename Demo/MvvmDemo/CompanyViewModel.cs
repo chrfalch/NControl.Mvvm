@@ -1,5 +1,5 @@
 ﻿using System;
-using NControl.MVVM;
+using NControl.Mvvm;
 using Xamarin.Forms;
 using System.Threading.Tasks;
 
@@ -9,20 +9,22 @@ namespace MvvmDemo
 	{
 		public CompanyViewModel ()
 		{
-			Title = "NControl.MVVM";
+			Title = "NControl.Mvvm";
 		}
 
 		public override async Task InitializeAsync ()
 		{
 			await base.InitializeAsync ();
 
-			MvvmApp.Current.ActivityIndicator.UpdateProgress (true, "Loading...");
-
 			Companies.AddRange (Company.CompanyRepository);
 
-			await Task.Delay (1000);
+			await Task.Run (async() => {
+				MvvmApp.Current.ActivityIndicator.UpdateProgress (true, "Loading...");
 
-			MvvmApp.Current.ActivityIndicator.UpdateProgress (false);
+				await Task.Delay (1000);
+
+				MvvmApp.Current.ActivityIndicator.UpdateProgress (false);
+			});
 		}
 
 		public ObservableCollectionWithAddRange<Company> Companies

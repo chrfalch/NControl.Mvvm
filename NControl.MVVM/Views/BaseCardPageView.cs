@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using NControl.Controls;
 using System.Threading.Tasks;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
 	/// <summary>
 	/// Base card page view.
@@ -139,8 +139,7 @@ namespace NControl.MVVM
 		{
 			base.OnAppearing();
 
-			Device.BeginInvokeOnMainThread (async() =>
-				await ViewModel.OnAppearingAsync ());
+			ViewModel.OnAppearingAsync ();
 		}
 
 		/// <summary>
@@ -150,8 +149,7 @@ namespace NControl.MVVM
 		{
 			base.OnDisappearing ();
 
-			Device.BeginInvokeOnMainThread (async() =>
-				await ViewModel.OnDisappearingAsync ());	
+			ViewModel.OnDisappearingAsync ();	
 		}
 
 		/// <summary>

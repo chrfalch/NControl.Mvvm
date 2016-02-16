@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
    <metadata minClientVersion="2.8.1">
-       <id>NControl.MVVM</id>
-    <version>0.29</version>
+       <id>NControl.Mvvm</id>
+    <version>0.294</version>
     <authors>Christian Falch</authors>
     <owners>Christian Falch</owners>
     <licenseUrl>https://github.com/chrfalch/NControl.MVVM/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>https://github.com/chrfalch/NControl.MVVM/</projectUrl>    
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-    	NControl.MVVM is a small MVVM library built to be used with the NControl.Controls library.
+    	NControl.Mvvm is a small Mvvm library built to be used with the NControl.Controls library.
     </description>
     <releaseNotes>Released for iOS and Android</releaseNotes>
     <copyright>Copyright 2016</copyright>
@@ -34,15 +34,15 @@
    </metadata>
    <files>
      <!--Core-->
-     <file src="NControl.MVVM/bin/Release/NControl.MVVM.dll" target="lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\NControl.MVVM.dll" />
+     <file src="NControl.MVVM/bin/Release/NControl.Mvvm.dll" target="lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\NControl.Mvvm.dll" />
      
      <!--Xamarin.Android-->
-     <file src="NControl.MVVM.Droid/bin/Release/NControl.MVVM.Droid.dll" target="lib\MonoAndroid10\NControl.MVVM.Droid.dll" />
-     <file src="NControl.MVVM.Droid/bin/Release/NControl.MVVM.dll" target="lib\MonoAndroid10\NControl.MVVM.dll" />
+     <file src="NControl.MVVM.Droid/bin/Release/NControl.Mvvm.Droid.dll" target="lib\MonoAndroid10\NControl.Mvvm.Droid.dll" />
+     <file src="NControl.MVVM.Droid/bin/Release/NControl.Mvvm.dll" target="lib\MonoAndroid10\NControl.Mvvm.dll" />
 
      <!--Xamarin.iOSUnified-->
-     <file src="NControl.MVVM.iOS/bin/Release/NControl.MVVM.iOS.dll" target="lib\Xamarin.iOS10\NControl.MVVM.iOS.dll" />
-     <file src="NControl.MVVM.iOS/bin/Release/NControl.MVVM.dll" target="lib\Xamarin.iOS10\NControl.MVVM.dll" />
+     <file src="NControl.MVVM.iOS/bin/Release/NControl.Mvvm.iOS.dll" target="lib\Xamarin.iOS10\NControl.Mvvm.iOS.dll" />
+     <file src="NControl.MVVM.iOS/bin/Release/NControl.Mvvm.dll" target="lib\Xamarin.iOS10\NControl.Mvvm.dll" />
       
    </files>
 </package>

@@ -3,7 +3,7 @@ using Android.App;
 using System.Threading;
 using Xamarin.Forms;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
 	/// <summary>
 	/// Droid activity indicator.

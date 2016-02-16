@@ -1,4 +1,4 @@
-# NControl.MVVM
+# NControl.Mvvm
 
 This small library is a simple Mvvm framework for Xamarin.Forms based 
 around the [NControl](https://github.com/chrfalch/NControl) and
@@ -32,10 +32,10 @@ When bulding this library there were a few simple requirements on my list:
 - Use the async-await pattern as much as possible
 
 ## Getting Started
-Getting started with NControl.MVVM is simple and only consists of a few steps before you are ready to run:
+Getting started with NControl.Mvvm is simple and only consists of a few steps before you are ready to run:
 
 - Create a new Xamarin.Forms/PCL based cross platform app for iOS/Android
-- Add the package NControl.MVVM to all projects
+- Add the package NControl.Mvvm to all projects
 
 ### Create a new app that inherits from the base MvvmApp class in the PCL project
 
@@ -121,7 +121,7 @@ Your app should now be ready to run, and you should be ready to read more about 
 ### Dependency Injection
 To ensure loose coupling between the different parts of the application and testability all setup and dependencies between the different objects in the app is set up using a dependency injection library. 
 
-In the NControl.MVVM library none of the views or view models are constructed using the ```new``` operator - they are automatically instantiated by the injection container using the ```Resolve<>``` method. 
+In the NControl.Mvvm library none of the views or view models are constructed using the ```new``` operator - they are automatically instantiated by the injection container using the ```Resolve<>``` method. 
 
 ### Navigation
 Navigation in an Mvvm app should always be from one ViewModel to another ViewModel. The type of navigation (modal, push, popup) should only be given as indications in the code and it should be the presenter's responsibility to present views in a consistent way on screen.
@@ -152,7 +152,7 @@ Backing fields has been replaced with a dictionary.
 ### ViewModels
 ViewModels serves as the transformation layer in an Mvvm app, and should take data from services and clients (again reading from databases or api endpoints) and transform these so that they can be properly bound to one or more UI elements in a view.
 
-NControl.MVVM contains base classes for view models that is easy to work with and easy to extend.
+NControl.Mvvm contains base classes for view models that is easy to work with and easy to extend.
 
 #### Construction of view models
 Declare all dependencies as parameters in the constructor and save them in private readonly fields in the class. This is not up for discussion. The dependency container will take care of resolving dependencies.
@@ -292,7 +292,7 @@ Views can be declared in Xaml (and now that we have the new compile option for o
 > Note: By describing the user interface in code with as few lines as possible we are forced to think about our views in a more conceptual way. I always try to hide code that talks about pixels and colors in separate control classes that can easily be reused in my views.
 
 #### Binding
-The most important part of building the UI is its bindings to the view model. NControl.MVVM contains a few extensions that makes this a simple task as well (remember that I don't like to repeat myself. Whops..)
+The most important part of building the UI is its bindings to the view model. NControl.Mvvm contains a few extensions that makes this a simple task as well (remember that I don't like to repeat myself. Whops..)
 
 Look at this example that sets up a list view (using the included ListViewEx class that exposes the item selected event as a command) and binds it to a view model with a list of companies:
 

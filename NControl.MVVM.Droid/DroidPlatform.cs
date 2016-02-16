@@ -13,7 +13,7 @@ using NControl.Controls.Droid;
 using Android.Content;
 using Android.App;
 
-namespace NControl.MVVM.Droid
+namespace NControl.Mvvm.Droid
 {
 	/// <summary>
 	/// Droid mvvm app.

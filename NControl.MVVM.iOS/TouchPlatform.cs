@@ -11,7 +11,7 @@ WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 using System;
 using NControl.Controls.iOS;
 
-namespace NControl.MVVM.iOS
+namespace NControl.Mvvm.iOS
 {
 	/// <summary>
 	/// Touch mvvm app.
@@ -19,7 +19,7 @@ namespace NControl.MVVM.iOS
 	public class TouchPlatform: IMvvmPlatform
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NControl.MVVM.iOS.TouchMvvmApp"/> class.
+		/// Initializes a new instance of the <see cref="NControl.Mvvm.iOS.TouchMvvmApp"/> class.
 		/// </summary>
 		public virtual void Initialize ()
 		{
