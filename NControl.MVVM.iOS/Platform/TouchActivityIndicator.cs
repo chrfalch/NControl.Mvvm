@@ -1,5 +1,7 @@
 ﻿using System;
 using BigTed;
+using Foundation;
+using Xamarin.Forms;
 
 namespace NControl.MVVM.iOS
 {
@@ -18,15 +20,20 @@ namespace NControl.MVVM.iOS
 		/// <param name="subtitle">Subtitle.</param>
 		public void UpdateProgress (bool visible, string title = "", string subtitle = "")
 		{
-			if (visible) {
-				if (!BTProgressHUD.IsVisible)
-					BTProgressHUD.Show (title, maskType: ProgressHUD.MaskType.Black);
-				else
-					BTProgressHUD.SetStatus (title);
-			}
-			else if (!visible && BTProgressHUD.IsVisible)
-				BTProgressHUD.Dismiss ();
-				
+			Action updateProgressAction = () => {
+				if (visible) {
+					if (!BTProgressHUD.IsVisible)
+						BTProgressHUD.Show (title, maskType: ProgressHUD.MaskType.Black);
+					else
+						BTProgressHUD.SetStatus (title);
+				} else if (!visible && BTProgressHUD.IsVisible)
+					BTProgressHUD.Dismiss ();
+			};
+
+			if (!NSThread.IsMain)
+				Device.BeginInvokeOnMainThread (updateProgressAction);
+			else
+				updateProgressAction ();
 		}
 
 		#endregion
