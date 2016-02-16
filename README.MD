@@ -115,6 +115,8 @@ public class DemoMvvmApp: MvvmApp
 }
 ```
 
+> Note: You don't need to wrap your main page into a NavigationPage, but it makes navigation easier.
+
 Your app should now be ready to run, and you should be ready to read more about how to bind the different parts of the app together.
 
 ### Dependency Injection
@@ -312,7 +314,3 @@ return new StackLayout {
 The only special stuff here is the ```BindTo``` extension method which exists for both DataTemplates and other controls like labels and textfields. 
 
 In addition the library contains a simple ```NameOf``` method in the base view classes that can be used to make binding type safe. This method uses the vide model as its default generic parameter, but can also be used for other types like the items in an enumerable property.
-
-## Demo
-
-## Configuration
