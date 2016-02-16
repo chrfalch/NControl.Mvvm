@@ -18,7 +18,6 @@ Since this library is built upon [NGraphics](https://github.com/chrfalch/NGraphi
 
 In addition the library uses a few other projects that I have chosen to use - but these can be configured if you want other implementations:
 
-- [Acr.UserDialogs](https://github.com/aritchie/userdialogs) - Cross platform standard user dialogs
 - [SimpleInjector](https://simpleinjector.org/index.html) - Fast and efficient Dependency Injection library
 
 ## Requirements

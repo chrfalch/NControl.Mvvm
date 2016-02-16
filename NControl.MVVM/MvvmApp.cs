@@ -39,7 +39,7 @@ namespace NControl.MVVM
 			// Set up presenter and view container
 			Container.RegisterSingleton<IViewContainer, DefaultViewContainer>();
 			Container.RegisterSingleton<IPresenter, DefaultPresenter> ();
-			Container.RegisterSingleton<IActivityIndicator, DefaultActivityIndicator> ();
+			//Container.RegisterSingleton<IActivityIndicator, DefaultActivityIndicator> ();
 
 			// Initialize platform app
 			platformApp.Initialize();

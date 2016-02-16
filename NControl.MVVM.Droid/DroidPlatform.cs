@@ -11,7 +11,6 @@ WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 using System;
 using NControl.Controls.Droid;
 using Android.Content;
-using Acr.UserDialogs;
 using Android.App;
 
 namespace NControl.MVVM.Droid
@@ -22,16 +21,10 @@ namespace NControl.MVVM.Droid
 	public class DroidPlatform: IMvvmPlatform
 	{
 		/// <summary>
-		/// The activity
-		/// </summary>
-		private readonly Activity _activity;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="NControl.MVVM.Droid.DroidPlatform"/> class.
 		/// </summary>
 		public DroidPlatform (Activity activity)
-		{
-			_activity = activity;
+		{			
 		}
 
 		/// <summary>
@@ -40,8 +33,8 @@ namespace NControl.MVVM.Droid
 		public void Initialize ()
 		{
 			NControls.Init ();
-			UserDialogs.Init(_activity);
 
+			Container.RegisterSingleton<IActivityIndicator, DroidActivityIndicator> ();
 			Container.Register<IImageProvider, DroidImageProvider> ();
 		}
 	}

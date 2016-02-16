@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
    <metadata minClientVersion="2.8.1">
        <id>NControl.MVVM</id>
-    <version>0.1</version>
+    <version>0.22</version>
     <authors>Christian Falch</authors>
     <owners>Christian Falch</owners>
     <licenseUrl>https://github.com/chrfalch/NControl.MVVM/blob/master/LICENSE.md</licenseUrl>
@@ -15,12 +15,21 @@
     <copyright>Copyright 2016</copyright>
     <tags>xamarin, pcl, xam.pcl, android, xamarin.forms, ios</tags>
        <dependencies>
-         <dependency id="Xamarin.Forms" version="2.0.1.6505" />
-         <dependency id="NGraphics" version="0.4.0" />
-         <dependency id="NControl" version="0.8.6" />
-         <dependency id="NControl.Controls" version="0.8.9" />
-         <dependency id="SimpleInjector" version="3.1.2" />
-         <dependency id="Acr.UserDialogs" version="4.0.0" />
+         <group>
+	         <dependency id="Xamarin.Forms" version="2.0.1.6505" />
+	         <dependency id="NGraphics" version="0.4.0" />
+	         <dependency id="NControl" version="0.8.6" />
+	         <dependency id="NControl.Controls" version="0.8.9" />
+	         <dependency id="SimpleInjector" version="3.1.2" />
+         </group>
+         <group targetFramework="Xamarin.iOS10">
+         	 <dependency id="Xamarin.Forms" version="2.0.1.6505" />
+	         <dependency id="NGraphics" version="0.4.0" />
+	         <dependency id="NControl" version="0.8.6" />
+	         <dependency id="NControl.Controls" version="0.8.9" />
+	         <dependency id="SimpleInjector" version="3.1.2" />
+            <dependency id="BTProgressHUD" version="1.0.0"/>
+        	</group>         
        </dependencies>
    </metadata>
    <files>
