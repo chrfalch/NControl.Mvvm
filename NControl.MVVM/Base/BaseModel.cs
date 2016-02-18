@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Reflection;
+using System.Collections;
 
 namespace NControl.Mvvm
 {
@@ -61,12 +62,15 @@ namespace NControl.Mvvm
         /// <typeparam name="TValueType">The 1st type parameter.</typeparam>
         protected bool SetValue<TValueType>(TValueType value, [CallerMemberName] string propertyName = null) 
         {
-            var existingValue = GetValue<TValueType>(propertyName);
+			if (value is IComparer) {
+				
+				var existingValue = GetValue<TValueType> (propertyName);
 
-            // Check for equality
-            if (!_notifyChangeForSameValues.Contains(propertyName) && 
-                EqualityComparer<TValueType>.Default.Equals (existingValue, value))
-                return false;
+				// Check for equality
+				if (!_notifyChangeForSameValues.Contains (propertyName) &&
+		            EqualityComparer<TValueType>.Default.Equals (existingValue, value))
+					return false;
+			}
 
             SetObjectForKey<TValueType> (propertyName, value);
 

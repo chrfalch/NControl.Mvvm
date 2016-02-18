@@ -20,7 +20,6 @@ In addition the library uses a few other projects that I have chosen to use - bu
 
 - [SimpleInjector](https://simpleinjector.org/index.html) - Fast and efficient Dependency Injection library
 - [Reactive Extensions](https://rx.codeplex.com) - Reactive Extensions for those who like it
-- [ReactiveProperty](https://github.com/runceel/ReactiveProperty) - Easy extensions to handle properties and commands
 
 ## Requirements
 The library is based on the [Mvvm pattern](https://en.wikipedia.org/wiki/Model–view–viewmodel) first described by Microsoft. This document will not try to explain the pattern.

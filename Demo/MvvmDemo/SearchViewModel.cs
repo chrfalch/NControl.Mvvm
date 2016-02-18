@@ -3,6 +3,9 @@ using NControl.Mvvm;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using System.Linq;
+using System.Reactive.Linq;
+using NControl.MVVM;
+using System.Windows.Input;
 
 namespace MvvmDemo
 {
@@ -13,7 +16,18 @@ namespace MvvmDemo
 		/// </summary>
 		public SearchViewModel ()
 		{
-			
+			this.OnPropertyChanges (d => d.Query)
+				.DistinctUntilChanged ()
+				.Throttle (TimeSpan.FromSeconds (0.25))
+				.Select(t => t.ToLowerInvariant())
+				.Subscribe (_ => {
+					Employees.Clear();
+					if(string.IsNullOrEmpty(Query))
+						Employees.AddRange(Employee.EmployeeRepository);
+					else
+						Employees.AddRange(Employee.EmployeeRepository
+							.Where(mn => mn.Name.ToLowerInvariant().Contains(Query)));	
+				});
 		}
 
 		/// <summary>
@@ -43,23 +57,6 @@ namespace MvvmDemo
 		public string Query {
 			get { return GetValue<string> (); }
 			set { SetValue<string> (value); }
-		}
-
-		/// <summary>
-		/// Returns the Search command
-		/// </summary>
-		/// <value>The view Search command.</value>
-		public Command SearchCommand {
-			get {
-				return GetOrCreateCommand (() => {
-
-					Employees.Clear();
-					if(string.IsNullOrEmpty(Query))
-						Employees.AddRange(Employee.EmployeeRepository);
-					else
-						Employees.AddRange(Employee.EmployeeRepository.Where(mn => mn.Name.Contains(Query)));					
-				});
-			}
 		}
 
 		/// <summary>
