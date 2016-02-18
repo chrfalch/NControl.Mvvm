@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
    <metadata minClientVersion="2.8.1">
        <id>NControl.Mvvm</id>
-    <version>0.294</version>
+    <version>0.3</version>
     <authors>Christian Falch</authors>
     <owners>Christian Falch</owners>
     <licenseUrl>https://github.com/chrfalch/NControl.MVVM/blob/master/LICENSE.md</licenseUrl>
@@ -21,6 +21,7 @@
 	         <dependency id="NControl" version="0.8.6" />
 	         <dependency id="NControl.Controls" version="0.8.9" />
 	         <dependency id="SimpleInjector" version="3.1.2" />
+	         <dependency id="Rx-Main" version="2.2.5" />
          </group>
          <group targetFramework="Xamarin.iOS10">
          	 <dependency id="Xamarin.Forms" version="2.0.1.6505" />
@@ -28,7 +29,8 @@
 	         <dependency id="NControl" version="0.8.6" />
 	         <dependency id="NControl.Controls" version="0.8.9" />
 	         <dependency id="SimpleInjector" version="3.1.2" />
-            <dependency id="BTProgressHUD" version="1.0.0"/>
+             <dependency id="BTProgressHUD" version="1.0.0"/>
+             <dependency id="Rx-Main" version="2.2.5" />
         	</group>         
        </dependencies>
    </metadata>

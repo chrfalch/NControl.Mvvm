@@ -8,10 +8,18 @@ namespace MvvmDemo
 {
 	public class SearchViewModel: BaseViewModel
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MvvmDemo.SearchViewModel"/> class.
+		/// </summary>
 		public SearchViewModel ()
 		{
+			
 		}
 
+		/// <summary>
+		/// Initializes the viewmodel
+		/// </summary>
+		/// <returns>The async.</returns>
 		public override async Task InitializeAsync ()
 		{
 			await base.InitializeAsync ();
@@ -19,11 +27,19 @@ namespace MvvmDemo
 			Employees.AddRange(Employee.EmployeeRepository);
 		}
 
+		/// <summary>
+		/// Gets the employees.
+		/// </summary>
+		/// <value>The employees.</value>
 		public ObservableCollectionWithAddRange<Employee> Employees {
 			get { return GetValue<ObservableCollectionWithAddRange<Employee>> (()=> 
 				new ObservableCollectionWithAddRange<Employee>()); }		
 		}
 
+		/// <summary>
+		/// Gets or sets the query.
+		/// </summary>
+		/// <value>The query.</value>
 		public string Query {
 			get { return GetValue<string> (); }
 			set { SetValue<string> (value); }
@@ -33,7 +49,6 @@ namespace MvvmDemo
 		/// Returns the Search command
 		/// </summary>
 		/// <value>The view Search command.</value>
-		[ExecuteOnChange(nameof(Query))]
 		public Command SearchCommand {
 			get {
 				return GetOrCreateCommand (() => {
@@ -51,7 +66,6 @@ namespace MvvmDemo
 		/// Returns the EmployeSelected command
 		/// </summary>
 		/// <value>The view EmployeSelected command.</value>
-		[DependsOn(nameof(Query))]
 		public Command<Employee> EmployeSelectedCommand {
 			get {
 				return GetOrCreateCommand<Employee> (async(emp) => {
