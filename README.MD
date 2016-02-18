@@ -19,6 +19,7 @@ Since this library is built upon [NGraphics](https://github.com/chrfalch/NGraphi
 In addition the library uses a few other projects that I have chosen to use - but these can be configured if you want other implementations:
 
 - [SimpleInjector](https://simpleinjector.org/index.html) - Fast and efficient Dependency Injection library
+- [Reactive Extensions](https://rx.codeplex.com) - Reactive Extensions for those who like it
 
 ## Requirements
 The library is based on the [Mvvm pattern](https://en.wikipedia.org/wiki/Model–view–viewmodel) first described by Microsoft. This document will not try to explain the pattern.
