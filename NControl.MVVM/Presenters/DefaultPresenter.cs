@@ -52,11 +52,16 @@ namespace NControl.Mvvm
 		{
 			Application.Current.MainPage = mainPage;
 
-			if(_navigationPageStack.Any())
-				_navigationPageStack.Pop();
+			if (_masterDetailPage == null) 
+			{
+				if (_navigationPageStack.Any ())
+					_navigationPageStack.Pop ();
 
-			_navigationPageStack.Push(new NavigationElement{Page = mainPage});
-			return _navigationPageStack.Peek().Page;
+				_navigationPageStack.Push (new NavigationElement{ Page = mainPage });
+				return _navigationPageStack.Peek ().Page;
+			}
+
+			return mainPage;
 		}
 
 		/// <summary>
@@ -66,6 +71,11 @@ namespace NControl.Mvvm
 		public void SetMasterDetailMaster(MasterDetailPage page)
 		{
 			_masterDetailPage = page;
+
+			if(_navigationPageStack.Any())
+				_navigationPageStack.Pop();
+
+			_navigationPageStack.Push(new NavigationElement{Page = page.Detail});
 		}
 
 		/// <summary>

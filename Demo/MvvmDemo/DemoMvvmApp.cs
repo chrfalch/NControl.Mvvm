@@ -35,7 +35,11 @@ namespace MvvmDemo
 		/// <returns>The main page.</returns>
 		protected override Xamarin.Forms.Page GetMainPage ()
 		{
-			return new NavigationPage(Container.Resolve<CompanyView> ());
+			var masterDetailsPage = new MasterDetailPage ();
+			masterDetailsPage.Master = Container.Resolve<MenuView> ();
+			masterDetailsPage.Detail = new NavigationPage(Container.Resolve<CompanyView>());
+			Presenter.SetMasterDetailMaster (masterDetailsPage);
+			return masterDetailsPage;
 		}
 	}
 }
