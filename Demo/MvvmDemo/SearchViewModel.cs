@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using System.Linq;
 using System.Reactive.Linq;
-using NControl.MVVM;
 using System.Windows.Input;
 
 namespace MvvmDemo
@@ -26,7 +25,8 @@ namespace MvvmDemo
 						Employees.AddRange(Employee.EmployeeRepository);
 					else
 						Employees.AddRange(Employee.EmployeeRepository
-							.Where(mn => mn.Name.ToLowerInvariant().Contains(Query)));	
+							.Where(mn => mn.Name.ToLowerInvariant()
+								.Contains(Query.ToLowerInvariant())));	
 				});
 		}
 

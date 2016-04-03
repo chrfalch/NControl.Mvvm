@@ -21,7 +21,7 @@ namespace NControl.Mvvm
 	/// <summary>
 	/// Base view model.
 	/// </summary>
-	public abstract class BaseViewModel : BaseModel
+	public abstract class BaseViewModel : BaseModel, IViewModel
 	{
 		#region Private Members
 

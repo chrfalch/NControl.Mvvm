@@ -214,13 +214,15 @@ namespace NControl.Mvvm
 				_masterDetailPage.IsPresented = false;
 
 			var view = MvvmApp.Current.ViewContainer.GetViewFromViewModel<TViewModel>();
-			var retVal = new NavigationPage (view);
 
 			var viewModelProvider = view as IView<TViewModel>;
 			if (viewModelProvider == null)
 				throw new ArgumentException ("Could not get viewmodel from view. View does not implement IView<T>.");
 
 			viewModelProvider.ViewModel.PresentationMode = PresentationMode.Modal;
+
+			// Create wrapper page
+			var retVal = new ModalNavigationPage (view, viewModelProvider.ViewModel);
 
 			if (parameter != null)
 			{

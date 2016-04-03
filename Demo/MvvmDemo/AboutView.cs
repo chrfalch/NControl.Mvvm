@@ -22,7 +22,6 @@ namespace MvvmDemo
 				Spacing = 8,
 				Children = {
 					new Label{Text = "Demo Application for NControl.Mvvm" },
-					new Button { Text = "Close" }.BindTo(Button.CommandProperty, NameOf(vm => vm.CloseCommand)),
 				}
 			};
 		}
