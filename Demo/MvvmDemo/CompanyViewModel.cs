@@ -49,6 +49,8 @@ namespace MvvmDemo
 			get{
 				return GetOrCreateCommand (async () => {
 
+					await MvvmApp.Current.Presenter.ShowMessageAsync("Title", "Message");
+					await MvvmApp.Current.Presenter.ShowActionSheet("Title", "Cancel", "Delete", "item 1", "item 2");
 					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<AboutViewModel>();
 
 				});

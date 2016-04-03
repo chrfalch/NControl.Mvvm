@@ -123,6 +123,35 @@ namespace NControl.Mvvm
 
 		#endregion
 
+		#region Dialogs
+
+		/// <summary>
+		/// Shows the message async.
+		/// </summary>
+		/// <returns>The message async.</returns>
+		/// <param name="title">Title.</param>
+		/// <param name="message">Message.</param>
+		public Task<bool> ShowMessageAsync(string title, string message, string accept, string cancel)
+		{
+			var page = _navigationPageStack.Peek ().Page;
+			return page.DisplayAlert (title, message, accept ?? "OK", cancel ?? "Cancel");
+		}
+
+		/// <summary>
+		/// Shows the action sheet.
+		/// </summary>
+		/// <returns>The action sheet.</returns>
+		/// <param name="title">Title.</param>
+		/// <param name="cancel">Cancel.</param>
+		/// <param name="destruction">Destruction.</param>
+		/// <param name="buttons">Buttons.</param>
+		public Task<string> ShowActionSheet(string title, string cancel, string destruction, params string[] buttons)
+		{
+			var page = _navigationPageStack.Peek ().Page;
+			return page.DisplayActionSheet (title, cancel, destruction, buttons);
+		}
+		#endregion
+
 		#region Regular Navigation
 
 		/// <summary>

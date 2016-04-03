@@ -69,6 +69,9 @@ namespace NControl.Mvvm
 		Task DismissViewModelAsync(PresentationMode presentationMode);
 		Task DismissViewModelAsync(PresentationMode presentationMode, bool success);
 
+		// Dialog
+		Task<bool> ShowMessageAsync(string title, string message, string accept = null, string cancel = null);
+		Task<string> ShowActionSheet (string title, string cancel, string destruction, params string[] buttons);
 	}
 }
 
