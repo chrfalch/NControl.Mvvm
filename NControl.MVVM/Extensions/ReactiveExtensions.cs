@@ -8,7 +8,7 @@ using System.Reactive.Subjects;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
 	/// <summary>
 	/// Contains Rx Extension Classes

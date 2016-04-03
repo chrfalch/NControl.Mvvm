@@ -15,13 +15,25 @@ namespace NControl.Mvvm
 	/// <summary>
 	/// I view.
 	/// </summary>
-	public interface IView<TViewModel> where TViewModel: BaseViewModel
+	public interface IView<TViewModel>: IView where TViewModel: BaseViewModel, IViewModel
 	{
 		/// <summary>
 		/// Gets the view model.
 		/// </summary>
 		/// <value>The view model.</value>
 		TViewModel ViewModel { get; }
+	}
+
+	/// <summary>
+	/// I view.
+	/// </summary>
+	public interface IView
+	{
+		/// <summary>
+		/// Gets the view model.
+		/// </summary>
+		/// <returns>The view model.</returns>
+		IViewModel GetViewModel();
 	}
 }
 

@@ -128,6 +128,15 @@ namespace NControl.Mvvm
 		/// </summary>
 		public TViewModel ViewModel{get; private set;}
 
+		/// <summary>
+		/// Gets the view model.
+		/// </summary>
+		/// <returns>The view model.</returns>
+		public IViewModel GetViewModel() 
+		{
+			return ViewModel as IViewModel;
+		}
+
 		#endregion
 
 		#region View LifeCycle
