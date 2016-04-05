@@ -131,10 +131,15 @@ namespace NControl.Mvvm
 		/// <returns>The message async.</returns>
 		/// <param name="title">Title.</param>
 		/// <param name="message">Message.</param>
-		public Task<bool> ShowMessageAsync(string title, string message, string accept, string cancel)
+		public async Task<bool> ShowMessageAsync(string title, string message, string accept, string cancel)
 		{
 			var page = _navigationPageStack.Peek ().Page;
-			return page.DisplayAlert (title, message, accept ?? "OK", cancel ?? "Cancel");
+			if (cancel == null) {
+				await page.DisplayAlert (title, message, accept ?? "OK");
+				return true;
+			}
+			
+			return await page.DisplayAlert (title, message, accept ?? "OK", cancel ?? "Cancel");
 		}
 
 		/// <summary>
