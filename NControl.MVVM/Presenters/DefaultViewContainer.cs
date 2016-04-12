@@ -46,6 +46,16 @@ namespace NControl.Mvvm
 		{
 			return Container.Resolve (ViewModels [typeof(TViewModel)]) as Page;
 		}
+
+		/// <summary>
+		/// Gets the view from view model.
+		/// </summary>
+		/// <returns>The view from view model.</returns>
+		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
+		public Page GetViewFromViewModel(Type viewModelType)
+		{
+			return Container.Resolve(ViewModels[viewModelType]) as Page;
+		}
 	}
 }
 

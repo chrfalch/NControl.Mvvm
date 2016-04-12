@@ -47,20 +47,16 @@ namespace NControl.Mvvm
 		void ToggleDrawer();
 
 		// Regular navigation
-		Task ShowViewModelAsync<TViewModel> () where TViewModel : BaseViewModel;
-		Task ShowViewModelAsync<TViewModel> (bool animate) where TViewModel : BaseViewModel;
-		Task ShowViewModelAsync<TViewModel> (object parameter) where TViewModel : BaseViewModel;
-		Task ShowViewModelAsync<TViewModel> (object parameter, bool animate) where TViewModel : BaseViewModel;
+		Task ShowViewModelAsync<TViewModel> (object parameter = null, bool animate = true) where TViewModel : BaseViewModel;
+		Task ShowViewModelAsync(Type viewModelType, object parameter = null, bool animate = true);
 
 		// Card navigation
-		Task ShowViewModelAsPopupAsync<TViewModel>() where TViewModel : BaseViewModel;
-		Task ShowViewModelAsPopupAsync<TViewModel>(object parameter) where TViewModel : BaseViewModel;
+		Task ShowViewModelAsPopupAsync<TViewModel>(object parameter = null) where TViewModel : BaseViewModel;
+		Task ShowViewModelAsPopupAsync(Type viewModelType, object parameter = null);
 
 		// Modal navigation
-		Task<NavigationPage> ShowViewModelModalAsync<TViewModel> (object parameter) where TViewModel : BaseViewModel;
-		Task<NavigationPage> ShowViewModelModalAsync<TViewModel> (Action<bool> dismissedCallback, object parameter) where TViewModel : BaseViewModel;
-		Task<NavigationPage> ShowViewModelModalAsync<TViewModel> (Action<bool> dismissedCallback) where TViewModel : BaseViewModel;
-		Task<NavigationPage> ShowViewModelModalAsync<TViewModel> () where TViewModel : BaseViewModel;
+		Task<NavigationPage> ShowViewModelModalAsync<TViewModel> (Action<bool> dismissedCallback = null, object parameter = null, bool animate = true) where TViewModel : BaseViewModel;
+		Task<NavigationPage> ShowViewModelModalAsync(Type viewModelType, Action<bool> dismissedCallback = null, object parameter = null, bool animate = true);
 
 		/// <summary>
 		/// Dismisses the view model async.

@@ -163,65 +163,43 @@ namespace NControl.Mvvm
 		/// Navigates to the provided view model of type
 		/// </summary>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Task ShowViewModelAsync<TViewModel>() 
+		public Task ShowViewModelAsync<TViewModel>(object parameter = null, bool animate = true)
 			where TViewModel : BaseViewModel
-		{       
-			return ShowViewModelAsync<TViewModel>(null, true);
+		{
+			return ShowViewModelAsync(typeof(TViewModel), parameter, animate);
 		}
 
 		/// <summary>
 		/// Navigates to the provided view model of type
 		/// </summary>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Task ShowViewModelAsync<TViewModel>(bool animate) 
-			where TViewModel : BaseViewModel
-		{       
-			return ShowViewModelAsync<TViewModel>(null, animate);
-		}
-
-		/// <summary>
-		/// Navigates to the provided view model of type
-		/// </summary>
-		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Task ShowViewModelAsync<TViewModel>(object parameter) 
-			where TViewModel : BaseViewModel
-		{       
-			return ShowViewModelAsync<TViewModel>(parameter, true);
-		}
-
-		/// <summary>
-		/// Navigates to the provided view model of type
-		/// </summary>
-		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public async Task ShowViewModelAsync<TViewModel>(object parameter, bool animate) 
-			where TViewModel : BaseViewModel
+		public async Task ShowViewModelAsync(Type viewModelType, object parameter = null, bool animate = true)			
 		{       
 			if (_masterDetailPage != null)
 				_masterDetailPage.IsPresented = false;
 
-			var view = MvvmApp.Current.ViewContainer.GetViewFromViewModel<TViewModel> ();
+			var view = MvvmApp.Current.ViewContainer.GetViewFromViewModel(viewModelType);
 
-			var viewModelProvider = view as IView<TViewModel>;
+			var viewModelProvider = view as IView;
 			if (viewModelProvider == null)
 				throw new ArgumentException ("Could not get viewmodel from view. View does not implement IView<T>.");
 
-			viewModelProvider.ViewModel.PresentationMode = PresentationMode.Default;
+			viewModelProvider.GetViewModel().PresentationMode = PresentationMode.Default;
 
 			if (parameter != null)
-			{
-				var viewModelType = typeof(TViewModel).GetTypeInfo();
-				var bt = viewModelType.BaseType;
+			{				
+				var bt = viewModelType.GetTypeInfo().BaseType;
 				var paramType = parameter.GetType ();
 				var met = bt.GetRuntimeMethod ("InitializeAsync", new Type[]{paramType});
 				if(met != null)
 				{
-					met.Invoke (viewModelProvider.ViewModel, new object[]{ parameter });
+					met.Invoke (viewModelProvider.GetViewModel(), new object[]{ parameter });
 				}
 			}
 
 			await _navigationPageStack.Peek().Page.Navigation.PushAsync (view, animate);
 		}
-			
+
 		#endregion
 
 		#region Modal Navigation
@@ -230,43 +208,45 @@ namespace NControl.Mvvm
 		/// Navigates to the provided view model of type
 		/// </summary>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Task<NavigationPage> ShowViewModelModalAsync<TViewModel>(object parameter) 
+		public Task<NavigationPage> ShowViewModelModalAsync<TViewModel>(
+			Action<bool> dismissedCallback = null, object parameter = null, bool animate = false)
 			where TViewModel : BaseViewModel
-		{       
-			return ShowViewModelModalAsync<TViewModel>(null, parameter);
+		{
+			return ShowViewModelModalAsync(typeof(TViewModel), dismissedCallback, parameter, animate);
 		}
 
 		/// <summary>
-		/// Navigates to the provided view model of type
+		/// Shows the view model modal async.
 		/// </summary>
+		/// <returns>The view model modal async.</returns>
+		/// <param name="dismissedCallback">Dismissed callback.</param>
+		/// <param name="parameter">Parameter.</param>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public async Task<NavigationPage> ShowViewModelModalAsync<TViewModel>(
-			Action<bool> dismissedCallback, object parameter) 
-			where TViewModel : BaseViewModel
+		public async Task<NavigationPage> ShowViewModelModalAsync(Type viewModelType,
+			Action<bool> dismissedCallback = null, object parameter = null, bool animate = false)
 		{       
 			if (_masterDetailPage != null)
 				_masterDetailPage.IsPresented = false;
 
-			var view = MvvmApp.Current.ViewContainer.GetViewFromViewModel<TViewModel>();
+			var view = MvvmApp.Current.ViewContainer.GetViewFromViewModel(viewModelType);
 
-			var viewModelProvider = view as IView<TViewModel>;
+			var viewModelProvider = view as IView;
 			if (viewModelProvider == null)
 				throw new ArgumentException ("Could not get viewmodel from view. View does not implement IView<T>.");
 
-			viewModelProvider.ViewModel.PresentationMode = PresentationMode.Modal;
+			viewModelProvider.GetViewModel().PresentationMode = PresentationMode.Modal;
 
 			// Create wrapper page
-			var retVal = new ModalNavigationPage (view, viewModelProvider.ViewModel);
+			var retVal = new ModalNavigationPage (view, viewModelProvider.GetViewModel() as BaseViewModel);
 
 			if (parameter != null)
 			{
-				var viewModelType = typeof(TViewModel).GetTypeInfo();
-				var bt = viewModelType.BaseType;
+				var bt = viewModelType.GetTypeInfo().BaseType;
 				var paramType = parameter.GetType ();
 				var met = bt.GetRuntimeMethod ("InitializeAsync", new Type[]{paramType});
 				if(met != null)
 				{
-					met.Invoke (viewModelProvider.ViewModel, new object[]{ parameter });
+					met.Invoke (viewModelProvider.GetViewModel(), new object[]{ parameter });
 				}
 			}
 
@@ -278,26 +258,6 @@ namespace NControl.Mvvm
 			});
 
 			return retVal;
-		}
-
-		/// <summary>
-		/// Navigates to the provided view model of type
-		/// </summary>
-		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Task<NavigationPage> ShowViewModelModalAsync<TViewModel>(Action<bool> dismissedCallback) 
-			where TViewModel : BaseViewModel
-		{       
-			return ShowViewModelModalAsync<TViewModel>(dismissedCallback, null);
-		}
-
-		/// <summary>
-		/// Navigates to the provided view model of type
-		/// </summary>
-		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Task<NavigationPage> ShowViewModelModalAsync<TViewModel>() 
-			where TViewModel : BaseViewModel
-		{       
-			return ShowViewModelModalAsync<TViewModel>(null);
 		}
 
 		/// <summary>
@@ -321,14 +281,15 @@ namespace NControl.Mvvm
 		#region Card Navigation
 
 		/// <summary>
-		/// Navigates to card view model async.
+		/// Shows the view model as popup async.
 		/// </summary>
-		/// <returns>The to card view model async.</returns>
-		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Task ShowViewModelAsPopupAsync<TViewModel>()
+		/// <returns>The view model as popup async.</returns>
+		/// <param name="viewModelType">View model type.</param>
+		/// <param name="parameter">Parameter.</param>
+		public Task ShowViewModelAsPopupAsync<TViewModel>(object parameter)
 			where TViewModel : BaseViewModel
 		{
-			return ShowViewModelAsPopupAsync<TViewModel> (null);
+			return ShowViewModelAsPopupAsync(typeof(TViewModel), parameter);
 		}
 
 		/// <summary>
@@ -336,29 +297,27 @@ namespace NControl.Mvvm
 		/// </summary>
 		/// <returns>The to card view model async.</returns>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public async Task ShowViewModelAsPopupAsync<TViewModel>(object parameter)
-			where TViewModel : BaseViewModel
+		public async Task ShowViewModelAsPopupAsync(Type viewModelType, object parameter)			
 		{
 			if (_masterDetailPage != null)
 				_masterDetailPage.IsPresented = false;
 
-			var view = (BaseCardPageView)MvvmApp.Current.ViewContainer.GetViewFromViewModel<TViewModel>();
+			var view = (BaseCardPageView)MvvmApp.Current.ViewContainer.GetViewFromViewModel(viewModelType);
 
-			var viewModelProvider = view as IView<TViewModel>;
+			var viewModelProvider = view as IView;
 			if (viewModelProvider == null)
 				throw new ArgumentException ("Could not get viewmodel from view. View does not implement IView<T>.");
 
-			viewModelProvider.ViewModel.PresentationMode = PresentationMode.Popup;
+			viewModelProvider.GetViewModel().PresentationMode = PresentationMode.Popup;
 
 			if (parameter != null)
 			{
-				var viewModelType = typeof(TViewModel).GetTypeInfo();
-				var bt = viewModelType.BaseType;
+				var bt = viewModelType.GetTypeInfo().BaseType;
 				var paramType = parameter.GetType ();
 				var met = bt.GetRuntimeMethod ("InitializeAsync", new Type[]{paramType});
 				if(met != null)
 				{
-					met.Invoke (viewModelProvider.ViewModel, new object[]{ parameter });
+					met.Invoke (viewModelProvider.GetViewModel(), new object[]{ parameter });
 				}
 			}
 

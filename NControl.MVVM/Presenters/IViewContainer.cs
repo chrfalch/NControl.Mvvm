@@ -34,6 +34,13 @@ namespace NControl.Mvvm
 		/// <returns>The view from view model.</returns>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
 		Page GetViewFromViewModel<TViewModel>() where TViewModel : BaseViewModel;
+
+		/// <summary>
+		/// Gets the view from view model.
+		/// </summary>
+		/// <returns>The view from view model.</returns>
+		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
+		Page GetViewFromViewModel(Type viewModelType);
 	}
 }
 
