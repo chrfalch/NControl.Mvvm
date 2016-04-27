@@ -11,6 +11,7 @@ WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 using System;
 using Xamarin.Forms;
 using System.Threading.Tasks;
+using NControl.MVVM;
 
 namespace NControl.Mvvm
 {
@@ -39,6 +40,9 @@ namespace NControl.Mvvm
 			// Set up presenter and view container
 			Container.RegisterSingleton<IViewContainer, DefaultViewContainer>();
 			Container.RegisterSingleton<IPresenter, DefaultPresenter> ();
+
+			// Sets up the messaging service
+			RegisterMessagingService ();
 
 			// Set up services
 			RegisterServices();
@@ -73,6 +77,12 @@ namespace NControl.Mvvm
 		/// <value>The view container.</value>
 		public IActivityIndicator ActivityIndicator { get { return Container.Resolve<IActivityIndicator> (); } }
 
+		/// <summary>
+		/// Gets the messaging service.
+		/// </summary>
+		/// <value>The messaging service.</value>
+		public IMessagingService MessagingService { get { return Container.Resolve<IMessagingService>(); } }
+
 		#endregion
 
 		#region Protected Members
@@ -84,6 +94,14 @@ namespace NControl.Mvvm
 		protected virtual IContainer CreateContainer()
 		{
 			return new SimpleInjectContainer ();
+		}
+
+		/// <summary>
+		/// Registers the messaging service
+		/// </summary>
+		protected virtual void RegisterMessagingService()
+		{
+			Container.RegisterSingleton<IMessagingService, MessagingService> ();
 		}
 
 		/// <summary>
