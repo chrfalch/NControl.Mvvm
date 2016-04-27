@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
 	/// <summary>
 	/// Messaging service.
 	/// </summary>
-	public class MessagingService: IMessagingService
+	public class MessageHub: IMessageHub
 	{
 		#region Private Members
 

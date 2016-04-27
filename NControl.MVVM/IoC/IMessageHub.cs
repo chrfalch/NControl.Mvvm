@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace NControl.MVVM
+namespace NControl.Mvvm
 {
 	/// <summary>
 	/// I messaging center.
 	/// </summary>
-	public interface IMessagingService
+	public interface IMessageHub
 	{
 		/// <summary>
 		/// Publishes a message the async.

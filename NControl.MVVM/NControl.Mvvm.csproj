@@ -6,7 +6,7 @@
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{6AF0AE38-F4D7-4A23-9E9F-4B11DF18ECC7}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>NControl.MVVM</RootNamespace>
+    <RootNamespace>NControl.Mvvm</RootNamespace>
     <AssemblyName>NControl.Mvvm</AssemblyName>
     <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -57,8 +57,8 @@
     <Compile Include="ViewModels\IViewModel.cs" />
     <Compile Include="Views\IView.cs" />
     <Compile Include="Presenters\ModalNavigationPage.cs" />
-    <Compile Include="IoC\MessagingService.cs" />
-    <Compile Include="IoC\IMessagingService.cs" />
+    <Compile Include="IoC\IMessageHub.cs" />
+    <Compile Include="IoC\MessageHub.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.0.1.6505\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.0.1.6505\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />

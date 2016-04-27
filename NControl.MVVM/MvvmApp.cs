@@ -11,7 +11,6 @@ WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 using System;
 using Xamarin.Forms;
 using System.Threading.Tasks;
-using NControl.MVVM;
 
 namespace NControl.Mvvm
 {
@@ -81,7 +80,7 @@ namespace NControl.Mvvm
 		/// Gets the messaging service.
 		/// </summary>
 		/// <value>The messaging service.</value>
-		public IMessagingService MessagingService { get { return Container.Resolve<IMessagingService>(); } }
+		public IMessageHub MessageHub { get { return Container.Resolve<IMessageHub>(); } }
 
 		#endregion
 
@@ -101,7 +100,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		protected virtual void RegisterMessagingService()
 		{
-			Container.RegisterSingleton<IMessagingService, MessagingService> ();
+			Container.RegisterSingleton<IMessageHub, MessageHub> ();
 		}
 
 		/// <summary>
