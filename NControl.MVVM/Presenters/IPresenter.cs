@@ -39,7 +39,7 @@ namespace NControl.Mvvm
 		/// Sets the master detail master.
 		/// </summary>
 		/// <param name="page">Page.</param>
-		void SetMasterDetailMaster(MasterDetailPage page);
+		void SetMasterDetailMaster(MasterDetailPage page, bool useMasterAsNavigationPage = false);
 
 		/// <summary>
 		/// Toggles the drawer.

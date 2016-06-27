@@ -39,6 +39,11 @@ namespace NControl.Mvvm
 		/// </summary>
 		private MasterDetailPage _masterDetailPage;
 
+		/// <summary>
+		/// The using master as navigation stack.
+		/// </summary>
+		private bool _usingMasterAsNavigationStack;
+
 		#endregion
 
 		#region IPresenter implementation
@@ -68,14 +73,15 @@ namespace NControl.Mvvm
 		/// Sets the master detail master.
 		/// </summary>
 		/// <param name="page">Page.</param>
-		public void SetMasterDetailMaster(MasterDetailPage page)
+		public void SetMasterDetailMaster(MasterDetailPage page, bool useMasterAsNavigationStack = false)
 		{
 			_masterDetailPage = page;
 
 			if(_navigationPageStack.Any())
 				_navigationPageStack.Pop();
 
-			_navigationPageStack.Push(new NavigationElement{Page = page.Detail});
+			_usingMasterAsNavigationStack = useMasterAsNavigationStack;
+			_navigationPageStack.Push(new NavigationElement{Page = useMasterAsNavigationStack ? page.Master : page.Detail});
 		}
 
 		/// <summary>
@@ -175,7 +181,7 @@ namespace NControl.Mvvm
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
 		public async Task ShowViewModelAsync(Type viewModelType, object parameter = null, bool animate = true)			
 		{       
-			if (_masterDetailPage != null)
+			if (_masterDetailPage != null && !_usingMasterAsNavigationStack)
 				_masterDetailPage.IsPresented = false;
 
 			var view = MvvmApp.Current.ViewContainer.GetViewFromViewModel(viewModelType);
@@ -196,6 +202,8 @@ namespace NControl.Mvvm
 					met.Invoke (viewModelProvider.GetViewModel(), new object[]{ parameter });
 				}
 			}
+
+			// Should we present this on its own navigation stack?
 
 			await _navigationPageStack.Peek().Page.Navigation.PushAsync (view, animate);
 		}
