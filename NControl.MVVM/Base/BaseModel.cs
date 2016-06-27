@@ -212,7 +212,14 @@ namespace NControl.Mvvm
                 SetObjectForKey (key, defaultValue);
             }
 
-            return (T)Convert.ChangeType( _storage [key], typeof(T));
+			try
+			{
+				return (T)Convert.ChangeType(_storage[key], typeof(T));
+			}
+			catch
+			{
+				return (T)_storage[key];
+			}
         }
 
         /// <summary>

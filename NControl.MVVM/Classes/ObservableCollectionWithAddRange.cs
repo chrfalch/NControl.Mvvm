@@ -54,6 +54,44 @@ namespace NControl.Mvvm
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
+		/// <summary>
+		/// Replaces the range.
+		/// </summary>
+		/// <param name="list">List.</param>
+		public void ReplaceRange(IEnumerable<T> list)
+		{
+			base.Items.Clear ();
+
+			foreach (T current in list) 
+				base.Items.Add (current);
+
+			this.OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, list));
+		}
+
+		/// <summary>
+		/// Removes the range.
+		/// </summary>
+		/// <param name="list">List.</param>
+		public void RemoveRange (IEnumerable<T> list)
+		{
+			foreach (T current in list) 
+				base.Items.Remove (current);
+
+			this.OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove, list));
+		}
+
+		/// <summary>
+		/// Inserts the range.
+		/// </summary>
+		/// <param name="index">Index.</param>
+		/// <param name="list">List.</param>
+		public void InsertRange (int index, IEnumerable<T> list)
+		{
+			foreach (T current in list) 
+				base.Items.Insert (index, current);
+
+			this.OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, list));
+		}
         #endregion
     }
 }
