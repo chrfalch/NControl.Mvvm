@@ -21,7 +21,7 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// The container.
 		/// </summary>
-		private SimpleInjector.Container _container;
+		protected SimpleInjector.Container _container;
 
 		#endregion
 
