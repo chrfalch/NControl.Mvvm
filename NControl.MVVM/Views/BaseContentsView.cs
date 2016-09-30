@@ -166,14 +166,11 @@ namespace NControl.Mvvm
 		{
             // Background image
 			var image = new Image {
-                Source = ImageProvider.GetImageSource(imageName),
-				Aspect = Aspect.AspectFill
+                Source = "girlbackground",
+				Aspect = Aspect.AspectFill,
 			};
 
-			_layout.Children.Add (image, Constraint.Constant(0), 
-				Constraint.RelativeToParent((parent) => parent.Height - 568), 
-				Constraint.RelativeToParent((parent) => parent.Width),
-				Constraint.Constant(568));
+			_layout.Children.Add (image, ()=> _layout.Bounds);
 		}
 
         /// <summary>
