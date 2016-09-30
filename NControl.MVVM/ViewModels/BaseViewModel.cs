@@ -284,10 +284,11 @@ namespace NControl.Mvvm
 		public virtual async Task OnAppearingAsync()
 		{
 			// Call initialize
-			if(!IsOnAppearingCalled)
-				await InitializeAsync ();  
-
-			IsOnAppearingCalled = true;
+			if (!IsOnAppearingCalled)
+			{
+				IsOnAppearingCalled = true;
+				await InitializeAsync();
+			}
 		}
 
 		/// <summary>
