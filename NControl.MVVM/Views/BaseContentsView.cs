@@ -161,12 +161,12 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Sets the background image.
 		/// </summary>
-		/// <param name="imageType">Image type.</param>
+		/// <param name="imageName">Image name.</param>
 		protected void SetBackgroundImage(string imageName)
 		{
             // Background image
 			var image = new Image {
-                Source = "girlbackground",
+                Source = imageName,
 				Aspect = Aspect.AspectFill,
 			};
 
