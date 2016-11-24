@@ -30,6 +30,8 @@ namespace NControl.Mvvm
 		public void UpdateProgress (bool visible, string title = "", string subtitle = "")
 		{			
 			Action updateProgressAction = () => {
+
+				// Check if we already have a progress dialog up and running
 				if (_progressDialog == null) {
 					_progressDialog = new ProgressDialog (Xamarin.Forms.Forms.Context);
 					_progressDialog.SetCancelable(false);
@@ -40,7 +42,10 @@ namespace NControl.Mvvm
 					_progressDialog.Show();
 
 				if (!visible && _progressDialog.IsShowing)
-					_progressDialog.Hide ();
+				{
+					_progressDialog.Hide();
+					_progressDialog = null;
+				}
 			};
 
 			if (Android.App.Application.SynchronizationContext != SynchronizationContext.Current)
