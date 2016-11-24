@@ -37,7 +37,7 @@ namespace NControl.Mvvm
 			if (!_subscribers.ContainsKey(typeof(TMessageType)))
 				return;
 
-			var list = _subscribers[typeof(TMessageType)];
+			var list = _subscribers[typeof(TMessageType)].ToArray();
 			foreach (var subscriber in list)            
 				if(subscriber.IsAlive)
 					(subscriber as Subscriber<TMessageType>).Action(message);
