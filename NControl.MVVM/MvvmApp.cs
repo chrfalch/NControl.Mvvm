@@ -18,21 +18,33 @@ namespace NControl.Mvvm
 	/// Base class for Mvvm apps
 	/// </summary>
 	public abstract class MvvmApp : Application
-	{   
+	{
 		/// <summary>
 		/// The app.
 		/// </summary>
 		public static new MvvmApp Current {get; private set;}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Test.NewSolution.App"/> class.
+		/// Initializes a new instance of the <see cref="T:NControl.Mvvm.MvvmApp"/> class.
 		/// </summary>
-		/// <param name="typeResolveProvider">Type resolve provider.</param>
-		public MvvmApp (IMvvmPlatform platform)
-		{	
+		/// <param name="platform">Platform.</param>
+		public MvvmApp(IMvvmPlatform platform)
+		{
 			// Save static for ease of access
 			Current = this;
 
+			// Avoid calling virtual members from the constructor:
+			Setup(platform);
+		}
+
+		#region Setup
+
+		/// <summary>
+		/// Setup the specified platform.
+		/// </summary>
+		/// <param name="platform">Platform.</param>
+		private void Setup(IMvvmPlatform platform)
+		{
 			// Register container
 			Container.Initialize (CreateContainer());
 
@@ -53,8 +65,10 @@ namespace NControl.Mvvm
 			RegisterViews();
 
 			// Set main page
-			Presenter.SetMainPage (GetMainPage());
+			Presenter.SetMainPage(GetMainPage());
 		}
+
+		#endregion
 
 		#region Properties
 
