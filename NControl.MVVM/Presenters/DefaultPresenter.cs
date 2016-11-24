@@ -101,7 +101,7 @@ namespace NControl.Mvvm
 		/// Dismisses the view model async.
 		/// </summary>
 		/// <returns>The view model async.</returns>
-		/// <param name="viewModel">View model.</param>
+		/// <param name="presentationMode">Presentation model.</param>
 		public Task DismissViewModelAsync(PresentationMode presentationMode)
 		{
 			return DismissViewModelAsync (presentationMode, true);
@@ -111,7 +111,7 @@ namespace NControl.Mvvm
 		/// Dismisses the view model async.
 		/// </summary>
 		/// <returns>The view model async.</returns>
-		/// <param name="presentationModel">Presentation model.</param>
+		/// <param name="presentationMode">Presentation mode</param>
 		/// <param name="success">If set to <c>true</c> success.</param>
 		public async Task DismissViewModelAsync(PresentationMode presentationMode, bool success)
 		{
@@ -292,7 +292,6 @@ namespace NControl.Mvvm
 		/// Shows the view model as popup async.
 		/// </summary>
 		/// <returns>The view model as popup async.</returns>
-		/// <param name="viewModelType">View model type.</param>
 		/// <param name="parameter">Parameter.</param>
 		public Task ShowViewModelAsPopupAsync<TViewModel>(object parameter)
 			where TViewModel : BaseViewModel
