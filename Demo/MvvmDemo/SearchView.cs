@@ -23,7 +23,7 @@ namespace MvvmDemo
 				Children = {
 					new SearchBar()
 						.BindTo(SearchBar.TextProperty, NameOf(vm => vm.Query)),
-
+											
 					new ListViewEx{
 						ItemsSource = ViewModel.Employees,
 						ItemSelectedCommand = ViewModel.EmployeSelectedCommand,

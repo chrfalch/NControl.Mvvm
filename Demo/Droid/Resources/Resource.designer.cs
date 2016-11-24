@@ -6162,6 +6162,9 @@ namespace MvvmDemo.Droid
 			// aapt resource value: 0x7f0b002b
 			public const int showTitle = 2131427371;
 			
+			// aapt resource value: 0x7f0b0098
+			public const int sliding_tabs = 2131427480;
+			
 			// aapt resource value: 0x7f0b006c
 			public const int snackbar_action = 2131427436;
 			
@@ -6215,6 +6218,9 @@ namespace MvvmDemo.Droid
 			
 			// aapt resource value: 0x7f0b0048
 			public const int title_template = 2131427400;
+			
+			// aapt resource value: 0x7f0b0099
+			public const int toolbar = 2131427481;
 			
 			// aapt resource value: 0x7f0b001c
 			public const int top = 2131427356;
@@ -6483,6 +6489,12 @@ namespace MvvmDemo.Droid
 			// aapt resource value: 0x7f030036
 			public const int support_simple_spinner_dropdown_item = 2130903094;
 			
+			// aapt resource value: 0x7f030037
+			public const int Tabbar = 2130903095;
+			
+			// aapt resource value: 0x7f030038
+			public const int Toolbar = 2130903096;
+			
 			static Layout()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
@@ -6640,6 +6652,9 @@ namespace MvvmDemo.Droid
 			
 			// aapt resource value: 0x7f09001c
 			public const int Animation_Design_BottomSheetDialog = 2131296284;
+			
+			// aapt resource value: 0x7f090174
+			public const int AppCompatDialogStyle = 2131296628;
 			
 			// aapt resource value: 0x7f0900be
 			public const int Base_AlertDialog_AppCompat = 2131296446;
@@ -7081,6 +7096,12 @@ namespace MvvmDemo.Droid
 			
 			// aapt resource value: 0x7f09001a
 			public const int CardView_Light = 2131296282;
+			
+			// aapt resource value: 0x7f090172
+			public const int MyTheme = 2131296626;
+			
+			// aapt resource value: 0x7f090173
+			public const int MyTheme_Base = 2131296627;
 			
 			// aapt resource value: 0x7f09004b
 			public const int Platform_AppCompat = 2131296331;

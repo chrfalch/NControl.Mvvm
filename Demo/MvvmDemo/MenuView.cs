@@ -1,5 +1,6 @@
 ﻿using System;
 using NControl.Mvvm;
+using Xamarin.Forms;
 
 namespace MvvmDemo
 {
@@ -7,7 +8,7 @@ namespace MvvmDemo
 	{
 		public MenuView ()
 		{
-			Icon = "MenuButton";
+			Device.OnPlatform(() => Icon = "MenuButton");
 		}
 
 		protected override Xamarin.Forms.View CreateContents ()
