@@ -9,7 +9,7 @@ namespace NControl.Mvvm
     public class ListViewEx: ListView
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Sin4U.FormsApp.Controls.ListViewEx"/> class.
+        /// Initializes a new instance of the <see cref="ListViewEx"/> class.
         /// </summary>
         public ListViewEx()
         {
@@ -22,13 +22,11 @@ namespace NControl.Mvvm
         /// <summary>
         /// The ItemSelectedCommand property.
         /// </summary>
-        public static BindableProperty ItemSelectedCommandProperty = 
-            BindableProperty.Create<ListViewEx, Command>(p => p.ItemSelectedCommand, null,
-                defaultBindingMode: BindingMode.TwoWay,
-                propertyChanged: (bindable, oldValue, newValue) => {
-                    var ctrl = (ListViewEx)bindable;
-                    ctrl.ItemSelectedCommand = newValue;
-                        });
+		public static BindableProperty ItemSelectedCommandProperty = BindableProperty.Create(nameof(ItemSelectedCommand), typeof(Command), typeof(ListViewEx), null, BindingMode.Default, 
+            propertyChanged: (bindable, oldValue, newValue) => {
+            var ctrl = (ListViewEx)bindable;
+			ctrl.ItemSelectedCommand = (Command)newValue;                       
+		});
 
         /// <summary>
         /// Gets or sets the ItemSelectedCommand of the ListViewEx instance.
