@@ -30,21 +30,46 @@ namespace NControl.Mvvm
 		/// </summary>
 		private readonly RelativeLayout _layout;
 
+		/// <summary>
+		/// The on appearing command.
+		/// </summary>
+		private readonly Command _onAppearingCommand;
+
+		/// <summary>
+		/// The on disappearing command.
+		/// </summary>
+		private readonly Command _onDisappearingCommand;
+
         /// <summary>
         /// The property change listeners.
         /// </summary>
         private readonly List<PropertyChangeListener> _propertyChangeListeners = new List<PropertyChangeListener>();
 
-        #endregion
+		#endregion
 
 		#region Constructors
 
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-        public BaseContentsView ()
+		public BaseContentsView()
 		{
-            // Image provider
+			// Main layout
+			_layout = new RelativeLayout();
+
+			// OnAppearing/OnDisappearing
+			_onAppearingCommand = new Command(async () => await ViewModel.OnAppearingAsync());
+			_onDisappearingCommand = new Command(async () => await ViewModel.OnDisappearingAsync());
+
+			Setup();
+		}
+
+		/// <summary>
+		/// Setup this instance.
+		/// </summary>
+		private void Setup()
+		{
+			// Image provider
             ImageProvider = Container.Resolve<IImageProvider>();
 
 			// Set up viewmodel and viewmodel values
@@ -55,7 +80,7 @@ namespace NControl.Mvvm
             this.SetBinding (Page.TitleProperty, NameOf (vm => vm.Title));
 
 			// Loading/Progress overlay
-			_layout = new RelativeLayout ();
+
 			var contents = CreateContents ();
             _layout.Children.Add(contents, () => _layout.Bounds);
 
@@ -105,7 +130,7 @@ namespace NControl.Mvvm
 		{
 			base.OnAppearing();
 
-			ViewModel.OnAppearingAsync();
+			_onAppearingCommand.Execute(null);
 		}
 
 		/// <summary>
@@ -115,7 +140,7 @@ namespace NControl.Mvvm
 		{
 			base.OnDisappearing ();
 
-			ViewModel.OnDisappearingAsync ();	
+			_onDisappearingCommand.Execute(null);
 		}
 
         /// <summary>
@@ -141,7 +166,7 @@ namespace NControl.Mvvm
 
         /// <summary>
         /// Gets or sets a value indicating whether this
-        /// <see cref="com.skjeri.app.FormsApp.Views.BaseContentsView`1"/> default back button behaviour.
+        /// BaseContentsView has default back button behaviour.
         /// </summary>
         /// <value><c>true</c> if default back button behaviour; otherwise, <c>false</c>.</value>
         protected bool DefaultBackButtonBehaviour { get; set; }
