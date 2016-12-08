@@ -14,6 +14,8 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Collections;
+using System.Linq;
+using System.Windows.Input;
 
 namespace NControl.Mvvm
 {
@@ -27,37 +29,50 @@ namespace NControl.Mvvm
         /// <summary>
         /// The storage.
         /// </summary>
-        private readonly Dictionary<string, object> _storage = 
-            new Dictionary<string, object>();
+        readonly Dictionary<string, object> _storage = new Dictionary<string, object>();
 
         /// <summary>
         /// Command dependencies - key == property, value = list of property names
         /// </summary>
-        private readonly Dictionary<string, List<string>> _propertyDependencies = 
+        readonly Dictionary<string, List<string>> _propertyDependencies = 
             new Dictionary<string, List<string>>();
+
+		/// <summary>
+		/// property message dependencies dict
+		/// </summary>
+		readonly Dictionary<Type, List<PropertyInfo>> _propertyMessageDependencies = 
+			new Dictionary<Type, List<PropertyInfo>>();
 
         /// <summary>
         /// The notify change for same values.
         /// </summary>
-        private readonly List<string> _notifyChangeForSameValues = new List<string>();
+        readonly List<string> _notifyChangeForSameValues = new List<string>();
 
         #endregion
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Sin4U.FormsApp.ViewModels.BaseModel"/> class.
+        /// Initializes a new instance of the BaseModel class.
         /// </summary>
         public BaseModel()
         {
             // Update property dependencies
             ResolvePropertyDependencies();
+
+			// Update property message dependencies
+			ResolvePropertyMessageDependencies();
         }
+
+		~BaseModel()
+		{
+			System.Diagnostics.Debug.WriteLine(GetType().Name + " finalizer");
+		}
 
         #region Protected Members
 
         /// <summary>
         /// Sets a value in viewmodel storage and raises property changed if value has changed
         /// </summary>
-        /// <param name="name">Name.</param>
+        /// <param name="propertyName">Name.</param>
         /// <param name="value">Value.</param>
         /// <typeparam name="TValueType">The 1st type parameter.</typeparam>
         protected bool SetValue<TValueType>(TValueType value, [CallerMemberName] string propertyName = null) 
@@ -96,7 +111,7 @@ namespace NControl.Mvvm
         /// Adds a dependency between a property and another property. Whenever the property changes, the command's 
         /// state will be updated
         /// </summary>
-        /// <param name="property">Source property.</param>
+        /// <param name="sourceProperty">Source property.</param>
         /// <param name="dependantProperty">Target property.</param>
         protected void AddPropertyDependency(string sourceProperty, string dependantProperty)
         {
@@ -111,9 +126,6 @@ namespace NControl.Mvvm
         /// <summary>
         /// Adds the raise notify changed for property when value is the same.
         /// </summary>
-        /// <param name="property">Property.</param>
-        /// <param name="dependantProperty">Dependant property.</param>
-        /// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
         protected void AddRaiseNotifyChangedForPropertyWhenValueIsTheSame(string propertyName)
         {
             _notifyChangeForSameValues.Add(propertyName);
@@ -137,7 +149,7 @@ namespace NControl.Mvvm
         /// Expression/Func magic we get compile time type checking on our property
         /// names by using this method instead of calling the event with a string in code.
         /// </summary>
-        /// <param name="property">Property.</param>
+        /// <param name="propertyName">Property.</param>
         protected override void RaisePropertyChangedEvent (string propertyName)
         {
             base.RaisePropertyChangedEvent (propertyName);
@@ -160,19 +172,18 @@ namespace NControl.Mvvm
         /// Returns a value from the viewmodel storage
         /// </summary>
         /// <returns>The value.</returns>
-        /// <param name="name">Name.</param>
+        /// <param name="property">Name.</param>
         /// <typeparam name="TValueType">The 1st type parameter.</typeparam>
         protected TValueType GetValue<TValueType>([CallerMemberName] string property = null) 
         {
             return GetValue<TValueType> (() => default(TValueType), propertyName:property);
         }
 
+		/// <summary>
         /// Returns a value from the viewmodel storage
         /// </summary>
-        /// <returns>The value.</returns>
-        /// <param name="name">Name.</param>
-        /// <typeparam name="TValueType">The 1st type parameter.</typeparam>
-        protected TValueType GetValue<TValueType>(Func<TValueType> defaultValueFunc, [CallerMemberName] string propertyName = null) 
+        protected TValueType GetValue<TValueType>(Func<TValueType> defaultValueFunc, 
+		                                          [CallerMemberName] string propertyName = null) 
         {
             if (string.IsNullOrEmpty(propertyName))
                 throw new ArgumentException("propertyName");
@@ -230,33 +241,106 @@ namespace NControl.Mvvm
         {
             return false;   
         }
+
+		/// <summary>
+		/// Unsubscribes to on message properties.
+		/// </summary>
+		protected void UnsubscribeToOnMessageProperties()
+		{
+			foreach (var messageType in _propertyMessageDependencies.Keys)
+			{
+				MvvmApp.Current.MessageHub.Unsubscribe(messageType, this);
+			}
+
+			_propertyMessageDependencies.Clear();
+		}
+
+		/// <summary>
+		/// Subscribes to on message properties.
+		/// </summary>
+		protected void SubscribeToOnMessageProperties()
+		{
+			ResolvePropertyMessageDependencies();
+		}
+
         #endregion
 
         #region Private Members
 
+		void ResolvePropertyMessageDependencies()
+		{
+			foreach (var prop in this.GetType().GetRuntimeProperties())
+			{
+				// Check for OnMessageAttribute
+				var attribute = prop.GetCustomAttribute<OnMessageAttribute>();
+				if (attribute == null)
+					continue;
+
+				// Verify that the property type is ICommand
+				if (prop.PropertyType.GetTypeInfo().ImplementedInterfaces.Any(intf => intf == typeof(ICommand)))
+				{
+					// Do we have a subscription?
+					if (!_propertyMessageDependencies.ContainsKey(attribute.MessageType))
+					{
+						// Remember
+						_propertyMessageDependencies.Add(attribute.MessageType, new List<PropertyInfo>());
+
+						// Weak this
+						var weakReference = new WeakReference(this);
+
+						// Listen
+						MvvmApp.Current.MessageHub.Subscribe(attribute.MessageType, this, (object obj) =>
+						{
+							if (!weakReference.IsAlive)
+								return;
+							
+							object instance = weakReference.Target;
+
+							if (_propertyMessageDependencies.ContainsKey(attribute.MessageType))
+							{
+								foreach (var p in _propertyMessageDependencies[attribute.MessageType])
+								{
+									var command = p.GetValue(instance) as ICommand;
+									if (command == null)
+										continue;
+
+									if (command.CanExecute(obj))
+										command.Execute(obj);
+								}
+							}
+						});
+					}
+
+					// Add proeprty
+					if (!_propertyMessageDependencies[attribute.MessageType].Contains(prop))
+						_propertyMessageDependencies[attribute.MessageType].Add(prop);
+				}
+			}
+		}
+
         /// <summary>
         /// Reads the property dependencies.
         /// </summary>
-        private void ResolvePropertyDependencies()
+        void ResolvePropertyDependencies()
         {
             foreach (var prop in this.GetType().GetRuntimeProperties())
-            {
+            {				
                 foreach (var dependantPropertyInfo in this.GetType().GetRuntimeProperties())
                 {                
-                    var attribute = dependantPropertyInfo.GetCustomAttribute<DependsOnAttribute>();
-                    if (attribute == null)
+					// Check for DependsOnAttribute
+					var dependsOnAttribute = dependantPropertyInfo.GetCustomAttribute<DependsOnAttribute>();
+                    if (dependsOnAttribute == null)
                         continue;
 
-					foreach (var property in attribute.SourceProperties) {
+					foreach (var property in dependsOnAttribute.SourceProperties) {
 
 						var handled = HandlePropertyDependency (dependantPropertyInfo, property);
-
 						if (!handled) {
 							
 							// Add a dependency between two properties
 							AddPropertyDependency (property, dependantPropertyInfo.Name);
 
-							if (attribute.RaisePropertyChangeForEqualValues)
+							if (dependsOnAttribute.RaisePropertyChangeForEqualValues)
 								AddRaiseNotifyChangedForPropertyWhenValueIsTheSame (property);
 						}
 					}

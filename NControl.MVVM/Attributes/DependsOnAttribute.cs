@@ -32,7 +32,7 @@ namespace NControl.Mvvm
         public bool RaisePropertyChangeForEqualValues { get; set;}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Sin4U.FormsApp.Mvvm.DependsOnAttribute"/> class.
+        /// Initializes a new instance of the DependsOnAttribute class.
         /// </summary>
         public DependsOnAttribute(params string[] propertyNames)
         {
@@ -40,11 +40,9 @@ namespace NControl.Mvvm
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Sin4U.FormsApp.Attributes.DependsOnAttribute"/> class.
+        /// Initializes a new instance of the DependsOnAttribute class.
         /// </summary>
-        /// <param name="propertyName">Property name.</param>
-        /// <param name="raisePropertyChangeForEqualValues">If set to <c>true</c> raise property change for equal values.</param>
-		public DependsOnAttribute(bool raisePropertyChangeForEqualValues, params string[] propertyNames)
+        public DependsOnAttribute(bool raisePropertyChangeForEqualValues, params string[] propertyNames)
         {
 			SourceProperties = propertyNames;
             RaisePropertyChangeForEqualValues = raisePropertyChangeForEqualValues;

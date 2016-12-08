@@ -38,16 +38,43 @@ namespace NControl.Mvvm
 				return;
 
 			var list = _subscribers[typeof(TMessageType)].ToArray();
-			foreach (var subscriber in list)            
-				if(subscriber.IsAlive)
-					(subscriber as Subscriber<TMessageType>).Action(message);
+			foreach (var subscriber in list)
+			{
+				if (subscriber.IsAlive)
+				{
+					if (subscriber is Subscriber<object>)
+						(subscriber as Subscriber<object>).Action(message);
+					else
+						(subscriber as Subscriber<TMessageType>).Action(message);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Subscribe the specified messageType, subscriber and message.
+		/// </summary>
+		/// <param name="messageType">Message type.</param>
+		/// <param name="subscriber">Subscriber.</param>
+		/// <param name="callback">Message.</param>
+		public void Subscribe(Type messageType, object subscriber, Action<object> callback)
+		{
+			RemoveDeadReferences();
+
+			if (!_subscribers.ContainsKey(messageType))
+				lock (_subscriberLock)
+					_subscribers.Add(messageType, new List<Subscriber>());
+
+			var list = _subscribers[messageType];
+			if (list.Any(m => m.TheSubscriber == subscriber))
+				return;
+
+			list.Add(new Subscriber<object>(subscriber, callback));
 		}
 
 		/// <summary>
 		/// Subscribe the specified subscriber and message.
 		/// </summary>
 		/// <param name="subscriber">Subscriber.</param>
-		/// <param name="message">Message.</param>
 		/// <typeparam name="TMessageType">The 1st type parameter.</typeparam>
 		public void Subscribe<TMessageType>(object subscriber, Action<TMessageType> callback) where TMessageType : class
 		{
@@ -62,6 +89,23 @@ namespace NControl.Mvvm
 				return;
 
 			list.Add(new Subscriber<TMessageType>(subscriber, callback));
+		}
+
+		/// <summary>
+		/// Unsubscribe the specified messageType and subscriber.
+		/// </summary>
+		/// <param name="messageType">Message type.</param>
+		/// <param name="subscriber">Subscriber.</param>
+		public void Unsubscribe(Type messageType, object subscriber)
+		{
+			if (!_subscribers.ContainsKey(messageType))
+				return;
+
+			var list = _subscribers[messageType];
+			var subscriberObj = list.FirstOrDefault(sub => sub.TheSubscriber == subscriber);
+			if (subscriberObj != null)
+				lock (_subscriberLock)
+					list.Remove(subscriberObj);
 		}
 
 		/// <summary>

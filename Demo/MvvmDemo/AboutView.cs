@@ -22,6 +22,7 @@ namespace MvvmDemo
 				Spacing = 8,
 				Children = {
 					new Label{Text = "Demo Application for NControl.Mvvm" },
+					new Button {Text="Call Command through message.", Command = ViewModel.ClickMeCommand },
 				}
 			};
 		}

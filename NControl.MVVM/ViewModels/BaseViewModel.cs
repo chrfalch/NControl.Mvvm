@@ -52,9 +52,8 @@ namespace NControl.Mvvm
 		#region Constructors
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CF.Xamarin.Forms.Mvvm.ViewModels.BaseViewModel"/> class.
+		/// Initializes a new instance of the BaseViewModel class.
 		/// </summary>
-		/// <param name="viewModelStorage">View model storage.</param>
 		public BaseViewModel()
 		{
 			// Title
@@ -71,8 +70,6 @@ namespace NControl.Mvvm
 		/// Creates or returns the 
 		/// </summary>
 		/// <returns>The command.</returns>
-		/// <param name="action">Action.</param>
-		/// <param name="state">State.</param>
 		protected Command GetOrCreateCommand(Action commandAction, Func<bool> canExecuteFunc = null, 
 			[CallerMemberName] string commandName = null)
 		{
@@ -94,8 +91,6 @@ namespace NControl.Mvvm
 		/// Creates or returns the 
 		/// </summary>
 		/// <returns>The command.</returns>
-		/// <param name="action">Action.</param>
-		/// <param name="state">State.</param>
 		protected Command GetOrCreateCommand(Action<object> commandAction, Func<object, bool> canExecuteFunc = null, 
 			[CallerMemberName] string commandName = null)
 		{
@@ -117,8 +112,6 @@ namespace NControl.Mvvm
 		/// Creates or returns the 
 		/// </summary>
 		/// <returns>The command.</returns>
-		/// <param name="action">Action.</param>
-		/// <param name="state">State.</param>
 		protected Command<T> GetOrCreateCommand<T>(Action<T> commandAction, Func<T, bool> canExecuteFunc = null, 
 			[CallerMemberName] string commandName = null)
 		{
@@ -178,9 +171,7 @@ namespace NControl.Mvvm
 		/// Adds a dependency between a command and a property. Whenever the property changes, the command's 
 		/// state will be updated
 		/// </summary>
-		/// <param name="property">Source Property.</param>
-		/// <param name="command">Target Command.</param>
-		private void AddCommandDependency(string propertyName, Command command)
+		void AddCommandDependency(string propertyName, Command command)
 		{
 			if (!_commandDependencies.ContainsKey (propertyName))
 				_commandDependencies.Add (propertyName, new List<Command> ());
@@ -193,7 +184,7 @@ namespace NControl.Mvvm
 		/// Raises the command state changed event.
 		/// </summary>
 		/// <param name="command">Command.</param>
-		private void RaiseCommandStateChangedEvent(Command command)
+		void RaiseCommandStateChangedEvent(Command command)
 		{
 			command.ChangeCanExecute ();
 		}
@@ -203,7 +194,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		/// <param name="propertyName">Property name.</param>
 		/// <param name="command">Command.</param>
-		private void AddCommandExecuteDependency(string propertyName, Command command)
+		void AddCommandExecuteDependency(string propertyName, Command command)
 		{			
 			if (!_commandExecuteDependencies.ContainsKey (propertyName))
 				_commandExecuteDependencies.Add (propertyName, new List<Command> ());
@@ -216,7 +207,7 @@ namespace NControl.Mvvm
 		/// Raises the command state changed event.
 		/// </summary>
 		/// <param name="command">Command.</param>
-		private void ExecuteCommand(Command command, object commandParameter)
+		void ExecuteCommand(Command command, object commandParameter)
 		{
 			if(command.CanExecute(commandParameter))
 				command.Execute (commandParameter);
@@ -225,26 +216,24 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Handles the property dependency.
 		/// </summary>
-		/// <param name="dependantPropertyInfo">Dependant property info.</param>
-		/// <returns><c>true</c>, if property dependency was handled, <c>false</c> otherwise.</returns>
-		protected override bool HandlePropertyDependency(PropertyInfo dependantProperty, string sourcePropertyName)
+		protected override bool HandlePropertyDependency(PropertyInfo dependantPropertyInfo, string sourcePropertyName)
 		{
 			// check command or property
-			if (dependantProperty.PropertyType == typeof(Command))
+			if (dependantPropertyInfo.PropertyType == typeof(Command))
 			{   
 				// Add a dependency between command and property
-				AddCommandDependency(sourcePropertyName, dependantProperty.GetValue(this) as Command);
+				AddCommandDependency(sourcePropertyName, dependantPropertyInfo.GetValue(this) as Command);
 
 				return true;
 			}
 
-			return base.HandlePropertyDependency(dependantProperty, sourcePropertyName);
+			return base.HandlePropertyDependency(dependantPropertyInfo, sourcePropertyName);
 		}
 
 		/// <summary>
 		/// Resolves the command execute dependencies.
 		/// </summary>
-		private void ResolveCommandExecuteDependencies ()
+		void ResolveCommandExecuteDependencies ()
 		{
 			foreach (var prop in this.GetType().GetRuntimeProperties())
 			{
@@ -289,13 +278,17 @@ namespace NControl.Mvvm
 				IsOnAppearingCalled = true;
 				await InitializeAsync();
 			}
+			else
+				SubscribeToOnMessageProperties();
 		}
 
 		/// <summary>
 		/// Called whenever the view is hidden
 		/// </summary>
 		public virtual Task OnDisappearingAsync()
-		{       
+		{
+			UnsubscribeToOnMessageProperties();
+
 			return Task.FromResult (true);
 		}
 
