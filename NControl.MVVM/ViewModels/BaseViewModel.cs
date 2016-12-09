@@ -275,6 +275,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		public virtual async Task OnAppearingAsync()
 		{
+			System.Diagnostics.Debug.WriteLine(GetType().Name + " appeared");
 			IsShowing = true;
 
 			// Call initialize
@@ -290,6 +291,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		public virtual Task OnDisappearingAsync()
 		{
+			System.Diagnostics.Debug.WriteLine(GetType().Name + " disappeared");
 			IsShowing = false;
 			return Task.FromResult(true);
 		}
