@@ -57,13 +57,27 @@ namespace NControl.Mvvm
 		{
 			Application.Current.MainPage = mainPage;
 
-			if (_masterDetailPage == null) 
+			if (_masterDetailPage == null)
 			{
-				if (_navigationPageStack.Any ())
-					_navigationPageStack.Pop ();
+				if (_navigationPageStack.Any())
+					_navigationPageStack.Pop();
 
-				_navigationPageStack.Push (new NavigationElement{ Page = mainPage });
-				return _navigationPageStack.Peek ().Page;
+				_navigationPageStack.Push(new NavigationElement { Page = mainPage });
+
+				// Is mainpage a navigation page?
+				var navPage = mainPage as NavigationPage;
+				if (navPage != null)
+					navPage.Popped += NavPage_Popped;
+
+				return _navigationPageStack.Peek().Page;
+			}
+			else
+			{
+				if(_masterDetailPage.Detail is NavigationPage)					
+					(_masterDetailPage.Detail as NavigationPage).Popped += NavPage_Popped;
+
+				if (_masterDetailPage.Master is NavigationPage)
+					(_masterDetailPage.Master as NavigationPage).Popped += NavPage_Popped;
 			}
 
 			return mainPage;
@@ -113,18 +127,28 @@ namespace NControl.Mvvm
 		/// <returns>The view model async.</returns>
 		/// <param name="presentationMode">Presentation mode</param>
 		/// <param name="success">If set to <c>true</c> success.</param>
-		public async Task DismissViewModelAsync(PresentationMode presentationMode, bool success)
+		public Task DismissViewModelAsync(PresentationMode presentationMode, bool success)
 		{
-			if (presentationMode == PresentationMode.Default) {
-				
-				if (await _navigationPageStack.Peek ().Page.Navigation.PopAsync () == null) {
-					_navigationPageStack.Pop ();
-				}
+			if (presentationMode == PresentationMode.Default)
+				return PopViewModelAsync();
+			
+			if (presentationMode == PresentationMode.Modal)
+				return PopModalViewModelAsync(success);
+			
+			if (presentationMode == PresentationMode.Popup)
+				return PopCardViewModelAsync();
 
-			} else if (presentationMode == PresentationMode.Modal)
-				await PopModalViewModelAsync (success);
-			else if (presentationMode == PresentationMode.Popup)
-				await PopCardViewModelAsync ();
+			throw new InvalidOperationException("Could not pop presentation mode " + presentationMode);
+		}
+
+		/// <summary>
+		/// Pops the view model async.
+		/// </summary>
+		/// <returns>The view model async.</returns>
+		async Task PopViewModelAsync()
+		{			                
+			if (await _navigationPageStack.Peek().Page.Navigation.PopAsync() == null)
+				_navigationPageStack.Pop();
 		}
 
 		#endregion
@@ -204,7 +228,6 @@ namespace NControl.Mvvm
 			}
 
 			// Should we present this on its own navigation stack?
-
 			await _navigationPageStack.Peek().Page.Navigation.PushAsync (view, animate);
 		}
 
@@ -246,6 +269,7 @@ namespace NControl.Mvvm
 
 			// Create wrapper page
 			var retVal = new ModalNavigationPage (view, viewModelProvider.GetViewModel() as BaseViewModel);
+			retVal.Popped += NavPage_Popped;
 
 			if (parameter != null)
 			{
@@ -275,6 +299,18 @@ namespace NControl.Mvvm
 		public async Task PopModalViewModelAsync(bool success)
 		{
 			var poppedPage = await _navigationPageStack.Peek().Page.Navigation.PopModalAsync ();
+
+			var navPage = poppedPage as ModalNavigationPage;
+			if(navPage != null)				
+			{
+				// Dismiss all children
+				if (navPage.CurrentPage != null)
+				{
+					var viewModelProvider = navPage.CurrentPage as IView;
+					viewModelProvider.GetViewModel().ViewModelDismissed();
+				}
+			}
+
 			if(poppedPage == _navigationPageStack.Peek().Page)
 			{
 				var tempNavigationElement = _navigationPageStack.Peek ();
@@ -346,6 +382,24 @@ namespace NControl.Mvvm
 
 		}
 		#endregion
+
+		#endregion
+
+		#region Event Handlers
+
+		/// <summary>
+		/// Handles popping in navigation pages
+		/// </summary>
+		/// <param name="sender">Sender.</param>
+		/// <param name="e">E.</param>
+		void NavPage_Popped(object sender, NavigationEventArgs e)
+		{
+			var viewModelProvider = e.Page as IView;
+			if (viewModelProvider != null)
+			{
+				viewModelProvider.GetViewModel().ViewModelDismissed();
+			}
+		}
 
 		#endregion
 	}

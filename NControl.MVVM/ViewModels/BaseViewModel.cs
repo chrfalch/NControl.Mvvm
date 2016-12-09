@@ -28,13 +28,13 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Command dependencies - key == property, value = list of commands
 		/// </summary>
-		private readonly Dictionary<string, List<Command>> _commandDependencies = 
+		private readonly Dictionary<string, List<Command>> _commandDependencies =
 			new Dictionary<string, List<Command>>();
 
 		/// <summary>
 		/// Command cache
 		/// </summary>
-		private readonly Dictionary<string, Command> _commands = new Dictionary<string, Command> ();
+		private readonly Dictionary<string, Command> _commands = new Dictionary<string, Command>();
 
 		/// <summary>
 		/// The property change listeners.
@@ -44,8 +44,8 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// The command execute dependencies.
 		/// </summary>
-		private readonly Dictionary<string, List<Command>> _commandExecuteDependencies = 
-			new Dictionary<string, List<Command>> ();
+		private readonly Dictionary<string, List<Command>> _commandExecuteDependencies =
+			new Dictionary<string, List<Command>>();
 
 		#endregion
 
@@ -59,7 +59,7 @@ namespace NControl.Mvvm
 			// Title
 			Title = this.GetType().Name;
 
-			ResolveCommandExecuteDependencies ();
+			ResolveCommandExecuteDependencies();
 		}
 
 		#endregion
@@ -70,7 +70,7 @@ namespace NControl.Mvvm
 		/// Creates or returns the 
 		/// </summary>
 		/// <returns>The command.</returns>
-		protected Command GetOrCreateCommand(Action commandAction, Func<bool> canExecuteFunc = null, 
+		protected Command GetOrCreateCommand(Action commandAction, Func<bool> canExecuteFunc = null,
 			[CallerMemberName] string commandName = null)
 		{
 			if (string.IsNullOrEmpty(commandName))
@@ -78,55 +78,55 @@ namespace NControl.Mvvm
 
 			if (!_commands.ContainsKey(commandName))
 			{
-				if(canExecuteFunc == null)
+				if (canExecuteFunc == null)
 					_commands.Add(commandName, new Command(commandAction));
 				else
 					_commands.Add(commandName, new Command(commandAction, canExecuteFunc));
 			}
 
-			return _commands [commandName];
+			return _commands[commandName];
 		}
 
 		/// <summary>
 		/// Creates or returns the 
 		/// </summary>
 		/// <returns>The command.</returns>
-		protected Command GetOrCreateCommand(Action<object> commandAction, Func<object, bool> canExecuteFunc = null, 
+		protected Command GetOrCreateCommand(Action<object> commandAction, Func<object, bool> canExecuteFunc = null,
 			[CallerMemberName] string commandName = null)
 		{
 			if (string.IsNullOrEmpty(commandName))
 				throw new ArgumentException("commandname");
 
-			if (!_commands.ContainsKey (commandName))
+			if (!_commands.ContainsKey(commandName))
 			{
-				if(canExecuteFunc == null)
+				if (canExecuteFunc == null)
 					_commands.Add(commandName, new Command(commandAction));
 				else
 					_commands.Add(commandName, new Command(commandAction, canExecuteFunc));
 			}
 
-			return _commands [commandName];
+			return _commands[commandName];
 		}
 
 		/// <summary>
 		/// Creates or returns the 
 		/// </summary>
 		/// <returns>The command.</returns>
-		protected Command<T> GetOrCreateCommand<T>(Action<T> commandAction, Func<T, bool> canExecuteFunc = null, 
+		protected Command<T> GetOrCreateCommand<T>(Action<T> commandAction, Func<T, bool> canExecuteFunc = null,
 			[CallerMemberName] string commandName = null)
 		{
 			if (string.IsNullOrEmpty(commandName))
 				throw new ArgumentException("commandname");
 
-			if (!_commands.ContainsKey (commandName))
+			if (!_commands.ContainsKey(commandName))
 			{
-				if(canExecuteFunc == null)
+				if (canExecuteFunc == null)
 					_commands.Add(commandName, new Command<T>(commandAction));
 				else
 					_commands.Add(commandName, new Command<T>(commandAction, canExecuteFunc));
 			}
 
-			return _commands [commandName] as Command<T>;
+			return _commands[commandName] as Command<T>;
 		}
 
 		/// <summary>
@@ -144,22 +144,24 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Checks the dependant properties and commands.
 		/// </summary>
-		protected override void CheckDependantProperties (string propertyName)
+		protected override void CheckDependantProperties(string propertyName)
 		{
 			base.CheckDependantProperties(propertyName);
 
 			// Dependent commands
-			if (_commandDependencies.ContainsKey (propertyName)) {
+			if (_commandDependencies.ContainsKey(propertyName))
+			{
 				foreach (var dependentCommand in _commandDependencies[propertyName])
-					RaiseCommandStateChangedEvent (dependentCommand);
+					RaiseCommandStateChangedEvent(dependentCommand);
 			}
 
 			// Execute commands
-			if (_commandExecuteDependencies.ContainsKey (propertyName)) {
+			if (_commandExecuteDependencies.ContainsKey(propertyName))
+			{
 				var property = this.GetType().GetRuntimeProperty(propertyName);
-				var propValue = property.GetValue (this);
+				var propValue = property.GetValue(this);
 				foreach (var dependantCommand in _commandExecuteDependencies[propertyName])
-					ExecuteCommand (dependantCommand, propValue);
+					ExecuteCommand(dependantCommand, propValue);
 			}
 		}
 
@@ -173,11 +175,11 @@ namespace NControl.Mvvm
 		/// </summary>
 		void AddCommandDependency(string propertyName, Command command)
 		{
-			if (!_commandDependencies.ContainsKey (propertyName))
-				_commandDependencies.Add (propertyName, new List<Command> ());
+			if (!_commandDependencies.ContainsKey(propertyName))
+				_commandDependencies.Add(propertyName, new List<Command>());
 
-			var list = _commandDependencies [propertyName];
-			list.Add (command);
+			var list = _commandDependencies[propertyName];
+			list.Add(command);
 		}
 
 		/// <summary>
@@ -186,7 +188,7 @@ namespace NControl.Mvvm
 		/// <param name="command">Command.</param>
 		void RaiseCommandStateChangedEvent(Command command)
 		{
-			command.ChangeCanExecute ();
+			command.ChangeCanExecute();
 		}
 
 		/// <summary>
@@ -195,12 +197,12 @@ namespace NControl.Mvvm
 		/// <param name="propertyName">Property name.</param>
 		/// <param name="command">Command.</param>
 		void AddCommandExecuteDependency(string propertyName, Command command)
-		{			
-			if (!_commandExecuteDependencies.ContainsKey (propertyName))
-				_commandExecuteDependencies.Add (propertyName, new List<Command> ());
+		{
+			if (!_commandExecuteDependencies.ContainsKey(propertyName))
+				_commandExecuteDependencies.Add(propertyName, new List<Command>());
 
-			var list = _commandExecuteDependencies [propertyName];
-			list.Add (command);
+			var list = _commandExecuteDependencies[propertyName];
+			list.Add(command);
 		}
 
 		/// <summary>
@@ -209,8 +211,8 @@ namespace NControl.Mvvm
 		/// <param name="command">Command.</param>
 		void ExecuteCommand(Command command, object commandParameter)
 		{
-			if(command.CanExecute(commandParameter))
-				command.Execute (commandParameter);
+			if (command.CanExecute(commandParameter))
+				command.Execute(commandParameter);
 		}
 
 		/// <summary>
@@ -220,7 +222,7 @@ namespace NControl.Mvvm
 		{
 			// check command or property
 			if (dependantPropertyInfo.PropertyType == typeof(Command))
-			{   
+			{
 				// Add a dependency between command and property
 				AddCommandDependency(sourcePropertyName, dependantPropertyInfo.GetValue(this) as Command);
 
@@ -233,23 +235,24 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Resolves the command execute dependencies.
 		/// </summary>
-		void ResolveCommandExecuteDependencies ()
+		void ResolveCommandExecuteDependencies()
 		{
 			foreach (var prop in this.GetType().GetRuntimeProperties())
 			{
 				foreach (var dependantPropertyInfo in this.GetType().GetRuntimeProperties())
-				{                
+				{
 					var attribute = dependantPropertyInfo.GetCustomAttribute<ExecuteOnChangeAttribute>();
 					if (attribute == null)
 						continue;
 
-					foreach (var property in attribute.SourceProperties) {
+					foreach (var property in attribute.SourceProperties)
+					{
 
 						// Get the command instance
 						var commandInstance = (Command)dependantPropertyInfo.GetValue(this);
 
 						// Add a dependency between command and property
-						AddCommandExecuteDependency (property, commandInstance);
+						AddCommandExecuteDependency(property, commandInstance);
 					}
 				}
 			}
@@ -264,7 +267,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		public virtual Task InitializeAsync()
 		{
-			return Task.FromResult (true);
+			return Task.FromResult(true);
 		}
 
 		/// <summary>
@@ -272,14 +275,14 @@ namespace NControl.Mvvm
 		/// </summary>
 		public virtual async Task OnAppearingAsync()
 		{
+			IsShowing = true;
+
 			// Call initialize
 			if (!IsOnAppearingCalled)
 			{
 				IsOnAppearingCalled = true;
 				await InitializeAsync();
 			}
-			else
-				SubscribeToOnMessageProperties();
 		}
 
 		/// <summary>
@@ -287,9 +290,17 @@ namespace NControl.Mvvm
 		/// </summary>
 		public virtual Task OnDisappearingAsync()
 		{
-			UnsubscribeToOnMessageProperties();
+			IsShowing = false;
+			return Task.FromResult(true);
+		}
 
-			return Task.FromResult (true);
+		/// <summary>
+		/// Called when the viewmodel is being dismissed
+		/// </summary>
+		public virtual void ViewModelDismissed()
+		{
+			System.Diagnostics.Debug.WriteLine(GetType().Name + " popped.");
+			UnsubscribeToOnMessageProperties();
 		}
 
 		#endregion
@@ -300,7 +311,7 @@ namespace NControl.Mvvm
 		/// Gets or sets the title.
 		/// </summary>
 		/// <value>The title.</value>
-		public string Title 
+		public string Title
 		{
 			get { return GetValue<string>(); }
 			set { SetValue<string>(value); }
@@ -310,10 +321,20 @@ namespace NControl.Mvvm
 		/// Flag that is set when OnAppearing was called.
 		/// </summary>
 		/// <value><c>true</c> if this instance is on appearing called; otherwise, <c>false</c>.</value>
-		public bool IsOnAppearingCalled 
+		public bool IsOnAppearingCalled
 		{
 			get { return GetValue<bool>(); }
 			set { SetValue<bool>(value); }
+		}
+
+		/// <summary>
+		/// Returns true if the viewmodel is current being displayed not covered by other views.
+		/// </summary>
+		/// <value><c>true</c> if is showing; otherwise, <c>false</c>.</value>
+		public bool IsShowing
+		{
+			get { return GetValue<bool>(); }
+			private set { SetValue<bool>(value); }
 		}
 
 		/// <summary>

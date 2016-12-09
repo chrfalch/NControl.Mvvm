@@ -12,6 +12,11 @@ namespace NControl.Mvvm
 		/// </summary>
 		/// <value>The presentation mode.</value>
 		PresentationMode PresentationMode { get; set; }
+
+		/// <summary>
+		/// Called when the viewmodel was dismissed from the view hierarchy
+		/// </summary>
+		void ViewModelDismissed();
 	}
 }
 

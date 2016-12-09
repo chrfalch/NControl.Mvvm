@@ -64,6 +64,7 @@ namespace NControl.Mvvm
 
 		~BaseModel()
 		{
+			UnsubscribeToOnMessageProperties();
 			System.Diagnostics.Debug.WriteLine(GetType().Name + " finalizer");
 		}
 
