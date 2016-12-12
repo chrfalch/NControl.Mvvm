@@ -19,50 +19,50 @@ namespace NControl.Mvvm
 	public class AsyncCommand : AsyncCommand<object>
 	{
 		public AsyncCommand(Func<object, Task> command)
-			: base(async (parmater, token) => { await command(parmater); return null; }, null)
+			: base(async (parameter, token) => { await command(parameter);  }, null)
 		{
 		}
 
 		public AsyncCommand(Func<object, Task> command, Func<object, bool> canExecute)
-			: base(async (parmater, token) => { await command(parmater); return null; }, canExecute)
+			: base(async (parameter, token) => { await command(parameter);  }, canExecute)
 		{
 		}
 
 		public AsyncCommand(Func<object, CancellationToken, Task> command)
-			: base(async (parmater, token) => { await command(parmater, token); return null; }, null)
+			: base(async (parameter, token) => { await command(parameter, token); }, null)
 		{
 		}
 
 		public AsyncCommand(Func<object, CancellationToken, Task> command, Func<object, bool> canExecute)
-			: base(async (parmater, token) => { await command(parmater, token); return null; }, canExecute)
+			: base(async (parameter, token) => { await command(parameter, token);  }, canExecute)
 		{
 		}
 	}
 
-	public class AsyncCommand<TResult> : AsyncCommandBase, INotifyPropertyChanged
+	public class AsyncCommand<T> : AsyncCommandBase, INotifyPropertyChanged where T : class
 	{
-		private readonly Func<object, CancellationToken, Task<TResult>> _command;
+		private readonly Func<T, CancellationToken, Task> _command;
 		private readonly CancelAsyncCommand _cancelCommand;
-		private readonly Func<object, bool> _canExecute;
-		private NotifyTaskCompletion<TResult> _execution;
+		private readonly Func<T, bool> _canExecute;
+		private NotifyTaskCompletion _execution;
 		private bool _allowMultipleInvocations;
 
-		public AsyncCommand(Func<object, Task<TResult>> command)
-			: this((parmater, token) => command(parmater), null)
+		public AsyncCommand(Func<T, Task> command)
+			: this((parameter, token) => command(parameter as T), null)
 		{
 		}
 
-		public AsyncCommand(Func<object, Task<TResult>> command, Func<object, bool> canExecute)
-			: this((parmater, token) => command(parmater), canExecute)
+		public AsyncCommand(Func<T, Task> command, Func<T, bool> canExecute)
+			: this((parameter, token) => command(parameter), canExecute)
 		{
 		}
 
-		public AsyncCommand(Func<object, CancellationToken, Task<TResult>> command)
+		public AsyncCommand(Func<T, CancellationToken, Task> command)
 			: this(command, null)
 		{
 		}
 
-		public AsyncCommand(Func<object, CancellationToken, Task<TResult>> command, Func<object, bool> canExecute)
+		public AsyncCommand(Func<T, CancellationToken, Task> command, Func<T, bool> canExecute)
 		{
 			_command = command;
 			_canExecute = canExecute;
@@ -72,7 +72,7 @@ namespace NControl.Mvvm
 
 		public override bool CanExecute(object parameter)
 		{
-			var canExecute = _canExecute == null || _canExecute(parameter);
+			var canExecute = _canExecute == null || _canExecute(parameter as T);
 			var executionComplete = (Execution == null || Execution.IsCompleted);
 
 			return canExecute && (AllowMultipleInvocations || executionComplete);
@@ -81,7 +81,7 @@ namespace NControl.Mvvm
 		public override async Task ExecuteAsync(object parameter)
 		{
 			_cancelCommand.NotifyCommandStarting();
-			Execution = new NotifyTaskCompletion<TResult>(_command(parameter, _cancelCommand.Token));
+			Execution = new NotifyTaskCompletion(_command(parameter as T, _cancelCommand.Token));
 			RaiseCanExecuteChanged();
 			await Execution.TaskCompletion;
 			_cancelCommand.NotifyCommandFinished();
@@ -106,7 +106,7 @@ namespace NControl.Mvvm
 			get { return _cancelCommand; }
 		}
 
-		public NotifyTaskCompletion<TResult> Execution
+		public NotifyTaskCompletion Execution
 		{
 			get { return _execution; }
 			private set

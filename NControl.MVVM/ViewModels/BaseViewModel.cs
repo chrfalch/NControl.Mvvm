@@ -34,7 +34,12 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Command cache
 		/// </summary>
-		private readonly Dictionary<string, Command> _commands = new Dictionary<string, Command>();
+		readonly Dictionary<string, Command> _commands = new Dictionary<string, Command>();
+
+		/// <summary>
+		/// Async command cache
+		/// </summary>
+		readonly Dictionary<string, AsyncCommandBase> _asyncCommands = new Dictionary<string, AsyncCommandBase>();
 
 		/// <summary>
 		/// The property change listeners.
@@ -127,6 +132,48 @@ namespace NControl.Mvvm
 			}
 
 			return _commands[commandName] as Command<T>;
+		}
+
+		/// <summary>
+		/// Creates or returns the 
+		/// </summary>
+		/// <returns>The command.</returns>
+		protected AsyncCommandBase GetOrCreateCommandAsync(Func<object, Task> commandAction, Func<object, bool> canExecuteFunc = null,
+			[CallerMemberName] string commandName = null)
+		{
+			if (string.IsNullOrEmpty(commandName))
+				throw new ArgumentException("commandname");
+
+			if (!_asyncCommands.ContainsKey(commandName))
+			{
+				if (canExecuteFunc == null)
+					_asyncCommands.Add(commandName, new AsyncCommand(commandAction));
+				else
+					_asyncCommands.Add(commandName, new AsyncCommand(commandAction, canExecuteFunc));
+			}
+
+			return _asyncCommands[commandName];
+		}
+
+		/// <summary>
+		/// Creates or returns the 
+		/// </summary>
+		/// <returns>The command.</returns>
+		protected AsyncCommand<T> GetOrCreateCommandAsync<T>(Func<T, Task> commandAction, Func<T, bool> canExecuteFunc = null,
+			[CallerMemberName] string commandName = null) where T : class
+		{
+			if (string.IsNullOrEmpty(commandName))
+				throw new ArgumentException("commandname");
+
+			if (!_asyncCommands.ContainsKey(commandName))
+			{
+				if (canExecuteFunc == null)
+					_asyncCommands.Add(commandName, new AsyncCommand<T>(commandAction));
+				else
+					_asyncCommands.Add(commandName, new AsyncCommand<T>(commandAction, canExecuteFunc));
+			}
+
+			return _asyncCommands[commandName] as AsyncCommand<T>;
 		}
 
 		/// <summary>
