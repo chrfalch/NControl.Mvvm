@@ -23,6 +23,8 @@ namespace MvvmDemo
 				Children = {
 					new Label{Text = "Demo Application for NControl.Mvvm" },
 					new Button {Text="Call Command through message.", Command = ViewModel.ClickMeCommand },
+					new Button {Text="Run async command", Command = ViewModel.CountAsyncCommand },
+					new Label {HorizontalTextAlignment = TextAlignment.Center}.BindTo(Label.TextProperty, nameof(ViewModel.NumberValue), stringFormat:"Number Value: {0}"),
 				}
 			};
 		}

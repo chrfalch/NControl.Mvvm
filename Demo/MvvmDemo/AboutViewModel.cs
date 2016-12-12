@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using NControl.Mvvm;
 using Xamarin.Forms;
 
@@ -22,13 +24,33 @@ namespace MvvmDemo
 			}
 		}
 
-		[OnMessage(typeof(MyMessage))]
-		public Command<MyMessage> HandleMyMessage
+		public ICommand CountAsyncCommand
 		{
 			get
 			{
-				return GetOrCreateCommand<MyMessage>(async (obj) => {
-					await MvvmApp.Current.Presenter.ShowMessageAsync(Title, obj.Message, "OK");
+				return GetOrCreateCommandAsync(async (arg) => {
+					for (var i = 0; i < 10; i++)
+					{
+						await Task.Delay(150);
+						NumberValue++;
+					}
+				});
+			}
+		}
+
+		public int NumberValue
+		{
+			get { return GetValue<int>(); }
+			set { SetValue(value); }
+		}
+
+		[OnMessage(typeof(MyMessage))]
+		public AsyncCommand<MyMessage> HandleMyMessage
+		{
+			get
+			{
+				return GetOrCreateCommandAsync(async (MyMessage arg) => {
+					await MvvmApp.Current.Presenter.ShowMessageAsync(Title, arg.Message, "OK");
 				});
 			}
 		}
