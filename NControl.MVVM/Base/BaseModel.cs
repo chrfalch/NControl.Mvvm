@@ -301,7 +301,8 @@ namespace NControl.Mvvm
 					continue;
 
 				// Verify that the property type is ICommand
-				if (prop.PropertyType.GetTypeInfo().ImplementedInterfaces.Any(intf => intf == typeof(ICommand)))
+				if (prop.PropertyType == typeof(ICommand) || 
+				    prop.PropertyType.GetTypeInfo().ImplementedInterfaces.Any(intf => intf == typeof(ICommand)))
 				{
 					// Do we have a subscription?
 					if (!_propertyMessageDependencies.ContainsKey(attribute.MessageType))
