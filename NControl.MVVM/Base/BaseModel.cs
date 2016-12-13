@@ -16,6 +16,7 @@ using System.Reflection;
 using System.Collections;
 using System.Linq;
 using System.Windows.Input;
+using System.Collections.Specialized;
 
 namespace NControl.Mvvm
 {
@@ -30,6 +31,11 @@ namespace NControl.Mvvm
         /// The storage.
         /// </summary>
         readonly Dictionary<string, object> _storage = new Dictionary<string, object>();
+
+		/// <summary>
+		/// collection dependencies.
+		/// </summary>
+		readonly Dictionary<object, string> _collectionDependencies = new Dictionary<object, string>();
 
         /// <summary>
         /// Command dependencies - key == property, value = list of property names
@@ -78,9 +84,10 @@ namespace NControl.Mvvm
         /// <typeparam name="TValueType">The 1st type parameter.</typeparam>
         protected bool SetValue<TValueType>(TValueType value, [CallerMemberName] string propertyName = null) 
         {
-			if (value is IComparer) {
-				
-				var existingValue = GetValue<TValueType> (propertyName);
+			// Check for setting the same value twice
+			if (value is IComparer) 
+			{
+				var existingValue = GetValue<TValueType>(propertyName);
 
 				// Check for equality
 				if (!_notifyChangeForSameValues.Contains (propertyName) &&
@@ -88,7 +95,7 @@ namespace NControl.Mvvm
 					return false;
 			}
 
-            SetObjectForKey<TValueType> (propertyName, value);
+            SetObjectForKey(propertyName, value);
 
             RaisePropertyChangedEvent (propertyName);
 
@@ -200,10 +207,26 @@ namespace NControl.Mvvm
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         protected void SetObjectForKey<T>(string key, T value)
         {
-            if (_storage.ContainsKey (key))
-                _storage [key] = value;
-            else
-                _storage.Add (key, value);      
+			if (_storage.ContainsKey(key))
+			{
+				var existingValue = _storage[key];
+				if (existingValue != null && existingValue is INotifyCollectionChanged)
+				{					
+					(existingValue as INotifyCollectionChanged).CollectionChanged -= HandleNotifyCollectionChangedEventHandler;
+					if (_collectionDependencies.ContainsKey(existingValue))
+						_collectionDependencies.Remove(existingValue);					
+				}
+				
+				_storage[key] = value;
+			}
+			else
+				_storage.Add(key, value);
+
+			if (value != null && value is INotifyCollectionChanged)
+			{
+				_collectionDependencies.Add(value, key);
+				(value as INotifyCollectionChanged).CollectionChanged += HandleNotifyCollectionChangedEventHandler;
+			}
         }
 
         /// <summary>
@@ -348,7 +371,18 @@ namespace NControl.Mvvm
                 }
             }
         } 
+
+		/// <summary>
+		/// Handles the notify collection changed event handler.
+		/// </summary>
+		/// <param name="sender">Sender.</param>
+		/// <param name="e">E.</param>
+		void HandleNotifyCollectionChangedEventHandler(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (sender is INotifyCollectionChanged && _collectionDependencies.ContainsKey(sender))
+				RaisePropertyChangedEvent(_collectionDependencies[sender]);
+		}
         #endregion
-    }
+	}
 }
 
