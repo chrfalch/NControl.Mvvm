@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Reflection;
+using System.Windows.Input;
 
 namespace NControl.Mvvm
 {
@@ -390,7 +391,7 @@ namespace NControl.Mvvm
 		/// Gets the back button command.
 		/// </summary>
 		/// <value>The back button command.</value>
-		public virtual Command BackButtonCommand { get { return null; } }
+		public virtual ICommand BackButtonCommand { get { return null; } }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this instance is busy.
@@ -439,10 +440,10 @@ namespace NControl.Mvvm
 		/// The default close command
 		/// </summary>
 		/// <value>The close command.</value>
-		public Command CloseCommand
+		public ICommand CloseCommand
 		{
 			get {
-				return GetOrCreateCommand (async() => {
+				return GetOrCreateCommandAsync (async(obj) => {
 					await MvvmApp.Current.Presenter.DismissViewModelAsync(PresentationMode);
 				});
 			}
