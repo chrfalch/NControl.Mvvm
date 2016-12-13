@@ -23,7 +23,13 @@ namespace NControl.Mvvm
 
 		protected void RaiseCanExecuteChanged()
 		{
-			CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+			try
+			{
+				CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+			}
+			catch(ObjectDisposedException)
+			{				
+			}
 		}
 
 		public void ChangeCanExecute()
