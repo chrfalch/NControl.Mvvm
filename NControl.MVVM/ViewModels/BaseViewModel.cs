@@ -392,7 +392,7 @@ namespace NControl.Mvvm
 		/// Gets the back button command.
 		/// </summary>
 		/// <value>The back button command.</value>
-		public virtual Command BackButtonCommand { get { return null; } }
+		public virtual ICommand BackButtonCommand { get { return null; } }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this instance is busy.
