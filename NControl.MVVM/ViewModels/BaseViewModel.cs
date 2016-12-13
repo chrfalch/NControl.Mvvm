@@ -273,7 +273,7 @@ namespace NControl.Mvvm
 			    dependantPropertyInfo.PropertyType.GetTypeInfo().ImplementedInterfaces.Any(intf => intf == typeof(ICommand)))
 			{
 				// Add a dependency between command and property
-				AddCommandDependency(sourcePropertyName, dependantPropertyInfo.GetValue(this) as Command);
+				AddCommandDependency(sourcePropertyName, dependantPropertyInfo.GetValue(this) as ICommand);
 
 				return true;
 			}
