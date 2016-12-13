@@ -54,12 +54,6 @@ namespace NControl.Mvvm
 		/// </summary>
 		private readonly List<PropertyChangeListener> _propertyChangeListeners = new List<PropertyChangeListener>();
 
-		/// <summary>
-		/// The command execute dependencies.
-		/// </summary>
-		private readonly Dictionary<string, List<Command>> _commandExecuteDependencies =
-			new Dictionary<string, List<Command>>();
-
 		#endregion
 
 		#region Constructors
@@ -70,9 +64,7 @@ namespace NControl.Mvvm
 		public BaseViewModel()
 		{
 			// Title
-			Title = this.GetType().Name;
-
-			ResolveCommandExecuteDependencies();
+			Title = GetType().Name;
 		}
 
 		#endregion
@@ -215,15 +207,6 @@ namespace NControl.Mvvm
 				foreach (var dependentCommand in _asyncCommandDependencies[propertyName])
 					dependentCommand.ChangeCanExecute();
 			}
-
-			// Execute commands
-			if (_commandExecuteDependencies.ContainsKey(propertyName))
-			{
-				var property = this.GetType().GetRuntimeProperty(propertyName);
-				var propValue = property.GetValue(this);
-				foreach (var dependantCommand in _commandExecuteDependencies[propertyName])
-					ExecuteCommand(dependantCommand, propValue);
-			}
 		}
 
 		#endregion
@@ -249,20 +232,6 @@ namespace NControl.Mvvm
 				_asyncCommandDependencies.Add(propertyName, new List<AsyncCommandBase>());
 
 			var list = _asyncCommandDependencies[propertyName];
-			list.Add(command);
-		}
-
-		/// <summary>
-		/// Adds the command execute dependency.
-		/// </summary>
-		/// <param name="propertyName">Property name.</param>
-		/// <param name="command">Command.</param>
-		void AddCommandExecuteDependency(string propertyName, Command command)
-		{
-			if (!_commandExecuteDependencies.ContainsKey(propertyName))
-				_commandExecuteDependencies.Add(propertyName, new List<Command>());
-
-			var list = _commandExecuteDependencies[propertyName];
 			list.Add(command);
 		}
 
@@ -307,32 +276,6 @@ namespace NControl.Mvvm
 			}
 
 			return base.HandlePropertyDependency(dependantPropertyInfo, sourcePropertyName);
-		}
-
-		/// <summary>
-		/// Resolves the command execute dependencies.
-		/// </summary>
-		void ResolveCommandExecuteDependencies()
-		{
-			foreach (var prop in this.GetType().GetRuntimeProperties())
-			{
-				foreach (var dependantPropertyInfo in this.GetType().GetRuntimeProperties())
-				{
-					var attribute = dependantPropertyInfo.GetCustomAttribute<ExecuteOnChangeAttribute>();
-					if (attribute == null)
-						continue;
-
-					foreach (var property in attribute.SourceProperties)
-					{
-
-						// Get the command instance
-						var commandInstance = (Command)dependantPropertyInfo.GetValue(this);
-
-						// Add a dependency between command and property
-						AddCommandExecuteDependency(property, commandInstance);
-					}
-				}
-			}
 		}
 
 		#endregion

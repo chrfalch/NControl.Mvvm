@@ -36,7 +36,6 @@
     <Compile Include="Classes\PropertyNameHelper.cs" />
     <Compile Include="Base\BaseModel.cs" />
     <Compile Include="Attributes\DependsOnAttribute.cs" />
-    <Compile Include="Attributes\ExecuteOnChangeAttribute.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="Extensions\BindingExtensions.cs" />
     <Compile Include="MvvmApp.cs" />
