@@ -25,5 +25,10 @@ namespace NControl.Mvvm
 		{
 			CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 		}
+
+		public void ChangeCanExecute()
+		{
+			RaiseCanExecuteChanged();
+		}
 	}
 }

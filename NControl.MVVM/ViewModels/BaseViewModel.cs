@@ -30,8 +30,14 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Command dependencies - key == property, value = list of commands
 		/// </summary>
-		private readonly Dictionary<string, List<Command>> _commandDependencies =
+		readonly Dictionary<string, List<Command>> _commandDependencies =
 			new Dictionary<string, List<Command>>();
+
+		/// <summary>
+		/// Async command dependencies
+		/// </summary>
+		readonly Dictionary<string, List<AsyncCommandBase>> _asyncCommandDependencies =
+			new Dictionary<string, List<AsyncCommandBase>>();
 
 		/// <summary>
 		/// Command cache
@@ -201,7 +207,13 @@ namespace NControl.Mvvm
 			if (_commandDependencies.ContainsKey(propertyName))
 			{
 				foreach (var dependentCommand in _commandDependencies[propertyName])
-					RaiseCommandStateChangedEvent(dependentCommand);
+					dependentCommand.ChangeCanExecute();
+			}
+
+			if (_asyncCommandDependencies.ContainsKey(propertyName))
+			{
+				foreach (var dependentCommand in _asyncCommandDependencies[propertyName])
+					dependentCommand.ChangeCanExecute();
 			}
 
 			// Execute commands
@@ -231,13 +243,13 @@ namespace NControl.Mvvm
 			list.Add(command);
 		}
 
-		/// <summary>
-		/// Raises the command state changed event.
-		/// </summary>
-		/// <param name="command">Command.</param>
-		void RaiseCommandStateChangedEvent(Command command)
+		void AddCommandDependency(string propertyName, AsyncCommandBase command)
 		{
-			command.ChangeCanExecute();
+			if (!_asyncCommandDependencies.ContainsKey(propertyName))
+				_asyncCommandDependencies.Add(propertyName, new List<AsyncCommandBase>());
+
+			var list = _asyncCommandDependencies[propertyName];
+			list.Add(command);
 		}
 
 		/// <summary>
@@ -273,7 +285,23 @@ namespace NControl.Mvvm
 			    dependantPropertyInfo.PropertyType.GetTypeInfo().ImplementedInterfaces.Any(intf => intf == typeof(ICommand)))
 			{
 				// Add a dependency between command and property
-				AddCommandDependency(sourcePropertyName, dependantPropertyInfo.GetValue(this) as ICommand);
+				var valueAsCommand = dependantPropertyInfo.GetValue(this) as Command;
+				if (valueAsCommand == null)
+				{
+					// Check for AsyncCommand
+					var valueAsAsyncCommand = dependantPropertyInfo.GetValue(this) as AsyncCommandBase;
+					if (valueAsAsyncCommand == null)
+						throw new InvalidOperationException("When adding command dependencies, you need to use either the " +
+															"Xamarin.Forms.Command class or a child of AsyncCommandBase to " +
+															"be able to use the ChangeCommandExecute method to listening " +
+															"elements. Command " + dependantPropertyInfo.Name + ".");
+					else
+					{
+						AddCommandDependency(sourcePropertyName, dependantPropertyInfo.GetValue(this) as AsyncCommandBase);
+					}
+				}
+				else				
+					AddCommandDependency(sourcePropertyName, dependantPropertyInfo.GetValue(this) as Command);
 
 				return true;
 			}
