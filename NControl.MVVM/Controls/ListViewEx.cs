@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace NControl.Mvvm
@@ -22,19 +23,19 @@ namespace NControl.Mvvm
         /// <summary>
         /// The ItemSelectedCommand property.
         /// </summary>
-		public static BindableProperty ItemSelectedCommandProperty = BindableProperty.Create(nameof(ItemSelectedCommand), typeof(Command), typeof(ListViewEx), null, BindingMode.Default, 
+		public static BindableProperty ItemSelectedCommandProperty = BindableProperty.Create(nameof(ItemSelectedCommand), typeof(ICommand), typeof(ListViewEx), null, BindingMode.Default, 
             propertyChanged: (bindable, oldValue, newValue) => {
             var ctrl = (ListViewEx)bindable;
-			ctrl.ItemSelectedCommand = (Command)newValue;                       
+			ctrl.ItemSelectedCommand = (ICommand)newValue;                       
 		});
 
         /// <summary>
         /// Gets or sets the ItemSelectedCommand of the ListViewEx instance.
         /// </summary>
         /// <value>The color of the buton.</value>
-        public Command ItemSelectedCommand
+        public ICommand ItemSelectedCommand
         {
-            get{ return (Command)GetValue(ItemSelectedCommandProperty); }
+            get{ return (ICommand)GetValue(ItemSelectedCommandProperty); }
             set
             {
                 SetValue(ItemSelectedCommandProperty, value);

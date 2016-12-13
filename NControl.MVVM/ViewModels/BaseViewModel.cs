@@ -16,6 +16,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Windows.Input;
+using System.Linq;
 
 namespace NControl.Mvvm
 {
@@ -267,9 +268,9 @@ namespace NControl.Mvvm
 		/// Handles the property dependency.
 		/// </summary>
 		protected override bool HandlePropertyDependency(PropertyInfo dependantPropertyInfo, string sourcePropertyName)
-		{
-			// check command or property
-			if (dependantPropertyInfo.PropertyType == typeof(Command))
+		{			
+			if (dependantPropertyInfo.PropertyType == typeof(ICommand) ||
+			    dependantPropertyInfo.PropertyType.GetTypeInfo().ImplementedInterfaces.Any(intf => intf == typeof(ICommand)))
 			{
 				// Add a dependency between command and property
 				AddCommandDependency(sourcePropertyName, dependantPropertyInfo.GetValue(this) as Command);
@@ -391,7 +392,7 @@ namespace NControl.Mvvm
 		/// Gets the back button command.
 		/// </summary>
 		/// <value>The back button command.</value>
-		public virtual ICommand BackButtonCommand { get { return null; } }
+		public virtual Command BackButtonCommand { get { return null; } }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this instance is busy.

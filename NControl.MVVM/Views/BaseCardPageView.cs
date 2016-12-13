@@ -14,6 +14,7 @@ using System.Linq.Expressions;
 using System.Collections.Generic;
 using NControl.Controls;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace NControl.Mvvm
 {
@@ -63,12 +64,12 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// The on appearing command.
 		/// </summary>
-		private readonly Command _onAppearingCommand;
+		private readonly ICommand _onAppearingCommand;
 
 		/// <summary>
 		/// The on disappearing command.
 		/// </summary>
-		private readonly Command _onDisappearingCommand;
+		private readonly ICommand _onDisappearingCommand;
 
 		/// <summary>
 		/// The property change listeners.
@@ -88,8 +89,8 @@ namespace NControl.Mvvm
 			_layout = new RelativeLayout();
 
 			// OnAppearing/OnDisappearing
-			_onAppearingCommand = new Command(async () => await ViewModel.OnAppearingAsync());
-			_onDisappearingCommand = new Command(async () => await ViewModel.OnDisappearingAsync());
+			_onAppearingCommand = new AsyncCommand(async (obj) => await ViewModel.OnAppearingAsync());
+			_onDisappearingCommand = new AsyncCommand(async (obj) => await ViewModel.OnDisappearingAsync());
 
 			Setup();
 		}
