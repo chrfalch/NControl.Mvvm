@@ -23,8 +23,8 @@ namespace NControl.Mvvm
 		/// <param name="bindableObject">Bindable object.</param>
 		/// <param name="bindableProperty">Bindable property.</param>
 		/// <param name="viewModelProperty">View model property.</param>
-		public static View BindTo(this View view, BindableProperty bindableProperty, string propertyName, 
-			IValueConverter converter = null, string stringFormat = null)
+		public static T BindTo<T>(this T view, BindableProperty bindableProperty, string propertyName, 
+			IValueConverter converter = null, string stringFormat = null) where T : View
 		{
 			view.SetBinding(bindableProperty, propertyName, converter: converter, stringFormat:stringFormat);
 			return view;
