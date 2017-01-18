@@ -412,7 +412,7 @@ namespace NControl.Mvvm
 		/// The default close command
 		/// </summary>
 		/// <value>The close command.</value>
-		public ICommand CloseCommand
+		public virtual ICommand CloseCommand
 		{
 			get {
 				return GetOrCreateCommandAsync (async(obj) => {
