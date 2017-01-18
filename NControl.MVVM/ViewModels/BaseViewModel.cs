@@ -223,7 +223,8 @@ namespace NControl.Mvvm
 				_commandDependencies.Add(propertyName, new List<Command>());
 
 			var list = _commandDependencies[propertyName];
-			list.Add(command);
+			if (!list.Contains(command))
+                list.Add(command);
 		}
 
 		void AddCommandDependency(string propertyName, AsyncCommandBase command)
@@ -232,7 +233,8 @@ namespace NControl.Mvvm
 				_asyncCommandDependencies.Add(propertyName, new List<AsyncCommandBase>());
 
 			var list = _asyncCommandDependencies[propertyName];
-			list.Add(command);
+            if(!list.Contains(command))
+			    list.Add(command);
 		}
 
 		/// <summary>
