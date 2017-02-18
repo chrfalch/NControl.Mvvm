@@ -299,15 +299,23 @@ namespace NControl.Mvvm
 		public async Task PopModalViewModelAsync(bool success)
 		{
 			var poppedPage = await _navigationPageStack.Peek().Page.Navigation.PopModalAsync ();
-
 			var navPage = poppedPage as ModalNavigationPage;
+
 			if(navPage != null)				
 			{
 				// Dismiss all children
 				if (navPage.CurrentPage != null)
 				{
 					var viewModelProvider = navPage.CurrentPage as IView;
-					viewModelProvider.GetViewModel().ViewModelDismissed();
+					try
+					{
+						viewModelProvider.GetViewModel().ViewModelDismissed();		
+					}
+					catch (Exception ex)
+					{
+						System.Diagnostics.Debug.WriteLine("MVVM: An exception occured in your ViewModelDismissed method in your " + 
+							viewModelProvider.GetType().Name + " view:\n" + ex.Message);
+					}
 				}
 			}
 
