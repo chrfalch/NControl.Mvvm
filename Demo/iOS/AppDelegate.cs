@@ -6,6 +6,7 @@ using Foundation;
 using UIKit;
 using NControl.Mvvm.iOS;
 using NControl.Controls.iOS;
+using NControl.Mvvm.Fluid.iOS;
 
 namespace MvvmDemo.iOS
 {
@@ -15,7 +16,7 @@ namespace MvvmDemo.iOS
 		public override bool FinishedLaunching (UIApplication uiApplication, NSDictionary launchOptions)
 		{
 			global::Xamarin.Forms.Forms.Init ();
-			LoadApplication (new DemoMvvmApp (new TouchPlatform()));
+			LoadApplication (new DemoMvvmApp (new FluidTouchPlatform()));
 
 			return base.FinishedLaunching (uiApplication, launchOptions);
 		}

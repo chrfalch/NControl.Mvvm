@@ -142,6 +142,18 @@
       <Project>{D757C407-D204-468E-8A85-8A3C79712FD6}</Project>
       <Name>NControl.Mvvm.Fluid</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Animation\NControl.XAnimation\NControl.XAnimation.csproj">
+      <Project>{5417603E-26FE-4000-AEDC-7B13AF7D2909}</Project>
+      <Name>NControl.XAnimation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Animation\NControl.XAnimation.iOS\NControl.XAnimation.iOS.csproj">
+      <Project>{CD9E691A-EA69-428F-B8A6-5F3969F38AF8}</Project>
+      <Name>NControl.XAnimation.iOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NControl.Mvvm.Fluid.iOS\NControl.Mvvm.Fluid.iOS.csproj">
+      <Project>{E252288B-A091-4D4A-A6B9-89631F13FC48}</Project>
+      <Name>NControl.Mvvm.Fluid.iOS</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Contents.json" />

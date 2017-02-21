@@ -9,6 +9,7 @@ using Android.Widget;
 using Android.OS;
 using NControl.Mvvm.Droid;
 using NControl.Controls.Droid;
+using NControl.Mvvm.Fluid.Droid;
 
 namespace MvvmDemo.Droid
 {
@@ -24,7 +25,7 @@ namespace MvvmDemo.Droid
 
 			global::Xamarin.Forms.Forms.Init (this, bundle);
 
-			LoadApplication (new DemoMvvmApp (new DroidPlatform(this)));
+			LoadApplication (new DemoMvvmApp (new FluidDroidPlatform(this)));
 		}
 	}
 }

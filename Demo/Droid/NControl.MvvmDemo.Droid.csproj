@@ -134,6 +134,18 @@
       <Project>{D757C407-D204-468E-8A85-8A3C79712FD6}</Project>
       <Name>NControl.Mvvm.Fluid</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Animation\NControl.XAnimation\NControl.XAnimation.csproj">
+      <Project>{5417603E-26FE-4000-AEDC-7B13AF7D2909}</Project>
+      <Name>NControl.XAnimation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Animation\NControl.XAnimation.Droid\NControl.XAnimation.Droid.csproj">
+      <Project>{EFAE0925-96E2-45B9-80F2-D2A63F839A1A}</Project>
+      <Name>NControl.XAnimation.Droid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NControl.Mvvm.Fluid.Droid\NControl.Mvvm.Fluid.Droid.csproj">
+      <Project>{EA027B4B-F1E1-4418-8A26-066DEDEFA4F0}</Project>
+      <Name>NControl.Mvvm.Fluid.Droid</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />

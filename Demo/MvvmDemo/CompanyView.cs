@@ -30,6 +30,11 @@ namespace MvvmDemo
 						ItemSelectedCommand = ViewModel.SelectCompanyCommand,
 						ItemTemplate = new DataTemplate(typeof(TextCell))
 							.BindTo(TextCell.TextProperty, NameOf<Company>(cw => cw.Name)),						
+					},
+
+					new Button{
+						Text = "Open Da Thing",
+						Command = ViewModel.ShowAboutCommand,
 					}
 				}
 			};
