@@ -26,21 +26,21 @@ namespace NControl.Mvvm
 		/// <typeparam name="TViewType">The 2nd type parameter.</typeparam>
 		void RegisterView<TViewModelType, TViewType> ()
 			where TViewModelType : BaseViewModel
-			where TViewType : Page;
+			where TViewType : IView;
 
 		/// <summary>
 		/// Gets the view from view model.
 		/// </summary>
 		/// <returns>The view from view model.</returns>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		Page GetViewFromViewModel<TViewModel>() where TViewModel : BaseViewModel;
+		IView GetViewFromViewModel<TViewModel>() where TViewModel : BaseViewModel;
 
 		/// <summary>
 		/// Gets the view from view model.
 		/// </summary>
 		/// <returns>The view from view model.</returns>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		Page GetViewFromViewModel(Type viewModelType);
+		IView GetViewFromViewModel(Type viewModelType);
 	}
 }
 

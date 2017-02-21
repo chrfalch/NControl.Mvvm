@@ -53,7 +53,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		/// <returns>The main page.</returns>
 		/// <param name="mainPage">Main page.</param>
-		public Page SetMainPage(Page mainPage)
+		public void SetMainPage(Page mainPage)
 		{
 			Application.Current.MainPage = mainPage;
 
@@ -68,8 +68,7 @@ namespace NControl.Mvvm
 				var navPage = mainPage as NavigationPage;
 				if (navPage != null)
 					navPage.Popped += NavPage_Popped;
-
-				return _navigationPageStack.Peek().Page;
+								
 			}
 			else
 			{
@@ -79,8 +78,6 @@ namespace NControl.Mvvm
 				if (_masterDetailPage.Master is NavigationPage)
 					(_masterDetailPage.Master as NavigationPage).Popped += NavPage_Popped;
 			}
-
-			return mainPage;
 		}
 
 		/// <summary>
@@ -228,7 +225,7 @@ namespace NControl.Mvvm
 			}
 
 			// Should we present this on its own navigation stack?
-			await _navigationPageStack.Peek().Page.Navigation.PushAsync (view, animate);
+			await _navigationPageStack.Peek().Page.Navigation.PushAsync (view as Page, animate);
 		}
 
 		#endregion
@@ -239,7 +236,7 @@ namespace NControl.Mvvm
 		/// Navigates to the provided view model of type
 		/// </summary>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Task<NavigationPage> ShowViewModelModalAsync<TViewModel>(
+		public Task ShowViewModelModalAsync<TViewModel>(
 			Action<bool> dismissedCallback = null, object parameter = null, bool animate = false)
 			where TViewModel : BaseViewModel
 		{
@@ -253,7 +250,7 @@ namespace NControl.Mvvm
 		/// <param name="dismissedCallback">Dismissed callback.</param>
 		/// <param name="parameter">Parameter.</param>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public async Task<NavigationPage> ShowViewModelModalAsync(Type viewModelType,
+		public async Task ShowViewModelModalAsync(Type viewModelType,
 			Action<bool> dismissedCallback = null, object parameter = null, bool animate = false)
 		{       
 			if (_masterDetailPage != null)
@@ -268,8 +265,8 @@ namespace NControl.Mvvm
 			viewModelProvider.GetViewModel().PresentationMode = PresentationMode.Modal;
 
 			// Create wrapper page
-			var retVal = new ModalNavigationPage (view, viewModelProvider.GetViewModel() as BaseViewModel);
-			retVal.Popped += NavPage_Popped;
+			var navigationPage = new ModalNavigationPage (view as Page, viewModelProvider.GetViewModel() as BaseViewModel);
+			navigationPage.Popped += NavPage_Popped;
 
 			if (parameter != null)
 			{
@@ -282,14 +279,12 @@ namespace NControl.Mvvm
 				}
 			}
 
-			await _navigationPageStack.Peek().Page.Navigation.PushModalAsync (retVal);
+			await _navigationPageStack.Peek().Page.Navigation.PushModalAsync (navigationPage);
 
 			_navigationPageStack.Push(new NavigationElement{
-				Page = retVal, 
+				Page = navigationPage, 
 				DismissedAction = dismissedCallback,
 			});
-
-			return retVal;
 		}
 
 		/// <summary>

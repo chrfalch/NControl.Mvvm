@@ -33,7 +33,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		/// <returns>The main page.</returns>
 		/// <param name="mainPage">Main page.</param>
-		Page SetMainPage (Page mainPage);
+		void SetMainPage (Page mainPage);
 
 		/// <summary>
 		/// Sets the master detail master.
@@ -55,8 +55,8 @@ namespace NControl.Mvvm
 		Task ShowViewModelAsPopupAsync(Type viewModelType, object parameter = null);
 
 		// Modal navigation
-		Task<NavigationPage> ShowViewModelModalAsync<TViewModel> (Action<bool> dismissedCallback = null, object parameter = null, bool animate = true) where TViewModel : BaseViewModel;
-		Task<NavigationPage> ShowViewModelModalAsync(Type viewModelType, Action<bool> dismissedCallback = null, object parameter = null, bool animate = true);
+		Task ShowViewModelModalAsync<TViewModel> (Action<bool> dismissedCallback = null, object parameter = null, bool animate = true) where TViewModel : BaseViewModel;
+		Task ShowViewModelModalAsync(Type viewModelType, Action<bool> dismissedCallback = null, object parameter = null, bool animate = true);
 
 		/// <summary>
 		/// Dismisses the view model async.

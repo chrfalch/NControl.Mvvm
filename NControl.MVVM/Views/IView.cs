@@ -29,11 +29,10 @@ namespace NControl.Mvvm
 	/// </summary>
 	public interface IView
 	{
-		/// <summary>
-		/// Gets the view model.
-		/// </summary>
-		/// <returns>The view model.</returns>
 		IViewModel GetViewModel();
+		void OnAppearing();
+		void OnDisappearing();
+
 	}
 }
 

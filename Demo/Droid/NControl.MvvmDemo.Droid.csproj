@@ -130,6 +130,10 @@
       <Project>{967C6CBE-86FA-4907-B153-063A3997B3CF}</Project>
       <Name>NControl.Mvvm.Droid</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\NControl.MVVM.Fluid\NControl.MVVM.Fluid.csproj">
+      <Project>{D757C407-D204-468E-8A85-8A3C79712FD6}</Project>
+      <Name>NControl.MVVM.Fluid</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />

@@ -230,6 +230,16 @@ namespace NControl.Mvvm
             changeListener.Listen<TViewModel>(property, ViewModel, callback);
             _propertyChangeListeners.Add(changeListener);
         }
+
+		void IView.OnAppearing()
+		{
+			this.OnAppearing();
+		}
+
+		void IView.OnDisappearing()
+		{
+			this.OnDisappearing();
+		}
 		#endregion
 	}
 }

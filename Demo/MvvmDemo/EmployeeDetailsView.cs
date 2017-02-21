@@ -1,13 +1,14 @@
 ﻿using System;
 using NControl.Mvvm;
+using NControl.Mvvm.Fluid;
 using Xamarin.Forms;
 
 namespace MvvmDemo
 {
-	public class EmployeeDetailsView: BaseCardPageView<EmployeeDetailsViewModel>
+	public class EmployeeDetailsView: BaseFluidContentsView<EmployeeDetailsViewModel>
 	{
 		public EmployeeDetailsView ()
-		{						
+		{				 		
 		}
 
 		protected override Xamarin.Forms.View CreateContents ()
@@ -16,7 +17,7 @@ namespace MvvmDemo
 				Orientation = StackOrientation.Vertical,
 				Padding = 15,
 				Spacing = 8,
-				Children = {
+				Children = {					
 					new Label{TextColor =Color.Blue}.BindTo(Label.TextProperty, NameOf(mn => mn.Employee.Id)),
 					new Label{TextColor =Color.Blue}.BindTo(Label.TextProperty, NameOf(mn => mn.Employee.Name)),
 					new Button { 

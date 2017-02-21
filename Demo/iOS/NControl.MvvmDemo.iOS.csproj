@@ -138,6 +138,10 @@
       <Project>{F1528ACD-1452-4DD4-8227-9CD52879D0E0}</Project>
       <Name>NControl.Mvvm.iOS</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\NControl.MVVM.Fluid\NControl.MVVM.Fluid.csproj">
+      <Project>{D757C407-D204-468E-8A85-8A3C79712FD6}</Project>
+      <Name>NControl.Mvvm.Fluid</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Contents.json" />

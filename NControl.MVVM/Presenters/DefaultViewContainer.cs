@@ -32,7 +32,7 @@ namespace NControl.Mvvm
 		/// <typeparam name="TViewType">The 2nd type parameter.</typeparam>
 		public void RegisterView<TViewModelType, TViewType>()
 			where TViewModelType : BaseViewModel
-			where TViewType : Page
+			where TViewType : IView
 		{
 			ViewModels.Add (typeof(TViewModelType), typeof(TViewType));
 		}
@@ -42,9 +42,9 @@ namespace NControl.Mvvm
 		/// </summary>
 		/// <returns>The view from view model.</returns>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Page GetViewFromViewModel<TViewModel>() where TViewModel : BaseViewModel
+		public IView GetViewFromViewModel<TViewModel>() where TViewModel : BaseViewModel
 		{
-			return Container.Resolve (ViewModels [typeof(TViewModel)]) as Page;
+			return Container.Resolve (ViewModels [typeof(TViewModel)]) as IView;
 		}
 
 		/// <summary>
@@ -52,9 +52,9 @@ namespace NControl.Mvvm
 		/// </summary>
 		/// <returns>The view from view model.</returns>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Page GetViewFromViewModel(Type viewModelType)
+		public IView GetViewFromViewModel(Type viewModelType)
 		{
-			return Container.Resolve(ViewModels[viewModelType]) as Page;
+			return Container.Resolve(ViewModels[viewModelType]) as IView;
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using NControl.Mvvm.Fluid;
 using NControl.Mvvm;
 using Xamarin.Forms;
 
@@ -7,7 +8,7 @@ namespace MvvmDemo
 	/// <summary>
 	/// Demo mvvm app.
 	/// </summary>
-	public class DemoMvvmApp: MvvmApp
+	public class DemoMvvmApp: FluidMvvmApp
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MvvmDemo.DemoMvvmApp"/> class.
@@ -15,6 +16,11 @@ namespace MvvmDemo
 		/// <param name="platform">Platform.</param>
 		public DemoMvvmApp (IMvvmPlatform platform): base(platform)
 		{
+		}
+
+		public override Type GetMainViewType()
+		{
+			return typeof(CompanyView);
 		}
 
 		/// <summary>
@@ -27,19 +33,6 @@ namespace MvvmDemo
 			ViewContainer.RegisterView<AboutViewModel, AboutView> ();
 			ViewContainer.RegisterView<EmployeeDetailsViewModel, EmployeeDetailsView> ();
 			ViewContainer.RegisterView<SearchViewModel, SearchView> ();
-		}
-
-		/// <summary>
-		/// Gets the main page.
-		/// </summary>
-		/// <returns>The main page.</returns>
-		protected override Xamarin.Forms.Page GetMainPage ()
-		{
-			var masterDetailsPage = new MasterDetailPage ();
-			masterDetailsPage.Master = Container.Resolve<MenuView> ();
-			masterDetailsPage.Detail = new NavigationPage(Container.Resolve<CompanyView>());
-			Presenter.SetMasterDetailMaster (masterDetailsPage);
-			return masterDetailsPage;
 		}
 	}
 }

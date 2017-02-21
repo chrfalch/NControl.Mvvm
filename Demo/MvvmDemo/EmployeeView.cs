@@ -1,10 +1,11 @@
 ﻿using System;
 using NControl.Mvvm;
+using NControl.Mvvm.Fluid;
 using Xamarin.Forms;
 
 namespace MvvmDemo
 {
-	public class EmployeeView: BaseContentsView<EmployeeViewModel>
+	public class EmployeeView: BaseFluidContentsView<EmployeeViewModel>
 	{
 		public EmployeeView ()
 		{
@@ -16,6 +17,14 @@ namespace MvvmDemo
 				Orientation = StackOrientation.Vertical,
 				Spacing = 8,
 				Children = {
+					new Button {
+						HorizontalOptions = LayoutOptions.FillAndExpand,
+						BackgroundColor = Color.Accent,
+						HeightRequest = 44,
+						TextColor = Color.White,
+						Text = "Back",
+						Command = ViewModel.CloseCommand,
+					},
 					new ListViewEx{
 						ItemsSource = ViewModel.Employees,
 						ItemSelectedCommand = ViewModel.SelectEmployeeCommand,

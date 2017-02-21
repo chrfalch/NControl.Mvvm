@@ -1,10 +1,11 @@
 ﻿using System;
 using NControl.Mvvm;
+using NControl.Mvvm.Fluid;
 using Xamarin.Forms;
 
 namespace MvvmDemo
 {
-	public class SearchView: BaseContentsView<SearchViewModel>
+	public class SearchView: BaseFluidContentsView<SearchViewModel>
 	{
 		public SearchView ()
 		{

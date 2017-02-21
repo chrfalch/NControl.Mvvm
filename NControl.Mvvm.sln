@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.Mvvm.iOS", "NContr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.Mvvm.Droid", "NControl.MVVM.Droid\NControl.Mvvm.Droid.csproj", "{967C6CBE-86FA-4907-B153-063A3997B3CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.Mvvm.Fluid", "NControl.MVVM.Fluid\NControl.MVVM.Fluid.csproj", "{D757C407-D204-468E-8A85-8A3C79712FD6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,10 +104,23 @@ Global
 		{F1528ACD-1452-4DD4-8227-9CD52879D0E0}.Release|iPhone.Build.0 = Release|Any CPU
 		{F1528ACD-1452-4DD4-8227-9CD52879D0E0}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{F1528ACD-1452-4DD4-8227-9CD52879D0E0}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{D757C407-D204-468E-8A85-8A3C79712FD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D757C407-D204-468E-8A85-8A3C79712FD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D757C407-D204-468E-8A85-8A3C79712FD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D757C407-D204-468E-8A85-8A3C79712FD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D757C407-D204-468E-8A85-8A3C79712FD6}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{D757C407-D204-468E-8A85-8A3C79712FD6}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{D757C407-D204-468E-8A85-8A3C79712FD6}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{D757C407-D204-468E-8A85-8A3C79712FD6}.Release|iPhone.Build.0 = Release|Any CPU
+		{D757C407-D204-468E-8A85-8A3C79712FD6}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{D757C407-D204-468E-8A85-8A3C79712FD6}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{D757C407-D204-468E-8A85-8A3C79712FD6}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{D757C407-D204-468E-8A85-8A3C79712FD6}.Debug|iPhone.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6AF0AE38-F4D7-4A23-9E9F-4B11DF18ECC7} = {7531541E-B7FF-4E7E-B336-A7DAB576105A}
 		{F1528ACD-1452-4DD4-8227-9CD52879D0E0} = {7531541E-B7FF-4E7E-B336-A7DAB576105A}
 		{967C6CBE-86FA-4907-B153-063A3997B3CF} = {7531541E-B7FF-4E7E-B336-A7DAB576105A}
+		{D757C407-D204-468E-8A85-8A3C79712FD6} = {7531541E-B7FF-4E7E-B336-A7DAB576105A}
 	EndGlobalSection
 EndGlobal

@@ -1,10 +1,11 @@
 ﻿using System;
 using NControl.Mvvm;
+using NControl.Mvvm.Fluid;
 using Xamarin.Forms;
 
 namespace MvvmDemo
 {
-	public class CompanyView: BaseContentsView<CompanyViewModel>
+	public class CompanyView: BaseFluidContentsView<CompanyViewModel>
 	{
 		public CompanyView ()
 		{

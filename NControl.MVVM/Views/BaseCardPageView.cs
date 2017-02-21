@@ -277,7 +277,17 @@ namespace NControl.Mvvm
             return ViewModel.InitializeAsync();
         }
 
-        #endregion
+		void IView.OnAppearing()
+		{
+			this.OnAppearing();
+		}
+
+		void IView.OnDisappearing()
+		{
+			this.OnDisappearing();
+		}
+
+		#endregion
 	}
 }
 

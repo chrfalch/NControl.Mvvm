@@ -48,9 +48,9 @@ namespace NControl.Mvvm
 			// Register container
 			Container.Initialize (CreateContainer());
 
-			// Set up presenter and view container
-			Container.RegisterSingleton<IViewContainer, DefaultViewContainer>();
-			Container.RegisterSingleton<IPresenter, DefaultPresenter> ();
+			// Create view container and presenter
+			RegisterViewContainer();
+			RegisterPresenter();
 
 			// Sets up the messaging service
 			RegisterMessagingService ();
@@ -107,6 +107,22 @@ namespace NControl.Mvvm
 		protected virtual IContainer CreateContainer()
 		{
 			return new SimpleInjectContainer ();
+		}
+
+		/// <summary>
+		/// Registers the presenter.
+		/// </summary>
+		protected virtual void RegisterPresenter()
+		{
+			Container.RegisterSingleton<IPresenter, DefaultPresenter>();
+		}
+
+		/// <summary>
+		/// Registers the view container
+		/// </summary>
+		protected virtual void RegisterViewContainer()
+		{
+			Container.RegisterSingleton<IViewContainer, DefaultViewContainer>();
 		}
 
 		/// <summary>
