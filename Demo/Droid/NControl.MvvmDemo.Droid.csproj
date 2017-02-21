@@ -132,7 +132,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\NControl.MVVM.Fluid\NControl.MVVM.Fluid.csproj">
       <Project>{D757C407-D204-468E-8A85-8A3C79712FD6}</Project>
-      <Name>NControl.MVVM.Fluid</Name>
+      <Name>NControl.Mvvm.Fluid</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
