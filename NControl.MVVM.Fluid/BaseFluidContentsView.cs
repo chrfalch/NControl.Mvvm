@@ -7,7 +7,7 @@ using Xamarin.Forms;
 
 namespace NControl.Mvvm.Fluid
 {
-	public abstract class BaseFluidContentsView<TViewModel> : ContentView, IView<TViewModel>
+	public abstract class BaseFluidContentsView<TViewModel> : ContentView, IView<TViewModel>, IXAnimatable
 		where TViewModel : BaseViewModel
 	{
 
@@ -206,6 +206,95 @@ namespace NControl.Mvvm.Fluid
 			changeListener.Listen<TViewModel>(property, ViewModel, callback);
 			_propertyChangeListeners.Add(changeListener);
 		}
+		#endregion
+
+		#region Transitions
+
+		public virtual IEnumerable<XAnimation.XAnimation> TransitionIn(View fromView, View overlay, PresentationMode presentationMode)
+		{
+			if (presentationMode == PresentationMode.Default)
+			{
+				var animateContentsIn = new XAnimation.XAnimation(new[] { this });
+				animateContentsIn
+						.Translate(Width, 0)
+						.Set()
+						.Translate(0, 0);
+
+				var animatePreviousOut = new XAnimation.XAnimation(new[] { fromView });
+				animatePreviousOut
+					.Translate(-(Width / 4), 0);
+
+				return new[] { animateContentsIn, animatePreviousOut };
+			}
+
+			if (presentationMode == PresentationMode.Modal)
+			{
+				var animateContentsIn = new XAnimation.XAnimation(new[] { this });
+				animateContentsIn
+						.Translate(0, Height)
+						.Set()
+						.Translate(0, 0);
+
+				var animatePreviousOut = new XAnimation.XAnimation(new[] { fromView });
+				animatePreviousOut
+					.Scale(0.75);
+
+				return new[] { animateContentsIn, animatePreviousOut };
+
+			}
+
+			if (presentationMode == PresentationMode.Popup)
+			{
+				var animateContentsIn = new XAnimation.XAnimation(new[] { this });
+				animateContentsIn
+					.Translate(0, Height)
+					.Set()
+					.Translate(0, 0);
+
+				var animateOverlay = new XAnimation.XAnimation(new VisualElement[] { overlay });
+				animateOverlay.Opacity(1.0);
+
+				return new[] { animateContentsIn, animateOverlay }; 
+			}
+
+			return null;
+		}
+
+		public virtual IEnumerable<XAnimation.XAnimation> TransitionOut(View toView, View overlay, PresentationMode presentationMode)
+		{
+			if (presentationMode == PresentationMode.Default)
+			{
+				// Animate
+				return new[] 
+				{ 
+					new XAnimation.XAnimation(new[] { this }).Translate(Width, 0),
+					new XAnimation.XAnimation(new[] { toView }).Translate(0, 0)
+				};
+			}
+
+			if (presentationMode == PresentationMode.Modal)
+			{
+				// Animate
+				return new[]
+				{
+					new XAnimation.XAnimation(new[] { this }).Translate(0, Height),
+					new XAnimation.XAnimation(new[] { toView }).Scale(1.0)
+				};
+			}
+
+			if (presentationMode == PresentationMode.Popup)
+			{
+				// Animate
+				return new[]
+				{
+					new XAnimation.XAnimation(new[] { this }).Translate(0, Height),
+					new XAnimation.XAnimation(new[] { overlay }).Opacity(0.0)
+				};
+			}
+
+			return null;
+		}
+
 		#endregion
 	}
 }

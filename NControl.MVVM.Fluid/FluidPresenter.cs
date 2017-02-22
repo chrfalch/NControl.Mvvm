@@ -91,16 +91,7 @@ namespace NControl.Mvvm
 		/// <param name="success">If set to <c>true</c> success.</param>
 		public Task DismissViewModelAsync(PresentationMode presentationMode, bool success)
 		{
-			if (presentationMode == PresentationMode.Default)
-				return PopViewModelAsync();
-			
-			if (presentationMode == PresentationMode.Modal)
-				return PopModalViewModelAsync(success);
-			
-			if (presentationMode == PresentationMode.Popup)
-				return PopCardViewModelAsync();
-
-			throw new InvalidOperationException("Could not pop presentation mode " + presentationMode);
+			return PopViewModelAsync(presentationMode, success);
 		}
 
 		#endregion
@@ -162,73 +153,56 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Shows the view model async.
 		/// </summary>
-		public Task ShowViewModelAsync(Type viewModelType, Action<bool> dismissedCallback = null, object parameter = null, bool animate = true, 
+		public Task ShowViewModelAsync(Type viewModelType, Action<bool> dismissedCallback = null, object parameter = null, bool animate = true,
 			PresentationMode presentationMode = PresentationMode.Default)
 		{
-			var tcs = new TaskCompletionSource<bool>();
-
 			var view = MvvmApp.Current.ViewContainer.GetViewFromViewModel(viewModelType);
 
 			view.GetViewModel().PresentationMode = presentationMode;
 
 			if (parameter != null)
-			{				
+			{
 				var bt = viewModelType.GetTypeInfo().BaseType;
-				var paramType = parameter.GetType ();
-				var met = bt.GetRuntimeMethod ("InitializeAsync", new Type[]{paramType});
-				if(met != null)
+				var paramType = parameter.GetType();
+				var met = bt.GetRuntimeMethod("InitializeAsync", new Type[] { paramType });
+				if (met != null)
 				{
-					met.Invoke (view.GetViewModel(), new object[]{ parameter });
+					met.Invoke(view.GetViewModel(), new object[] { parameter });
 				}
 			}
+
+			return ShowViewModelAsync(view, dismissedCallback, presentationMode);
+		}
+
+		/// <summary>
+		/// Internal show viewmodel method
+		/// </summary>
+		Task ShowViewModelAsync(IView view, Action<bool> dismissedCallback, PresentationMode presentationMode)
+		{
+			var tcs = new TaskCompletionSource<bool>();
+
+			// Start the actual presentation of the view
+			View contents = view as ContentView;
+			View overlay = null;
+
+			if (contents == null)
+				throw new ArgumentException("View must inherit from ContentView.");
+
+			// Get previous/current view
+			var currentContent = _contentStack.Peek();
 
 			if (presentationMode == PresentationMode.Default || presentationMode == PresentationMode.Modal)
 			{
-				var contents = view as ContentView;
+				// Add view itself
 				_contentsContainer.Children.Add(contents, 0, 0);
-				var currentContent = _contentStack.Peek();
 				_contentStack.Push(new NavigationElement(contents, dismissedCallback));
-
-				if (presentationMode == PresentationMode.Default)
-				{
-					// Animate
-					var animation = new XAnimation.XAnimation(new[] { contents });
-					animation
-						.Translate(_contentsContainer.Width, 0)
-						.Set()
-						.Translate(0, 0)
-						.Run(() => tcs.TrySetResult(true));
-
-					animation = new XAnimation.XAnimation(new[] { currentContent.View });
-					animation
-						.Translate(-(_contentsContainer.Width / 4), 0)
-					.Run();
-				}
-				else if (presentationMode == PresentationMode.Modal)
-				{
-					// Animate 
-					var animation = new XAnimation.XAnimation(new[] { contents });
-					animation
-						.Translate(0, _contentsContainer.Height)
-						.Set()
-						.Translate(0, 0)
-						.Run(() => tcs.TrySetResult(true));
-
-					animation = new XAnimation.XAnimation(new[] { currentContent.View });
-					animation
-						.Scale(0.75)
-					.Run();
-				}
 			}
-			else if (presentationMode == PresentationMode.Popup)
+			else
 			{
-				var contents = view as ContentView;
-
 				// Add overlay
-				var overlay = new BoxView { BackgroundColor = Color.Gray.MultiplyAlpha(0.5) };
-				overlay.Opacity = 0.0;
+				overlay = new BoxView { BackgroundColor = Color.Gray.MultiplyAlpha(0.5) };
 				_contentsContainer.Children.Add(overlay);
-					
+
 				// Add container
 				var container = new RelativeLayout();
 				var popupRect = new Rectangle(0, 0, _contentsContainer.Width * 0.85, _contentsContainer.Height * 0.65);
@@ -236,25 +210,39 @@ namespace NControl.Mvvm
 				container.Children.Add(contents, () => new Rectangle(container.Width / 2 - popupRect.Width / 2,
 																  container.Height / 2 - popupRect.Height / 2,
 																  popupRect.Width, popupRect.Height));
-					
+
 				_contentsContainer.Children.Add(container, 0, 0);
-				_contentStack.Push(new NavigationElement(container, dismissedCallback) { Overlay = overlay});
+				_contentStack.Push(new NavigationElement(container, dismissedCallback) { Overlay = overlay });
 
-				// Animate 
-				var animation = new XAnimation.XAnimation(new[] { container });
-				animation
-					.Translate(0, _contentsContainer.Height)
-					.Set()
-					.Translate(0, 0)
-					.Run(() => tcs.TrySetResult(true));
+				contents = container;
+			}
 
-				animation = new XAnimation.XAnimation(new VisualElement[] { overlay });
-				animation.Opacity(1.0).Run();
+			if (view is IXAnimatable)
+			{
+				if(overlay != null)
+					overlay.Opacity = 0.0;
 
+				var animations = (view as IXAnimatable).TransitionIn(currentContent.View, overlay, presentationMode);
+				if (animations != null)
+				{
+					var animationFinishedCounter = 0;
+					foreach (var anim in animations)
+					{
+						anim.Run(() =>
+						{
+							animationFinishedCounter++;
+							if (animationFinishedCounter == animations.Count())
+								tcs.TrySetResult(true);
+						});
+					}
+				}
 			}
 			else
+			{
+				// No animation, just return straight await
 				tcs.TrySetResult(true);
-			
+			}
+
 			return tcs.Task;
 		}
 
@@ -262,26 +250,56 @@ namespace NControl.Mvvm
 		/// Pops the view model async.
 		/// </summary>
 		/// <returns>The view model async.</returns>
-		Task PopViewModelAsync()
+		Task PopViewModelAsync(PresentationMode presentationMode, bool success)
 		{
 			var tcs = new TaskCompletionSource<bool>();
 
 			var contentToPop = _contentStack.Pop();
+			var viewToPop = contentToPop.View;
+			if (presentationMode == PresentationMode.Popup)
+				viewToPop = (contentToPop.View as RelativeLayout).Children.First();
+			
 			var nextContent = _contentStack.Peek();
 
-			// Animate
-			var animation = new XAnimation.XAnimation(new[] { contentToPop.View });
-			animation
-				.Translate(_contentsContainer.Width, 0).Run(() => { 
+			// Function for removing when we're done.
+			Action removeAction = () => 
+			{
 				_contentsContainer.Children.Remove(contentToPop.View);
-				(contentToPop.View as IView).GetViewModel().ViewModelDismissed();
-				tcs.TrySetResult(true);
-			});
+				var viewModel = (viewToPop as IView).GetViewModel();
 
-			animation = new XAnimation.XAnimation(new[] { nextContent.View });
-			animation
-				.Translate(0, 0)
-				.Run();
+				if (presentationMode == PresentationMode.Popup)
+					_contentsContainer.Children.Remove(contentToPop.Overlay);				
+				
+				viewModel.ViewModelDismissed();
+
+				if (contentToPop.DismissedAction != null)
+					contentToPop.DismissedAction(success);
+
+				tcs.TrySetResult(true);
+			};
+
+			if (viewToPop is IXAnimatable)
+			{
+				var animations = (viewToPop as IXAnimatable).TransitionOut(nextContent.View, contentToPop.Overlay, presentationMode);
+				if (animations != null)
+				{
+					var animationFinishedCounter = 0;
+					foreach (var anim in animations)
+					{
+						anim.Run(() =>
+						{
+							animationFinishedCounter++;
+							if (animationFinishedCounter == animations.Count())
+								removeAction();
+						});
+					}
+				}
+			}
+			else
+			{
+				// Just remove
+				removeAction();
+			}
 
 			return tcs.Task;
 		}
@@ -311,38 +329,6 @@ namespace NControl.Mvvm
 			return ShowViewModelAsync(viewModelType, dismissedCallback, parameter, animate, PresentationMode.Modal);
 		}
 
-		/// <summary>
-		/// Pops the active modal view 
-		/// </summary>
-		/// <returns>The modal view model async.</returns>
-		public Task PopModalViewModelAsync(bool success)
-		{
-			var tcs = new TaskCompletionSource<bool>();
-
-			var contentToPop = _contentStack.Pop();
-			var nextContent = _contentStack.Peek();
-
-			// Animate
-			var animation = new XAnimation.XAnimation(new[] { contentToPop.View });
-			animation
-				.Translate(0, _contentsContainer.Height).Run(() =>
-				{
-					_contentsContainer.Children.Remove(contentToPop.View);
-					if (contentToPop.DismissedAction != null)
-						contentToPop.DismissedAction(success);
-
-					(contentToPop.View as IView).GetViewModel().ViewModelDismissed();		
-					tcs.TrySetResult(true);
-				});
-
-			animation = new XAnimation.XAnimation(new[] { nextContent.View });
-			animation
-				.Scale(1.0)
-				.Run();
-
-			return tcs.Task;
-		}
-
 		#endregion
 
 		#region Card Navigation
@@ -368,32 +354,6 @@ namespace NControl.Mvvm
 			return ShowViewModelAsync(viewModelType, null, parameter, true, PresentationMode.Popup);
 		}
 
-		/// <summary>
-		/// Pops the card view model async.
-		/// </summary>
-		/// <returns>The card view model async.</returns>
-		public Task PopCardViewModelAsync()
-		{
-			var tcs = new TaskCompletionSource<bool>();
-
-			var contentToPop = _contentStack.Pop();
-
-			// Animate
-			var animation = new XAnimation.XAnimation(new[] { contentToPop.View });
-			animation
-				.Translate(0, _contentsContainer.Height).Run(() =>
-				{
-					_contentsContainer.Children.Remove(contentToPop.View);
-					((contentToPop.View as RelativeLayout).Children.First() as IView).GetViewModel().ViewModelDismissed();
-					tcs.TrySetResult(true);
-				});
-
-			animation = new XAnimation.XAnimation(new VisualElement[] { contentToPop.Overlay });
-			animation.Opacity(0.0).Run(()=> _contentsContainer.Children.Remove(contentToPop.Overlay));
-
-			return tcs.Task;
-
-		}
 		#endregion
 
 		#endregion
