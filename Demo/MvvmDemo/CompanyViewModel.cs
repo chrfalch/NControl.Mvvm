@@ -2,6 +2,7 @@
 using NControl.Mvvm;
 using Xamarin.Forms;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace MvvmDemo
 {
@@ -35,19 +36,19 @@ namespace MvvmDemo
 			}
 		}
 
-		public Command<Company> SelectCompanyCommand
+		public ICommand SelectCompanyCommand
 		{
 			get {
-				return GetOrCreateCommand<Company> (async(company) => {
+				return GetOrCreateCommandAsync<Company> (async(company) => {
 					await MvvmApp.Current.Presenter.ShowViewModelAsync<EmployeeViewModel>(company);
 				});
 			}
 		}
 
-		public Command ShowAboutCommand
+		public ICommand ShowAboutCommand
 		{
 			get{
-				return GetOrCreateCommand (async () => {
+				return GetOrCreateCommandAsync (async _=> {
 
 					//await MvvmApp.Current.Presenter.ShowMessageAsync("Title", "Message");
 					//await MvvmApp.Current.Presenter.ShowActionSheet("Title", "Cancel", "Delete", "item 1", "item 2");
@@ -61,9 +62,9 @@ namespace MvvmDemo
 		/// Returns the SearchCommand command
 		/// </summary>
 		/// <value>The view SearchCommand command.</value>
-		public Command SearchCommand {
+		public ICommand SearchCommand {
 			get {
-				return GetOrCreateCommand (async() => {
+				return GetOrCreateCommandAsync (async _=> {
 					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<SearchViewModel>();           
 				});
 			}

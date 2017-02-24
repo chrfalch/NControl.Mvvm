@@ -24,17 +24,8 @@ namespace MvvmDemo
 		{
 			return new StackLayout {
 				Orientation = StackOrientation.Vertical,
+				Spacing = 0,
 				Children = {
-					new BoxView{
-						HeightRequest = 22,
-					},
-					new Label{
-						HeightRequest = 44,
-						HorizontalTextAlignment = TextAlignment.Center,
-						VerticalTextAlignment = TextAlignment.Center,
-						BackgroundColor = Color.Blue,
-						TextColor = Color.White,
-					}.BindTo(Label.TextProperty, NameOf(vm => vm.Title)),
 					new ListViewEx{
 						ItemsSource = ViewModel.Companies,
 						ItemSelectedCommand = ViewModel.SelectCompanyCommand,

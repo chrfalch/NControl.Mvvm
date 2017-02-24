@@ -17,6 +17,11 @@ namespace NControl.Mvvm
 		/// Called when the viewmodel was dismissed from the view hierarchy
 		/// </summary>
 		void ViewModelDismissed();
+
+		/// <summary>
+		/// Returns the viewmodel title
+		/// </summary>
+		string Title { get; }
 	}
 }
 

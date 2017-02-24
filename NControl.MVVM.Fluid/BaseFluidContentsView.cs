@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq.Expressions;
 using System.Windows.Input;
 using NControl.Mvvm;
@@ -7,14 +8,19 @@ using Xamarin.Forms;
 
 namespace NControl.Mvvm.Fluid
 {
-	public abstract class BaseFluidContentsView<TViewModel> : ContentView, IView<TViewModel>, IXAnimatable
+	public interface IToolbarItemsContainer: IView
+	{
+		IList<ToolbarItem> ToolbarItems { get; }
+	}
+
+	public abstract class BaseFluidContentsView<TViewModel> : ContentView, IView<TViewModel>, IToolbarItemsContainer, IXAnimatable
 		where TViewModel : BaseViewModel
 	{
 
 		#region Private Members
 
 		readonly RelativeLayout _layout;
-		readonly IList<ToolbarItem> _toolbarItems = new List<ToolbarItem>();
+		readonly ObservableCollectionWithAddRange<ToolbarItem> _toolbarItems = new ObservableCollectionWithAddRange<ToolbarItem>();
 		readonly ICommand _onAppearingCommand;
 		readonly ICommand _onDisappearingCommand;
 		readonly List<PropertyChangeListener> _propertyChangeListeners = new List<PropertyChangeListener>();
@@ -36,6 +42,8 @@ namespace NControl.Mvvm.Fluid
 			// OnAppearing/OnDisappearing
 			_onAppearingCommand = new AsyncCommand(async (obj) => await ViewModel.OnAppearingAsync());
 			_onDisappearingCommand = new AsyncCommand(async (obj) => await ViewModel.OnDisappearingAsync());
+
+			_toolbarItems.CollectionChanged += ToolbarItems_CollectionChanged;
 
 			Setup();
 		}
@@ -216,9 +224,9 @@ namespace NControl.Mvvm.Fluid
 			{
 				var animateContentsIn = new XAnimation.XAnimation(new[] { this });
 				animateContentsIn
-						.Translate(Width, 0)
-						.Set()
-						.Translate(0, 0);
+					.Translate(Width, 0)
+					.Set()
+					.Translate(0, 0);
 
 				var animatePreviousOut = new XAnimation.XAnimation(new[] { fromView });
 				animatePreviousOut
@@ -231,9 +239,9 @@ namespace NControl.Mvvm.Fluid
 			{
 				var animateContentsIn = new XAnimation.XAnimation(new[] { this });
 				animateContentsIn
-						.Translate(0, Height)
-						.Set()
-						.Translate(0, 0);
+					.Translate(0, Height)
+					.Set()
+					.Translate(0, 0);
 
 				var animatePreviousOut = new XAnimation.XAnimation(new[] { fromView });
 				animatePreviousOut
@@ -246,7 +254,7 @@ namespace NControl.Mvvm.Fluid
 			if (presentationMode == PresentationMode.Popup)
 			{
 				var animateContentsIn = new XAnimation.XAnimation(new[] { this });
-				animateContentsIn
+				animateContentsIn					
 					.Translate(0, Height)
 					.Set()
 					.Translate(0, 0);
@@ -293,6 +301,20 @@ namespace NControl.Mvvm.Fluid
 			}
 
 			return null;
+		}
+
+		#endregion
+
+		#region Toolbar Items
+
+		/// <summary>
+		/// Toolbar items collection changed.
+		/// </summary>
+		void ToolbarItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			if (e.Action != NotifyCollectionChangedAction.Add)
+				return;
+		
 		}
 
 		#endregion

@@ -26,7 +26,7 @@ namespace NControl.Mvvm
 	{
 		#region Private Members
 
-		Grid _contentsContainer;
+		FluidNavigationContainer _contentsContainer;
 		ContentPage _contentPage;
 		readonly Stack<NavigationElement> _contentStack = new Stack<NavigationElement>();
 
@@ -42,14 +42,14 @@ namespace NControl.Mvvm
 		{
 			// Create container page
 			_contentPage = new ContentPage();
-			_contentsContainer = new Grid { BackgroundColor = Color.Gray.MultiplyAlpha(0.7)};
+			_contentsContainer = new FluidNavigationContainer();
 			_contentPage.Content = _contentsContainer;
 			Application.Current.MainPage = _contentPage;
 
 			// instantiate view type
 			var mainViewType = (MvvmApp.Current as FluidMvvmApp).GetMainViewType();
 			var mainView = Container.Resolve(mainViewType) as ContentView;
-			_contentsContainer.Children.Add(mainView, 0, 0);
+			_contentsContainer.AddChild(mainView);
 			_contentStack.Push(new NavigationElement(mainView, null));
 			(mainView as IView).OnAppearing();
 		}
@@ -194,24 +194,24 @@ namespace NControl.Mvvm
 			if (presentationMode == PresentationMode.Default || presentationMode == PresentationMode.Modal)
 			{
 				// Add view itself
-				_contentsContainer.Children.Add(contents, 0, 0);
+				_contentsContainer.AddChild(contents);
 				_contentStack.Push(new NavigationElement(contents, dismissedCallback));
 			}
 			else
 			{
 				// Add overlay
 				overlay = new BoxView { BackgroundColor = Color.Gray.MultiplyAlpha(0.5) };
-				_contentsContainer.Children.Add(overlay);
+				_contentsContainer.AddChild(overlay);
 
 				// Add container
 				var container = new RelativeLayout();
 				var popupRect = new Rectangle(0, 0, _contentsContainer.Width * 0.85, _contentsContainer.Height * 0.65);
 
 				container.Children.Add(contents, () => new Rectangle(container.Width / 2 - popupRect.Width / 2,
-																  container.Height / 2 - popupRect.Height / 2,
-																  popupRect.Width, popupRect.Height));
+			  		container.Height / 2 - popupRect.Height / 2,
+					popupRect.Width, popupRect.Height));
 
-				_contentsContainer.Children.Add(container, 0, 0);
+				_contentsContainer.AddChild(container);
 				_contentStack.Push(new NavigationElement(container, dismissedCallback) { Overlay = overlay });
 
 				contents = container;
@@ -264,11 +264,11 @@ namespace NControl.Mvvm
 			// Function for removing when we're done.
 			Action removeAction = () => 
 			{
-				_contentsContainer.Children.Remove(contentToPop.View);
+				_contentsContainer.RemoveChild(contentToPop.View);
 				var viewModel = (viewToPop as IView).GetViewModel();
 
 				if (presentationMode == PresentationMode.Popup)
-					_contentsContainer.Children.Remove(contentToPop.Overlay);				
+					_contentsContainer.RemoveChild(contentToPop.Overlay);				
 				
 				viewModel.ViewModelDismissed();
 
