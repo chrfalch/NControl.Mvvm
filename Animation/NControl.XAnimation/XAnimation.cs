@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace NControl.XAnimation
@@ -171,6 +172,51 @@ namespace NControl.XAnimation
 			var animationInfo = _animationInfos.First();
 			_animationInfos.Remove(animationInfo);
 			RunAnimation(animationInfo, completed);
+		}
+
+		/// <summary>
+		/// Runs the animations async
+		/// </summary>
+		public Task RunAsync()
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			Run(() => tcs.TrySetResult(true));
+			return tcs.Task;
+		}
+
+		/// <summary>
+		/// Run multiple animations and return with completed action when all are done.
+		/// </summary>
+		public static void RunAll(IEnumerable<XAnimation> animations, Action completed = null)
+		{
+			if (animations == null || animations.Count() == 0)
+			{
+				if (completed != null)
+					completed();
+
+				return;
+			}
+
+			var counter = 0;
+			foreach (var animation in animations)
+			{
+				animation.Run(() =>
+				{
+					counter++;
+					if (counter == animations.Count() && completed != null)
+						completed();
+				});
+			}
+		}
+
+		/// <summary>
+		/// Run multiple animations async
+		/// </summary>
+		public static Task RunAllAsync(IEnumerable<XAnimation> animations)
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			RunAll(animations, () => tcs.TrySetResult(true));
+			return tcs.Task;
 		}
 
 		/// <summary>

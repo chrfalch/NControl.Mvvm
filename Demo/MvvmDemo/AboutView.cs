@@ -26,7 +26,9 @@ namespace MvvmDemo
 					new Button {Text="Call Command through message.", Command = ViewModel.ClickMeCommand },
 					new Button {Text="Run async command", Command = ViewModel.CountAsyncCommand },
 					new Label {HorizontalTextAlignment = TextAlignment.Center}.BindTo(Label.TextProperty, nameof(ViewModel.NumberValue), stringFormat:"Number Value: {0}"),
+					new Button {Text="Push new about", Command = ViewModel.PushNewAboutCommand },
 					new Button {Text="Close", Command = ViewModel.CloseCommand },
+
 				}						
 			};
 		}

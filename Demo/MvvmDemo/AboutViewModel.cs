@@ -54,6 +54,15 @@ namespace MvvmDemo
 				});
 			}
 		}
+
+		public ICommand PushNewAboutCommand
+		{
+			get
+			{
+				return GetOrCreateCommandAsync(async _=> 
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<AboutViewModel>());
+			}
+		}
 	}
 
 	public class MyMessage

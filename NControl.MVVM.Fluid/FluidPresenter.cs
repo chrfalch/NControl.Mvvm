@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Xamarin.Forms;
 using System.Linq;
-using NControl.XAnimation;
 using System.Reflection;
 using NControl.Mvvm.Fluid;
 
@@ -26,9 +25,9 @@ namespace NControl.Mvvm
 	{
 		#region Private Members
 
-		FluidNavigationContainer _contentsContainer;
+		Grid _contentsContainer;
 		ContentPage _contentPage;
-		readonly Stack<NavigationElement> _contentStack = new Stack<NavigationElement>();
+		readonly Stack<NavigationContext> _contextStack = new Stack<NavigationContext>();
 
 		#endregion
 
@@ -42,15 +41,24 @@ namespace NControl.Mvvm
 		{
 			// Create container page
 			_contentPage = new ContentPage();
-			_contentsContainer = new FluidNavigationContainer();
+			_contentsContainer = new Grid();
 			_contentPage.Content = _contentsContainer;
 			Application.Current.MainPage = _contentPage;
 
 			// instantiate view type
 			var mainViewType = (MvvmApp.Current as FluidMvvmApp).GetMainViewType();
 			var mainView = Container.Resolve(mainViewType) as ContentView;
-			_contentsContainer.AddChild(mainView);
-			_contentStack.Push(new NavigationElement(mainView, null));
+
+			// Create container
+			var container = new FluidNavigationContainer();
+			container.AddChild(mainView);
+
+			// Add to container
+			_contentsContainer.Children.Add(container, 0, 0);
+			_contextStack.Push(new NavigationContext(container, null));
+			_contextStack.Peek().NavigationStack.Push(mainView);
+
+			// Notify
 			(mainView as IView).OnAppearing();
 		}
 
@@ -182,65 +190,78 @@ namespace NControl.Mvvm
 			var tcs = new TaskCompletionSource<bool>();
 
 			// Start the actual presentation of the view
-			View contents = view as ContentView;
-			View overlay = null;
-
+			var contents = view as View;
 			if (contents == null)
-				throw new ArgumentException("View must inherit from ContentView.");
+				throw new ArgumentException("View must inherit from Xamarin.Forms.View.");
 
-			// Get previous/current view
-			var currentContent = _contentStack.Peek();
-
-			if (presentationMode == PresentationMode.Default || presentationMode == PresentationMode.Modal)
+			if (presentationMode == PresentationMode.Default)
 			{
-				// Add view itself
-				_contentsContainer.AddChild(contents);
-				_contentStack.Push(new NavigationElement(contents, dismissedCallback));
-			}
-			else
-			{
-				// Add overlay
-				overlay = new BoxView { BackgroundColor = Color.Gray.MultiplyAlpha(0.5) };
-				_contentsContainer.AddChild(overlay);
+				// Get previous/current view
+				var currentContext = _contextStack.Peek();
 
-				// Add container
-				var container = new RelativeLayout();
-				var popupRect = new Rectangle(0, 0, _contentsContainer.Width * 0.85, _contentsContainer.Height * 0.65);
+				// Add view 
+				currentContext.Container.AddChild(contents);
+				currentContext.NavigationStack.Push(contents);
 
-				container.Children.Add(contents, () => new Rectangle(container.Width / 2 - popupRect.Width / 2,
-			  		container.Height / 2 - popupRect.Height / 2,
-					popupRect.Width, popupRect.Height));
-
-				_contentsContainer.AddChild(container);
-				_contentStack.Push(new NavigationElement(container, dismissedCallback) { Overlay = overlay });
-
-				contents = container;
-			}
-
-			if (view is IXAnimatable)
-			{
-				if(overlay != null)
-					overlay.Opacity = 0.0;
-
-				var animations = (view as IXAnimatable).TransitionIn(currentContent.View, overlay, presentationMode);
-				if (animations != null)
+				if (currentContext.Container is IXAnimatable)
 				{
-					var animationFinishedCounter = 0;
-					foreach (var anim in animations)
-					{
-						anim.Run(() =>
-						{
-							animationFinishedCounter++;
-							if (animationFinishedCounter == animations.Count())
-								tcs.TrySetResult(true);
-						});
-					}
+					var animations = (currentContext.Container as IXAnimatable).TransitionIn(
+						contents, presentationMode);
+
+					XAnimation.XAnimation.RunAll(animations, () => tcs.TrySetResult(true));
 				}
+				else
+				{
+					// No animation, just return straight await
+					tcs.TrySetResult(true);
+				}
+
 			}
-			else
+			else if (presentationMode == PresentationMode.Modal || 
+			         presentationMode == PresentationMode.Popup)
 			{
-				// No animation, just return straight await
-				tcs.TrySetResult(true);
+				// Get previous/current view
+				var currentContext = _contextStack.Peek();
+
+				// Container and navigation context
+				View container = null;
+
+				if (presentationMode == PresentationMode.Modal)
+				{
+					container = new FluidNavigationContainer();
+				}
+				else
+				{
+					container = new FluidModalContainer { 
+						ContentSize = new Size(
+							_contentsContainer.Width * 0.8, _contentsContainer.Height * 0.7)
+					};
+				}
+
+				var navigationContainer = container as INavigationContainer;
+				if (navigationContainer == null)
+					throw new InvalidOperationException("Need a INavigationContainer when " +
+														"showing modal or as popup.");
+				
+				navigationContainer.AddChild(contents);
+
+				// Add to container
+				_contentsContainer.Children.Add(container, 0, 0);
+				_contextStack.Push(new NavigationContext(navigationContainer, dismissedCallback));
+				_contextStack.Peek().NavigationStack.Push(contents);
+
+				if (container is IXAnimatable)
+				{
+					var animations = (container as IXAnimatable).TransitionIn(
+						container, presentationMode);
+
+					XAnimation.XAnimation.RunAll(animations, () => tcs.TrySetResult(true));
+				}
+				else
+				{
+					// No animation, just return straight await
+					tcs.TrySetResult(true);
+				}
 			}
 
 			return tcs.Task;
@@ -254,53 +275,69 @@ namespace NControl.Mvvm
 		{
 			var tcs = new TaskCompletionSource<bool>();
 
-			var contentToPop = _contentStack.Pop();
-			var viewToPop = contentToPop.View;
-			if (presentationMode == PresentationMode.Popup)
-				viewToPop = (contentToPop.View as RelativeLayout).Children.First();
-			
-			var nextContent = _contentStack.Peek();
-
-			// Function for removing when we're done.
-			Action removeAction = () => 
+			if (presentationMode == PresentationMode.Default)
 			{
-				_contentsContainer.RemoveChild(contentToPop.View);
-				var viewModel = (viewToPop as IView).GetViewModel();
+				var currentContext = _contextStack.Peek();
+				var view = currentContext.NavigationStack.FirstOrDefault();
 
-				if (presentationMode == PresentationMode.Popup)
-					_contentsContainer.RemoveChild(contentToPop.Overlay);				
-				
-				viewModel.ViewModelDismissed();
-
-				if (contentToPop.DismissedAction != null)
-					contentToPop.DismissedAction(success);
-
-				tcs.TrySetResult(true);
-			};
-
-			if (viewToPop is IXAnimatable)
-			{
-				var animations = (viewToPop as IXAnimatable).TransitionOut(nextContent.View, contentToPop.Overlay, presentationMode);
-				if (animations != null)
+				// Set up action to run when all transitions and animations
+				// are done
+				Action removeAction = () =>
 				{
-					var animationFinishedCounter = 0;
-					foreach (var anim in animations)
-					{
-						anim.Run(() =>
-						{
-							animationFinishedCounter++;
-							if (animationFinishedCounter == animations.Count())
-								removeAction();
-						});
-					}
-				}
-			}
-			else
-			{
-				// Just remove
-				removeAction();
-			}
+					var viewModelProvider = view as IView;
+					if (viewModelProvider != null)
+						viewModelProvider.GetViewModel().ViewModelDismissed();
+					
+					currentContext.Container.RemoveChild(view);
+					currentContext.NavigationStack.Pop();
+					tcs.TrySetResult(true);
+				};
 
+				// Should we animate?
+				if (currentContext.Container is IXAnimatable)
+					XAnimation.XAnimation.RunAll(
+						(currentContext.Container as IXAnimatable).TransitionOut(
+						view, presentationMode), removeAction);				
+				else
+					removeAction();				
+			}
+			else if (presentationMode == PresentationMode.Modal ||
+			         presentationMode == PresentationMode.Popup)
+			{
+				// Get current context (modal)
+				var currentContext = _contextStack.Pop();
+
+				Action removeAction = () =>
+				{
+					// Call dismiss on all view models
+					foreach (var view in currentContext.NavigationStack.Reverse())
+					{
+						var viewModelProvider = view as IView;
+						if (viewModelProvider != null)
+							viewModelProvider.GetViewModel().ViewModelDismissed();
+					}
+
+					// Clear navigation stack
+					currentContext.NavigationStack.Clear();
+
+					// Remove from view stack
+					_contentsContainer.Children.Remove(currentContext.Container as View);
+
+					// Call dismissed action
+					if (currentContext.DismissedAction != null)
+						currentContext.DismissedAction(success);
+					
+					tcs.TrySetResult(true);
+				};
+
+				if (currentContext.Container is IXAnimatable)
+					XAnimation.XAnimation.RunAll(
+						(currentContext.Container as IXAnimatable).TransitionOut(
+							currentContext.Container as View, presentationMode), removeAction);
+				else
+					removeAction();
+			}
+					
 			return tcs.Task;
 		}
 
@@ -359,19 +396,19 @@ namespace NControl.Mvvm
 		#endregion
 	}
 
-	/// <summary>
-	/// Navigation Element Helper 
-	/// </summary>
-	internal class NavigationElement
+	public class NavigationContext
 	{
-		public NavigationElement(View view, Action<bool> dismissedAction)
+		public Stack<View> NavigationStack { get; private set; }
+		public Action<bool> DismissedAction { get; private set; }
+		public INavigationContainer Container { get; private set; }
+
+		public NavigationContext (INavigationContainer container, 
+		                         Action<bool> dismissedAction)
 		{
-			View = view;
+			Container = container;
+			NavigationStack = new Stack<View>();
 			DismissedAction = dismissedAction;
 		}
-		public View View { get; private set; }
-		public View Overlay { get; set; }
-		public Action<bool> DismissedAction { get; private set; }
 	}
 }
 

@@ -11,9 +11,8 @@ namespace NControl.Mvvm.Fluid
 		}
 
 		/// <summary>
-		/// Override to provide information about main view
+		/// Implement to provide type information about main view
 		/// </summary>
-		/// <returns>The main view type.</returns>
 		public abstract Type GetMainViewType();
 
 		/// <summary>

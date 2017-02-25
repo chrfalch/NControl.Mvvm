@@ -34,7 +34,9 @@
     <Compile Include="BaseFluidContentsView.cs" />
     <Compile Include="IXAnimatable.cs" />
     <Compile Include="Controls\FluidNavigationBar.cs" />
-    <Compile Include="FluidNavigationContainer.cs" />
+    <Compile Include="INavigationContainer.cs" />
+    <Compile Include="Controls\FluidModalContainer.cs" />
+    <Compile Include="Controls\FluidNavigationContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">
