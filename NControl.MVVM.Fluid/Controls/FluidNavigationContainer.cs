@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace NControl.Mvvm.Fluid
@@ -27,8 +28,13 @@ namespace NControl.Mvvm.Fluid
 			var statusbarHeight = 22;
 			var navigationBarHeight = 44;
 
-			_navigationBar = new FluidNavigationBar()
-				.BindTo(FluidNavigationBar.TitleProperty, nameof(IViewModel.Title));
+			_navigationBar = new FluidNavigationBar { BindingContext = this, }
+				.BindTo(FluidNavigationBar.TitleProperty, nameof(Title))
+				.BindTo(FluidNavigationBar.BackButtonVisibleProperty, nameof(BackButtonVisible));
+
+			// Back button command
+			_navigationBar.BackButtonCommand = new AsyncCommand(async _=> 
+				await MvvmApp.Current.Presenter.DismissViewModelAsync(GetViewModel().PresentationMode));
 			
 			_container = new Grid();
 
@@ -38,7 +44,29 @@ namespace NControl.Mvvm.Fluid
 			_layout.Children.Add(_container, () => new Rectangle(
 				0, statusbarHeight + navigationBarHeight, _layout.Width,
 				_layout.Height - (statusbarHeight + navigationBarHeight)));
+
+			this.BindTo(TitleProperty, nameof(IViewModel.Title));
 		}
+
+		#region Properties
+
+		/// <summary>
+		/// The title property.
+		/// </summary>
+		public static BindableProperty TitleProperty = BindableProperty.Create(
+			nameof(Title), typeof(string), typeof(FluidNavigationContainer), 
+			null, BindingMode.OneWay);
+
+		/// <summary>
+		/// Gets or sets the title.
+		/// </summary>
+		/// <value>The title.</value>
+		public string Title
+		{
+			get { return (string)GetValue(TitleProperty); }
+			set { SetValue(TitleProperty, value); }
+		}
+		#endregion
 
 		#region INavigationContainer
 
@@ -49,6 +77,8 @@ namespace NControl.Mvvm.Fluid
 		{			
 			_container.Children.Add(view);
 			BindingContext = GetViewModel();
+
+			OnPropertyChanged(nameof(BackButtonVisible));
 		}
 
 		/// <summary>
@@ -56,6 +86,8 @@ namespace NControl.Mvvm.Fluid
 		/// </summary>
 		public void RemoveChild(View view)
 		{
+			OnPropertyChanged(nameof(BackButtonVisible));
+
 			if (!_container.Children.Contains(view))
 				throw new ArgumentException("View not part of child collection.");
 
@@ -67,7 +99,12 @@ namespace NControl.Mvvm.Fluid
 		/// <summary>
 		/// Returns number of children in container
 		/// </summary>
-		public int Count { get { return _container.Children.Count; } }
+		public int Count { get { return _container == null ? 0 : _container.Children.Count; } }
+
+		/// <summary>
+		/// Returns true if backbutton should be visible
+		/// </summary>
+		public bool BackButtonVisible { get { return Count > 1; } }
 
 		#endregion
 
@@ -150,16 +187,6 @@ namespace NControl.Mvvm.Fluid
 					new XAnimation.XAnimation(new[] { view }).Translate(0, Height),				
 				};
 			}
-
-			//if (presentationMode == PresentationMode.Popup)
-			//{
-			//	// Animate
-			//	return new[]
-			//	{
-			//		new XAnimation.XAnimation(new[] { this }).Translate(0, Height),
-			//		new XAnimation.XAnimation(new[] { overlay }).Opacity(0.0)
-			//	};
-			//}
 
 			return null;
 		}

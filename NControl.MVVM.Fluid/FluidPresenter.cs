@@ -99,7 +99,7 @@ namespace NControl.Mvvm
 		/// <param name="success">If set to <c>true</c> success.</param>
 		public Task DismissViewModelAsync(PresentationMode presentationMode, bool success)
 		{
-			return PopViewModelAsync(presentationMode, success);
+			return PopViewModelAsync(presentationMode, success, true);
 		}
 
 		#endregion
@@ -179,13 +179,14 @@ namespace NControl.Mvvm
 				}
 			}
 
-			return ShowViewModelAsync(view, dismissedCallback, presentationMode);
+			return ShowViewModelAsync(view, dismissedCallback, presentationMode, animate);
 		}
 
 		/// <summary>
 		/// Internal show viewmodel method
 		/// </summary>
-		Task ShowViewModelAsync(IView view, Action<bool> dismissedCallback, PresentationMode presentationMode)
+		Task ShowViewModelAsync(IView view, Action<bool> dismissedCallback, 
+		                        PresentationMode presentationMode, bool animate)
 		{
 			var tcs = new TaskCompletionSource<bool>();
 
@@ -203,7 +204,7 @@ namespace NControl.Mvvm
 				currentContext.Container.AddChild(contents);
 				currentContext.NavigationStack.Push(contents);
 
-				if (currentContext.Container is IXAnimatable)
+				if (animate && currentContext.Container is IXAnimatable)
 				{
 					var animations = (currentContext.Container as IXAnimatable).TransitionIn(
 						contents, presentationMode);
@@ -220,9 +221,6 @@ namespace NControl.Mvvm
 			else if (presentationMode == PresentationMode.Modal || 
 			         presentationMode == PresentationMode.Popup)
 			{
-				// Get previous/current view
-				var currentContext = _contextStack.Peek();
-
 				// Container and navigation context
 				View container = null;
 
@@ -250,7 +248,7 @@ namespace NControl.Mvvm
 				_contextStack.Push(new NavigationContext(navigationContainer, dismissedCallback));
 				_contextStack.Peek().NavigationStack.Push(contents);
 
-				if (container is IXAnimatable)
+				if (animate && container is IXAnimatable)
 				{
 					var animations = (container as IXAnimatable).TransitionIn(
 						container, presentationMode);
@@ -271,7 +269,7 @@ namespace NControl.Mvvm
 		/// Pops the view model async.
 		/// </summary>
 		/// <returns>The view model async.</returns>
-		Task PopViewModelAsync(PresentationMode presentationMode, bool success)
+		Task PopViewModelAsync(PresentationMode presentationMode, bool success, bool animate)
 		{
 			var tcs = new TaskCompletionSource<bool>();
 
@@ -294,7 +292,7 @@ namespace NControl.Mvvm
 				};
 
 				// Should we animate?
-				if (currentContext.Container is IXAnimatable)
+				if (animate && currentContext.Container is IXAnimatable)
 					XAnimation.XAnimation.RunAll(
 						(currentContext.Container as IXAnimatable).TransitionOut(
 						view, presentationMode), removeAction);				
@@ -330,7 +328,7 @@ namespace NControl.Mvvm
 					tcs.TrySetResult(true);
 				};
 
-				if (currentContext.Container is IXAnimatable)
+				if (animate && currentContext.Container is IXAnimatable)
 					XAnimation.XAnimation.RunAll(
 						(currentContext.Container as IXAnimatable).TransitionOut(
 							currentContext.Container as View, presentationMode), removeAction);

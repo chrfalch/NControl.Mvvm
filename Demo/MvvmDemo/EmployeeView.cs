@@ -17,14 +17,6 @@ namespace MvvmDemo
 				Orientation = StackOrientation.Vertical,
 				Spacing = 8,
 				Children = {
-					new Button {
-						HorizontalOptions = LayoutOptions.FillAndExpand,
-						BackgroundColor = Color.Accent,
-						HeightRequest = 44,
-						TextColor = Color.White,
-						Text = "Back",
-						Command = ViewModel.CloseCommand,
-					},
 					new ListViewEx{
 						ItemsSource = ViewModel.Employees,
 						ItemSelectedCommand = ViewModel.SelectEmployeeCommand,

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Xamarin.Forms;
+using NControl.Controls;
+using System.Windows.Input;
 
 namespace NControl.Mvvm.Fluid
 {
@@ -10,9 +12,12 @@ namespace NControl.Mvvm.Fluid
 		readonly Grid _contentGrid;
 		readonly StackLayout _leftViewContainer;
 		readonly StackLayout _rightViewContainer;
+		readonly FontMaterialDesignLabel _backButton;
 
 		public FluidNavigationBar()
 		{
+			BackgroundColor = Color.White;
+
 			_leftViewContainer = new StackLayout { 
 				Orientation = StackOrientation.Horizontal,
 				Spacing = 4,
@@ -34,10 +39,11 @@ namespace NControl.Mvvm.Fluid
 			_contentGrid.Children.Add(new Label
 			{
 				HeightRequest = 44,
+				InputTransparent = true,
 				BindingContext = this,
 				HorizontalTextAlignment = TextAlignment.Center,
 				VerticalTextAlignment = TextAlignment.Center,
-				BackgroundColor = Color.White,
+
 			}.BindTo(Label.TextProperty, nameof(Title)));
 
 			Children.Add(_contentGrid);
@@ -46,6 +52,24 @@ namespace NControl.Mvvm.Fluid
 				HeightRequest = 0.5,
 				BackgroundColor = Color.Gray,
 			});
+
+			_backButton = new FontMaterialDesignLabel
+			{
+				Text = FontMaterialDesignLabel.MDArrowLeft,
+				Opacity = BackButtonVisible ? 1.0 : 0.0,
+				TextColor = Color.Accent,
+				BindingContext = this,
+				WidthRequest = 44,
+				HorizontalTextAlignment = TextAlignment.Start,
+
+			}//.BindTo(IsVisibleProperty, nameof(BackButtonVisible))
+			 .AddBehaviorTo(new BounceAndClickBehavior(new Command(_ =>
+			 {
+				 if (BackButtonCommand != null && BackButtonCommand.CanExecute(null))
+					 BackButtonCommand.Execute(null);
+			 })));
+
+			_leftViewContainer.Children.Add(_backButton);
 		}
 
 		#region Properties
@@ -65,6 +89,52 @@ namespace NControl.Mvvm.Fluid
 		{
 			get { return (string)GetValue(TitleProperty); }
 			set { SetValue(TitleProperty, value); }
+		}
+
+		public static BindableProperty BackButtonCommandProperty = BindableProperty.Create(
+			nameof(BackButtonCommand), typeof(ICommand), typeof(FluidNavigationBar), null,
+			BindingMode.OneWay);
+
+		/// <summary>
+		/// Gets or sets the backbutton command.
+		/// </summary>
+		/// <value>The title.</value>
+		public ICommand BackButtonCommand
+		{
+			get { return (ICommand)GetValue(BackButtonCommandProperty); }
+			set { SetValue(BackButtonCommandProperty, value); }
+		}
+
+		/// <summary>
+		/// The title property.
+		/// </summary>
+		public static BindableProperty BackButtonVisibleProperty = BindableProperty.Create(
+			nameof(BackButtonVisible), typeof(bool), typeof(FluidNavigationBar),
+			false, BindingMode.OneWay, null, (bindable, oldValue, newValue) => {
+			var ctrl = bindable as FluidNavigationBar;
+
+			if (newValue != oldValue)
+			{
+				if((bool)newValue)
+					new XAnimation.XAnimation(ctrl._backButton)
+					  .Opacity(1.0)
+		              .Animate()
+		              .Run();
+				else
+					new XAnimation.XAnimation(ctrl._backButton)
+					  .Opacity(0.0)
+					  .Animate()
+		              .Run();
+			}
+		});
+
+		/// <summary>
+		/// Gets or sets if the back button is visible
+		/// </summary>
+		public bool BackButtonVisible
+		{
+			get { return (bool)GetValue(BackButtonVisibleProperty); }
+			set { SetValue(BackButtonVisibleProperty, value); }
 		}
 
 		/// <summary>
@@ -91,6 +161,7 @@ namespace NControl.Mvvm.Fluid
 			get { return (IList<ToolbarItem>)GetValue(ToolbarItemsProperty); }
 			set { SetValue(ToolbarItemsProperty, value); }
 		}
+
 		#endregion
 
 		#region Events
