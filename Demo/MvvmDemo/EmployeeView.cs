@@ -29,7 +29,7 @@ namespace MvvmDemo
 							.BindTo(TextCell.TextProperty, NameOf<Employee>(e => e.Name))
 					},
 					
-					new Button{
+					new ExtendedButton{
 						Text = "Open Da Thing",
 						Command = ViewModel.ShowAboutCommand,
 					}

@@ -24,7 +24,7 @@ namespace MvvmDemo
 						Children = {
 							new Label{TextColor =Color.Blue}.BindTo(Label.TextProperty, NameOf(mn => mn.Employee.Id)),
 							new Label{TextColor =Color.Blue}.BindTo(Label.TextProperty, NameOf(mn => mn.Employee.Name)),
-							new Button {
+							new ExtendedButton {
 								Text = "Close",
 							}.BindTo(Button.CommandProperty, NameOf(vm => vm.CloseCommand)),
 						}

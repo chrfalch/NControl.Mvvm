@@ -34,7 +34,7 @@ namespace MvvmDemo
 							.BindTo(TextCell.TextProperty, NameOf<Company>(cw => cw.Name)),						
 					},
 
-					new Button{
+					new ExtendedButton{
 						Text = "Open Da Thing",
 						Command = ViewModel.ShowAboutCommand,
 					}

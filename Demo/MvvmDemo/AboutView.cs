@@ -24,11 +24,11 @@ namespace MvvmDemo
 				Spacing = 8,
 				Children = {
 					new Label{Text = "Demo Application for NControl.Mvvm" },
-					new Button {Text="Call Command through message.", Command = ViewModel.ClickMeCommand },
-					new Button {Text="Run async command", Command = ViewModel.CountAsyncCommand },
+					new ExtendedButton {Text="Call Command through message.", Command = ViewModel.ClickMeCommand },
+					new ExtendedButton {Text="Run async command", Command = ViewModel.CountAsyncCommand },
 					new Label {HorizontalTextAlignment = TextAlignment.Center}.BindTo(Label.TextProperty, nameof(ViewModel.NumberValue), stringFormat:"Number Value: {0}"),
-					new Button {Text="Push new about", Command = ViewModel.PushNewAboutCommand },
-					new Button {Text="Close", Command = ViewModel.CloseCommand },
+					new ExtendedButton {Text="Push new about", Command = ViewModel.PushNewAboutCommand },
+					new ExtendedButton {Text="Close", Command = ViewModel.CloseCommand },
 
 				}						
 			};
