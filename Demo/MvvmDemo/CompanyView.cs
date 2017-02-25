@@ -1,4 +1,5 @@
 ﻿using System;
+using NControl.Controls;
 using NControl.Mvvm;
 using NControl.Mvvm.Fluid;
 using Xamarin.Forms;
@@ -9,13 +10,13 @@ namespace MvvmDemo
 	{
 		public CompanyView ()
 		{
-			ToolbarItems.Add (new ToolbarItem {
-				Text = "About",
+			ToolbarItems.Add (new ToolbarItemEx {
+				MaterialDesignIcon = FontMaterialDesignLabel.MDInformationOutline,
 				Command = ViewModel.ShowAboutCommand,
 			});
 
-			ToolbarItems.Add (new ToolbarItem {
-				Text = "Search",
+			ToolbarItems.Add (new ToolbarItemEx {
+				MaterialDesignIcon = FontMaterialDesignLabel.MDMagnify,
 				Command = ViewModel.SearchCommand,
 			});
 		}

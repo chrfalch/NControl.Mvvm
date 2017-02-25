@@ -103,12 +103,12 @@ namespace NControl.Mvvm.Fluid
 
 		#region Navigation Container
 
-		public void AddChild(View view)
+		public void AddChild(View view, PresentationMode presentationMode)
 		{
 			_container.Children.Add(view);
 		}
 
-		public void RemoveChild(View view)
+		public void RemoveChild(View view, PresentationMode presentationMode)
 		{
 			_container.Children.Remove(view);
 		}

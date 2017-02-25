@@ -8,10 +8,18 @@ namespace NControl.Mvvm
 	public class BounceAndClickBehavior: Behavior<View>
 	{
 		readonly ICommand _clickCommand;
+		readonly object _clickCommandParameter;
+		readonly Func<ICommand> _commandFunc;
 
 		public BounceAndClickBehavior(ICommand clickCommand)
 		{
 			_clickCommand = clickCommand;
+		}
+
+		public BounceAndClickBehavior(ICommand clickCommand, object clickCommandParameter)
+		{
+			_clickCommand = clickCommand;
+			_clickCommandParameter = clickCommandParameter;
 		}
 
 		protected override void OnAttachedTo(View bindable)
@@ -23,7 +31,7 @@ namespace NControl.Mvvm
 			{
 				Command = new AsyncCommand(async (obj) => {
 
-					if (_clickCommand != null && _clickCommand.CanExecute(null))
+					if (_clickCommand != null && _clickCommand.CanExecute(_clickCommandParameter))
 					{
 						var animation = new XAnimation.XAnimation(new[] { bindable });
 						animation
@@ -34,7 +42,7 @@ namespace NControl.Mvvm
 							.Scale(1.0)
 							.Animate();
 
-						_clickCommand.Execute(null);
+						_clickCommand.Execute(_clickCommandParameter);
 						await animation.RunAsync();
 					}
 				})

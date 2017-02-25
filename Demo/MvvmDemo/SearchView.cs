@@ -1,4 +1,5 @@
 ﻿using System;
+using NControl.Controls;
 using NControl.Mvvm;
 using NControl.Mvvm.Fluid;
 using Xamarin.Forms;
@@ -9,8 +10,8 @@ namespace MvvmDemo
 	{
 		public SearchView ()
 		{
-			ToolbarItems.Add (new ToolbarItem {
-				Text = "Close",
+			ToolbarItems.Add (new ToolbarItemEx {
+				MaterialDesignIcon = FontMaterialDesignLabel.MDClose,
 				Command = ViewModel.CloseCommand,
 			});
 		}

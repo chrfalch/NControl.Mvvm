@@ -1,4 +1,5 @@
 ﻿using System;
+using NControl.Controls;
 using NControl.Mvvm;
 using NControl.Mvvm.Fluid;
 using Xamarin.Forms;
@@ -9,6 +10,10 @@ namespace MvvmDemo
 	{
 		public EmployeeView ()
 		{
+			ToolbarItems.Add(new ToolbarItemEx
+			{
+				MaterialDesignIcon = FontMaterialDesignLabel.MDPlus,
+			});
 		}
 
 		protected override View CreateContents ()
@@ -23,6 +28,11 @@ namespace MvvmDemo
 						ItemTemplate = new DataTemplate(typeof(TextCell))
 							.BindTo(TextCell.TextProperty, NameOf<Employee>(e => e.Name))
 					},
+					
+					new Button{
+						Text = "Open Da Thing",
+						Command = ViewModel.ShowAboutCommand,
+					}
 				}
 			};
 		}

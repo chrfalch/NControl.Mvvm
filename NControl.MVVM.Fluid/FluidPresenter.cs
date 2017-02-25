@@ -51,7 +51,7 @@ namespace NControl.Mvvm
 
 			// Create container
 			var container = new FluidNavigationContainer();
-			container.AddChild(mainView);
+			container.AddChild(mainView, PresentationMode.Default);
 
 			// Add to container
 			_contentsContainer.Children.Add(container, 0, 0);
@@ -209,7 +209,7 @@ namespace NControl.Mvvm
 				var currentContext = _contextStack.Peek();
 
 				// Add view 
-				currentContext.Container.AddChild(contents);
+				currentContext.Container.AddChild(contents, presentationMode);
 				currentContext.NavigationStack.Push(contents);
 
 				if (animate && currentContext.Container is IXAnimatable)
@@ -249,7 +249,7 @@ namespace NControl.Mvvm
 					throw new InvalidOperationException("Need a INavigationContainer when " +
 														"showing modal or as popup.");
 				
-				navigationContainer.AddChild(contents);
+				navigationContainer.AddChild(contents, presentationMode);
 
 				// Add to container
 				_contentsContainer.Children.Add(container, 0, 0);
@@ -294,7 +294,7 @@ namespace NControl.Mvvm
 					if (viewModelProvider != null)
 						viewModelProvider.GetViewModel().ViewModelDismissed();
 					
-					currentContext.Container.RemoveChild(view);
+					currentContext.Container.RemoveChild(view, presentationMode);
 					currentContext.NavigationStack.Pop();
 					tcs.TrySetResult(true);
 				};

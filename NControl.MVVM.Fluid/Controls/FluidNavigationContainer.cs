@@ -38,9 +38,11 @@ namespace NControl.Mvvm.Fluid
 			var statusbarHeight = Device.OnPlatform(22, 0, 22);
 			var navigationBarHeight = 44;
 
-			_navigationBar = new FluidNavigationBar { BindingContext = this, }
-				.BindTo(FluidNavigationBar.TitleProperty, nameof(Title))
-				.BindTo(FluidNavigationBar.BackButtonVisibleProperty, nameof(BackButtonVisible));
+			_navigationBar = new FluidNavigationBar { 
+				BindingContext = this, 
+			}
+			.BindTo(FluidNavigationBar.TitleProperty, nameof(Title))
+			.BindTo(FluidNavigationBar.BackButtonVisibleProperty, nameof(BackButtonVisible));
 
 			// Back button command
 			_navigationBar.BackButtonCommand = new AsyncCommand(async _ =>
@@ -126,18 +128,30 @@ namespace NControl.Mvvm.Fluid
 		/// <summary>
 		/// Add a new child to the container
 		/// </summary>
-		public void AddChild(View view)
+		public void AddChild(View view, PresentationMode presentationMode)
 		{
 			_container.Children.Add(view);
-			BindingContext = GetViewModel();
 
-			OnPropertyChanged(nameof(BackButtonVisible));
+			BindingContext = GetViewModel();
+			UpdateToolbarItems(view);
+			OnPropertyChanged(nameof(BackButtonVisible));		
+		}
+
+		/// <summary>
+		/// Helper
+		/// </summary>
+		public override string ToString()
+		{
+			if (_container == null)
+				return "Empty";
+
+			return string.Join(", ", _container.Children.Select(v => v.GetType().Name));
 		}
 
 		/// <summary>
 		/// Remove a view from the container
 		/// </summary>
-		public void RemoveChild(View view)
+		public void RemoveChild(View view, PresentationMode presentationMode)
 		{			
 			if (!_container.Children.Contains(view))
 				throw new ArgumentException("View not part of child collection.");
@@ -145,8 +159,8 @@ namespace NControl.Mvvm.Fluid
 			_container.Children.Remove(view);
 
 			BindingContext = GetViewModel();
-
-			OnPropertyChanged(nameof(BackButtonVisible));
+			UpdateToolbarItems(_container.Children.LastOrDefault());
+			OnPropertyChanged(nameof(BackButtonVisible));		
 		}
 
 		/// <summary>
@@ -293,6 +307,14 @@ namespace NControl.Mvvm.Fluid
 					.Translate(fromViewTranslationX, 0)
 					.Animate()
 					.Run();
+		}
+
+		void UpdateToolbarItems(View view)
+		{
+			_navigationBar.ToolbarItems.Clear();
+			var toolbarItemsProvider = view as IToolbarItemsContainer;
+			if (toolbarItemsProvider != null)
+				_navigationBar.ToolbarItems.AddRange(toolbarItemsProvider.ToolbarItems);
 		}
 
 		#endregion

@@ -40,6 +40,7 @@
     <Compile Include="Behaviors\BounceAndClickBehavior.cs" />
     <Compile Include="Behaviors\BounceBehavior.cs" />
     <Compile Include="Behaviors\ClickBehavior.cs" />
+    <Compile Include="Controls\FluidToolbarControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">

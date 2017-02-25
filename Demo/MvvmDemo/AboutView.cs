@@ -1,5 +1,6 @@
 ﻿using System;
 using NControl.Mvvm;
+using NControl.Controls;
 using NControl.Mvvm.Fluid;
 using Xamarin.Forms;
 
@@ -9,8 +10,8 @@ namespace MvvmDemo
 	{
 		public AboutView ()
 		{
-			ToolbarItems.Add (new ToolbarItem {
-				Text = "Close",
+			ToolbarItems.Add (new ToolbarItemEx {
+				MaterialDesignIcon = FontMaterialDesignLabel.MDClose,
 				Command = ViewModel.CloseCommand,
 			});
 		}

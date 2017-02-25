@@ -5,8 +5,8 @@ namespace NControl.Mvvm.Fluid
 {
 	public interface INavigationContainer
 	{
-		void AddChild(View view);
-		void RemoveChild(View view);
+		void AddChild(View view, PresentationMode presentationMode);
+		void RemoveChild(View view, PresentationMode presentationMode);
 		int Count { get; }
 	}
 }

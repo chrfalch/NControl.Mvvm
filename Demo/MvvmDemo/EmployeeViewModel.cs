@@ -4,6 +4,7 @@ using Xamarin.Forms;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
 
 namespace MvvmDemo
 {
@@ -23,25 +24,40 @@ namespace MvvmDemo
 
 		public ObservableCollectionWithAddRange<Employee> Employees {
 			get{
-				return GetValue<ObservableCollectionWithAddRange<Employee>>(()=>
+				return GetValue(()=>
 					new ObservableCollectionWithAddRange<Employee> ());
 			}
 		}
 
-		public Command<Employee> SelectEmployeeCommand
+		public ICommand SelectEmployeeCommand
 		{
 			get {
-				return GetOrCreateCommand<Employee> (async(employee) => {
+				return GetOrCreateCommandAsync<Employee> (async (employee) => {
 					await MvvmApp.Current.Presenter.ShowViewModelAsPopupAsync<EmployeeDetailsViewModel>(
 						employee);
 				});
 			}
 		}
 
-		public Command ShowModalCommand
+		public ICommand ShowAboutCommand
+		{
+			get
+			{
+				return GetOrCreateCommandAsync(async _ =>
+				{
+
+					//await MvvmApp.Current.Presenter.ShowMessageAsync("Title", "Message");
+					//await MvvmApp.Current.Presenter.ShowActionSheet("Title", "Cancel", "Delete", "item 1", "item 2");
+					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<AboutViewModel>();
+
+				});
+			}
+		}
+
+		public ICommand ShowModalCommand
 		{
 			get {
-				return GetOrCreateCommand (async() => {
+				return GetOrCreateCommandAsync (async _=> {
 					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<AboutViewModel>();
 				});
 			}

@@ -14,12 +14,16 @@ namespace NControl.Mvvm.Fluid
 		readonly StackLayout _rightViewContainer;
 		readonly ContentView _titleContentView;
 		readonly FontMaterialDesignLabel _backButton;
+		readonly ObservableCollectionWithAddRange<ToolbarItem> _toolbarItems =
+			new ObservableCollectionWithAddRange<ToolbarItem>();
 
 		public FluidNavigationBar()
 		{
-			BackgroundColor = Color.White;
+			BackgroundColor = Color.Accent;
 			Spacing = 0;
 			Padding = 0;
+
+			_toolbarItems.CollectionChanged += HandleToolbarItemsCollectionChanged;
 
 			_leftViewContainer = new StackLayout { 
 				Orientation = StackOrientation.Horizontal,
@@ -49,6 +53,7 @@ namespace NControl.Mvvm.Fluid
 					TextColor = Color.Accent,
 
 				}.BindTo(Label.TextProperty, nameof(Title))
+				 .BindTo(Label.TextColorProperty, nameof(TintColor))
 			};
 
 			_contentGrid.Children.Add(_titleContentView);
@@ -66,22 +71,33 @@ namespace NControl.Mvvm.Fluid
 			{
 				Text = FontMaterialDesignLabel.MDArrowLeft,
 				Opacity = BackButtonVisible ? 1.0 : 0.0,
-				TextColor = Color.Accent,
 				BindingContext = this,
-				WidthRequest = 44,
 				HorizontalTextAlignment = TextAlignment.Start,
 
-			}//.BindTo(IsVisibleProperty, nameof(BackButtonVisible))
+			}.BindTo(Label.TextColorProperty, nameof(TintColor))
 			 .AddBehaviorTo(new BounceAndClickBehavior(new Command(_ =>
 			 {
 				 if (BackButtonCommand != null && BackButtonCommand.CanExecute(null))
 					 BackButtonCommand.Execute(null);
 			 })));
 
-			_leftViewContainer.Children.Add(_backButton);
+			_leftViewContainer.Children.Add(new FluidToolbarControl(_backButton));
 		}
 
 		#region Properties
+
+		public static BindableProperty TintColorProperty = BindableProperty.Create(
+			nameof(TintColor), typeof(Color), typeof(FluidNavigationBar), 
+			Color.White, BindingMode.OneWay);
+
+		/// <summary>
+		/// Gets or sets the tint color.
+		/// </summary>
+		public Color TintColor
+		{
+			get { return (Color)GetValue(TintColorProperty); }
+			set { SetValue(TintColorProperty, value); }
+		}
 
 		/// <summary>
 		/// The title property.
@@ -147,28 +163,11 @@ namespace NControl.Mvvm.Fluid
 		}
 
 		/// <summary>
-		/// The ToolbarItems property.
-		/// </summary>
-		public static BindableProperty ToolbarItemsProperty =
-			BindableProperty.Create(nameof(ToolbarItems), typeof(IList<ToolbarItem>), typeof(FluidNavigationBar), null,
-				BindingMode.OneWay, null, propertyChanged: (bindable, oldValue, newValue) =>
-				{
-					var ctrl = (FluidNavigationBar)bindable;
-
-					if (oldValue != null && oldValue is INotifyCollectionChanged)
-						(oldValue as INotifyCollectionChanged).CollectionChanged -= ctrl.HandleToolbarItemsCollectionChanged;
-
-					if (newValue != null && newValue is INotifyCollectionChanged)
-						(newValue as INotifyCollectionChanged).CollectionChanged += ctrl.HandleToolbarItemsCollectionChanged;
-				});
-
-		/// <summary>
 		/// Gets or sets the ToolbarItems of the FluidNavigationBar instance.
 		/// </summary>
-		public IList<ToolbarItem> ToolbarItems
+		public ObservableCollectionWithAddRange<ToolbarItem> ToolbarItems
 		{
-			get { return (IList<ToolbarItem>)GetValue(ToolbarItemsProperty); }
-			set { SetValue(ToolbarItemsProperty, value); }
+			get { return _toolbarItems; }
 		}
 
 		#endregion
@@ -181,11 +180,55 @@ namespace NControl.Mvvm.Fluid
 		void HandleToolbarItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			_rightViewContainer.Children.Clear();
-			foreach (var item in (Parent as IToolbarItemsContainer).ToolbarItems)
+			if (ToolbarItems == null)
+				return;
+			
+			foreach (var item in ToolbarItems)
 			{
+				FluidToolbarControl toolbarControl = null;
+
 				if (item is ToolbarItemEx)
 				{
 					// Handle custom toolbar item
+					if (((ToolbarItemEx)item).View != null)
+						toolbarControl = new FluidToolbarControl(((ToolbarItemEx)item).View);
+					else if (!string.IsNullOrEmpty(((ToolbarItemEx)item).FontAwesomeIcon))
+						toolbarControl = new FluidToolbarControl(new FontAwesomeLabel
+						{
+							Text = ((ToolbarItemEx)item).FontAwesomeIcon,
+							TextColor = TintColor,
+						});
+
+					else if (!string.IsNullOrEmpty(((ToolbarItemEx)item).MaterialDesignIcon))
+						toolbarControl = new FluidToolbarControl(new FontMaterialDesignLabel
+						{
+							Text = ((ToolbarItemEx)item).MaterialDesignIcon,
+							TextColor = TintColor,
+						});
+				}
+				else
+				{
+					// Icon
+					if (!string.IsNullOrEmpty(item.Icon))
+						toolbarControl = new FluidToolbarControl(new Image
+						{
+							Source = item.Icon,
+						});
+
+					// Text
+					else
+						toolbarControl = new FluidToolbarControl(new Label {
+							Text = item.Text,
+							TextColor = TintColor,
+						});
+				}
+
+				if (toolbarControl != null)
+				{
+					toolbarControl.AddBehaviorTo(new BounceAndClickBehavior(
+						item.Command, item.CommandParameter));
+					
+					_rightViewContainer.Children.Add(toolbarControl);
 				}
 			}
 		}
