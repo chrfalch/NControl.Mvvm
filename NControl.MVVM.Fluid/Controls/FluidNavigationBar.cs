@@ -12,11 +12,14 @@ namespace NControl.Mvvm.Fluid
 		readonly Grid _contentGrid;
 		readonly StackLayout _leftViewContainer;
 		readonly StackLayout _rightViewContainer;
+		readonly ContentView _titleContentView;
 		readonly FontMaterialDesignLabel _backButton;
 
 		public FluidNavigationBar()
 		{
 			BackgroundColor = Color.White;
+			Spacing = 0;
+			Padding = 0;
 
 			_leftViewContainer = new StackLayout { 
 				Orientation = StackOrientation.Horizontal,
@@ -34,17 +37,23 @@ namespace NControl.Mvvm.Fluid
 			};
 
 			_contentGrid = new Grid();
+			_titleContentView = new ContentView
+			{
+				Content = new Label
+				{
+					HeightRequest = 44,
+					InputTransparent = true,
+					BindingContext = this,
+					HorizontalTextAlignment = TextAlignment.Center,
+					VerticalTextAlignment = TextAlignment.Center,
+					TextColor = Color.Accent,
+
+				}.BindTo(Label.TextProperty, nameof(Title))
+			};
+
+			_contentGrid.Children.Add(_titleContentView);
 			_contentGrid.Children.Add(_leftViewContainer);
 			_contentGrid.Children.Add(_rightViewContainer);
-			_contentGrid.Children.Add(new Label
-			{
-				HeightRequest = 44,
-				InputTransparent = true,
-				BindingContext = this,
-				HorizontalTextAlignment = TextAlignment.Center,
-				VerticalTextAlignment = TextAlignment.Center,
-
-			}.BindTo(Label.TextProperty, nameof(Title)));
 
 			Children.Add(_contentGrid);
 			Children.Add(new BoxView

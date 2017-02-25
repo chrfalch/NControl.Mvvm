@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.Mvvm.iOS", "NContr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.Mvvm.Droid", "NControl.MVVM.Droid\NControl.Mvvm.Droid.csproj", "{967C6CBE-86FA-4907-B153-063A3997B3CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.Mvvm.Fluid", "NControl.MVVM.Fluid\NControl.MVVM.Fluid.csproj", "{D757C407-D204-468E-8A85-8A3C79712FD6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.MVVM.Fluid", "NControl.MVVM.Fluid\NControl.MVVM.Fluid.csproj", "{D757C407-D204-468E-8A85-8A3C79712FD6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Animation", "Animation", "{1ACA5A0C-0661-4274-A97E-9DC7E9B512BD}"
 EndProject

@@ -102,6 +102,14 @@ namespace NControl.Mvvm
 			return PopViewModelAsync(presentationMode, success, true);
 		}
 
+		/// <summary>
+		/// Dismiss the view model async.
+		/// </summary>
+		public Task DismissViewModelAsync(PresentationMode presentationMode, bool success, bool animate)
+		{
+			return PopViewModelAsync(presentationMode, success, animate);
+		}
+
 		#endregion
 
 		#region Dialogs

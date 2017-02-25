@@ -120,6 +120,8 @@
     <Compile Include="Platform\DroidImageProvider.cs" />
     <Compile Include="DroidPlatform.cs" />
     <Compile Include="Platform\DroidProgressIndicator.cs" />
+    <Compile Include="Platform\ExtendedEntryRenderer.cs" />
+    <Compile Include="Platform\ButtonRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

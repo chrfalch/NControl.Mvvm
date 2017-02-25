@@ -64,6 +64,7 @@ namespace NControl.Mvvm
 		/// <returns>The view model async.</returns>
 		Task DismissViewModelAsync(PresentationMode presentationMode);
 		Task DismissViewModelAsync(PresentationMode presentationMode, bool success);
+		Task DismissViewModelAsync(PresentationMode presentationMode, bool success, bool animate);
 
 		// Dialog
 		Task<bool> ShowMessageAsync(string title, string message, string accept = null, string cancel = null);

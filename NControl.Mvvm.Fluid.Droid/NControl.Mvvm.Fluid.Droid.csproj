@@ -8,12 +8,13 @@
     <OutputType>Library</OutputType>
     <RootNamespace>NControl.Mvvm.Fluid.Droid</RootNamespace>
     <AssemblyName>NControl.Mvvm.Fluid.Droid</AssemblyName>
-    <TargetFrameworkVersion>v7.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
+    <AndroidTlsProvider></AndroidTlsProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -85,6 +86,7 @@
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FluidDroidPlatform.cs" />
+    <Compile Include="Renderers\FluidNavigationContainerRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -104,7 +106,7 @@
     </ProjectReference>
     <ProjectReference Include="..\NControl.MVVM.Fluid\NControl.MVVM.Fluid.csproj">
       <Project>{D757C407-D204-468E-8A85-8A3C79712FD6}</Project>
-      <Name>NControl.Mvvm.Fluid</Name>
+      <Name>NControl.MVVM.Fluid</Name>
     </ProjectReference>
     <ProjectReference Include="..\NControl.MVVM.Droid\NControl.Mvvm.Droid.csproj">
       <Project>{967C6CBE-86FA-4907-B153-063A3997B3CF}</Project>
@@ -114,6 +116,9 @@
       <Project>{6AF0AE38-F4D7-4A23-9E9F-4B11DF18ECC7}</Project>
       <Name>NControl.Mvvm</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Renderers\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets')" />

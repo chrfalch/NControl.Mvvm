@@ -126,14 +126,25 @@ namespace NControl.Mvvm
 		/// <param name="success">If set to <c>true</c> success.</param>
 		public Task DismissViewModelAsync(PresentationMode presentationMode, bool success)
 		{
+			return DismissViewModelAsync(presentationMode, success, true);
+		}
+
+		/// <summary>
+		/// Dismisses the view model async.
+		/// </summary>
+		/// <returns>The view model async.</returns>
+		/// <param name="presentationMode">Presentation mode</param>
+		/// <param name="success">If set to <c>true</c> success.</param>
+		public Task DismissViewModelAsync(PresentationMode presentationMode, bool success, bool animate)
+		{
 			if (presentationMode == PresentationMode.Default)
-				return PopViewModelAsync();
+				return PopViewModelAsync(animate);
 			
 			if (presentationMode == PresentationMode.Modal)
-				return PopModalViewModelAsync(success);
+				return PopModalViewModelAsync(success, animate);
 			
 			if (presentationMode == PresentationMode.Popup)
-				return PopCardViewModelAsync();
+				return PopCardViewModelAsync(animate);
 
 			throw new InvalidOperationException("Could not pop presentation mode " + presentationMode);
 		}
@@ -142,9 +153,9 @@ namespace NControl.Mvvm
 		/// Pops the view model async.
 		/// </summary>
 		/// <returns>The view model async.</returns>
-		async Task PopViewModelAsync()
+		async Task PopViewModelAsync(bool animate)
 		{			                
-			if (await _navigationPageStack.Peek().Page.Navigation.PopAsync() == null)
+			if (await _navigationPageStack.Peek().Page.Navigation.PopAsync(animate) == null)
 				_navigationPageStack.Pop();
 		}
 
@@ -291,9 +302,9 @@ namespace NControl.Mvvm
 		/// Pops the active modal view 
 		/// </summary>
 		/// <returns>The modal view model async.</returns>
-		public async Task PopModalViewModelAsync(bool success)
+		public async Task PopModalViewModelAsync(bool success, bool animate)
 		{
-			var poppedPage = await _navigationPageStack.Peek().Page.Navigation.PopModalAsync ();
+			var poppedPage = await _navigationPageStack.Peek().Page.Navigation.PopModalAsync (animate);
 			var navPage = poppedPage as ModalNavigationPage;
 
 			if(navPage != null)				
@@ -375,7 +386,7 @@ namespace NControl.Mvvm
 		/// Pops the card view model async.
 		/// </summary>
 		/// <returns>The card view model async.</returns>
-		public async Task PopCardViewModelAsync()
+		public async Task PopCardViewModelAsync(bool animate)
 		{
 			if (!_presentedCardStack.Any())
 				return;
