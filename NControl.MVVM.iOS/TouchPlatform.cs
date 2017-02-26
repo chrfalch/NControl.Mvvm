@@ -24,8 +24,13 @@ namespace NControl.Mvvm.iOS
 		public virtual void Initialize ()
 		{
 			NControls.Init ();
-			Container.Register<IActivityIndicator, TouchActivityIndicator> ();
+			RegisterActivityIndicator();
 			Container.Register<IImageProvider, TouchImageProvider> ();
+		}
+
+		public virtual void RegisterActivityIndicator()
+		{
+			Container.Register<IActivityIndicator, TouchActivityIndicator>();
 		}
 	}
 }
