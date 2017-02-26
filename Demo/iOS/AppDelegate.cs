@@ -7,6 +7,8 @@ using UIKit;
 using NControl.Mvvm.iOS;
 using NControl.Controls.iOS;
 using NControl.Mvvm.Fluid.iOS;
+using Xamarin.Forms.Platform.iOS;
+using Xamarin.Forms;
 
 namespace MvvmDemo.iOS
 {

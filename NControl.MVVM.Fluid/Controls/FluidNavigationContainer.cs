@@ -54,13 +54,21 @@ namespace NControl.Mvvm.Fluid
 
 			_container = new Grid();
 
+			// Add statusbar container if necessary
+			_layout.Children.Add(
+				new BoxView { BackgroundColor = Color.Accent },
+			 	() => new Rectangle(0, 0, _layout.Width, statusbarHeight));
+
+			// Add navigation bar
 			_layout.Children.Add(_navigationBar, () => new Rectangle(
 				0, statusbarHeight, _layout.Width, navigationBarHeight));
 
+			// Add contents container
 			_layout.Children.Add(_container, () => new Rectangle(
 				0, statusbarHeight + navigationBarHeight, _layout.Width,
 				_layout.Height - (statusbarHeight + navigationBarHeight)));
 
+			// Bindings
 			this.BindTo(TitleProperty, nameof(IViewModel.Title));
 		}
 
@@ -167,6 +175,15 @@ namespace NControl.Mvvm.Fluid
 		/// Returns number of children in container
 		/// </summary>
 		public int Count { get { return _container == null ? 0 : _container.Children.Count; } }
+
+		/// <summary>
+		/// Gets the root view.
+		/// </summary>
+		/// <returns>The root view.</returns>
+		public View GetRootView()
+		{
+			return this;
+		}
 
 		/// <summary>
 		/// Returns true if backbutton should be visible

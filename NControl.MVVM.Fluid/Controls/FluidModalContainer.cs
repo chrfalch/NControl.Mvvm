@@ -118,6 +118,8 @@ namespace NControl.Mvvm.Fluid
 			get { return _container.Children.Count; }
 		}
 
+		public View GetRootView() { return this; }
+
 		#endregion
 
 	}

@@ -8,5 +8,6 @@ namespace NControl.Mvvm.Fluid
 		void AddChild(View view, PresentationMode presentationMode);
 		void RemoveChild(View view, PresentationMode presentationMode);
 		int Count { get; }
+		View GetRootView();
 	}
 }

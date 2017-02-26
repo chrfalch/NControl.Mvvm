@@ -55,6 +55,9 @@ namespace NControl.Mvvm
 			// Sets up the messaging service
 			RegisterMessagingService ();
 
+			// Register providers
+			RegisterProviders();
+
 			// Set up services
 			RegisterServices();
 
@@ -123,6 +126,13 @@ namespace NControl.Mvvm
 		protected virtual void RegisterViewContainer()
 		{
 			Container.RegisterSingleton<IViewContainer, DefaultViewContainer>();
+		}
+
+		/// <summary>
+		/// Override to register providers
+		/// </summary>
+		protected virtual void RegisterProviders()
+		{ 
 		}
 
 		/// <summary>

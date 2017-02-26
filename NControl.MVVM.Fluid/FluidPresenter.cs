@@ -25,11 +25,18 @@ namespace NControl.Mvvm
 	{
 		#region Private Members
 
-		Grid _contentsContainer;
-		ContentPage _contentPage;
-		readonly Stack<NavigationContext> _contextStack = new Stack<NavigationContext>();
+		FluidContainerPage _contentPage;
+		readonly INavigationContainerProvider _navigationContainerProvider;
 
 		#endregion
+
+		/// <summary>
+		/// Initializes a new instance of the FluidPresenter class.
+		/// </summary>
+		public FluidPresenter(INavigationContainerProvider navigationContainerProvider)
+		{
+			_navigationContainerProvider = navigationContainerProvider;
+		}
 
 		#region IPresenter implementation
 
@@ -40,9 +47,7 @@ namespace NControl.Mvvm
 		public void SetMainPage(Xamarin.Forms.Page page)
 		{
 			// Create container page
-			_contentPage = new ContentPage();
-			_contentsContainer = new Grid();
-			_contentPage.Content = _contentsContainer;
+			_contentPage = new FluidContainerPage();
 			Application.Current.MainPage = _contentPage;
 
 			// instantiate view type
@@ -50,13 +55,13 @@ namespace NControl.Mvvm
 			var mainView = Container.Resolve(mainViewType) as ContentView;
 
 			// Create container
-			var container = new FluidNavigationContainer();
+			var container = _navigationContainerProvider.CreateNavigationContainer();
 			container.AddChild(mainView, PresentationMode.Default);
 
 			// Add to container
-			_contentsContainer.Children.Add(container, 0, 0);
-			_contextStack.Push(new NavigationContext(container, null));
-			_contextStack.Peek().NavigationStack.Push(mainView);
+			_contentPage.Container.Children.Add(container.GetRootView(), 0, 0);
+			_contentPage.Stack.Push(new NavigationContext(container, null));
+			_contentPage.Stack.Peek().NavigationStack.Push(mainView);
 
 			// Notify
 			(mainView as IView).OnAppearing();
@@ -206,7 +211,7 @@ namespace NControl.Mvvm
 			if (presentationMode == PresentationMode.Default)
 			{
 				// Get previous/current view
-				var currentContext = _contextStack.Peek();
+				var currentContext = _contentPage.Stack.Peek();
 
 				// Add view 
 				currentContext.Container.AddChild(contents, presentationMode);
@@ -230,18 +235,16 @@ namespace NControl.Mvvm
 			         presentationMode == PresentationMode.Popup)
 			{
 				// Container and navigation context
-				View container = null;
+				INavigationContainer container = null;
 
 				if (presentationMode == PresentationMode.Modal)
 				{
-					container = new FluidNavigationContainer();
+					container = _navigationContainerProvider.CreateNavigationContainer();
 				}
 				else
 				{
-					container = new FluidModalContainer { 
-						ContentSize = new Size(
-							_contentsContainer.Width * 0.8, _contentsContainer.Height * 0.7)
-					};
+					container = _navigationContainerProvider.CreateModalAndPopupNavigationContainer(
+						new Size(_contentPage.Container.Width * 0.8, _contentPage.Container.Height * 0.7));					
 				}
 
 				var navigationContainer = container as INavigationContainer;
@@ -252,14 +255,14 @@ namespace NControl.Mvvm
 				navigationContainer.AddChild(contents, presentationMode);
 
 				// Add to container
-				_contentsContainer.Children.Add(container, 0, 0);
-				_contextStack.Push(new NavigationContext(navigationContainer, dismissedCallback));
-				_contextStack.Peek().NavigationStack.Push(contents);
+				_contentPage.Container.Children.Add(container.GetRootView(), 0, 0);
+				_contentPage.Stack.Push(new NavigationContext(navigationContainer, dismissedCallback));
+				_contentPage.Stack.Peek().NavigationStack.Push(contents);
 
 				if (animate && container is IXAnimatable)
 				{
 					var animations = (container as IXAnimatable).TransitionIn(
-						container, presentationMode);
+						container.GetRootView(), presentationMode);
 
 					XAnimation.XAnimation.RunAll(animations, () => tcs.TrySetResult(true));
 				}
@@ -283,7 +286,7 @@ namespace NControl.Mvvm
 
 			if (presentationMode == PresentationMode.Default)
 			{
-				var currentContext = _contextStack.Peek();
+				var currentContext = _contentPage.Stack.Peek();
 				var view = currentContext.NavigationStack.FirstOrDefault();
 
 				// Set up action to run when all transitions and animations
@@ -311,7 +314,7 @@ namespace NControl.Mvvm
 			         presentationMode == PresentationMode.Popup)
 			{
 				// Get current context (modal)
-				var currentContext = _contextStack.Pop();
+				var currentContext = _contentPage.Stack.Pop();
 
 				Action removeAction = () =>
 				{
@@ -327,7 +330,7 @@ namespace NControl.Mvvm
 					currentContext.NavigationStack.Clear();
 
 					// Remove from view stack
-					_contentsContainer.Children.Remove(currentContext.Container as View);
+					_contentPage.Container.Children.Remove(currentContext.Container as View);
 
 					// Call dismissed action
 					if (currentContext.DismissedAction != null)
