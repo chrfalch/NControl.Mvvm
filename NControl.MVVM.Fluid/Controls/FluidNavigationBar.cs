@@ -9,10 +9,13 @@ namespace NControl.Mvvm.Fluid
 {
 	public class FluidNavigationBar: StackLayout
 	{
+		bool _useSwapLabelNextTime = true;
 		readonly Grid _contentGrid;
 		readonly StackLayout _leftViewContainer;
 		readonly StackLayout _rightViewContainer;
 		readonly ContentView _titleContentView;
+		readonly Label _titleLabel;
+		readonly Label _titleSwapLabel;
 		readonly FontMaterialDesignLabel _backButton;
 		readonly ObservableCollectionWithAddRange<ToolbarItem> _toolbarItems =
 			new ObservableCollectionWithAddRange<ToolbarItem>();
@@ -40,20 +43,35 @@ namespace NControl.Mvvm.Fluid
 				HorizontalOptions = LayoutOptions.EndAndExpand,
 			};
 
+			// Create two labels
+			_titleLabel = new Label
+			{
+				HeightRequest = 44,
+				InputTransparent = true,
+				BindingContext = this,
+				HorizontalTextAlignment = TextAlignment.Center,
+				VerticalTextAlignment = TextAlignment.Center,
+				TextColor = Color.Accent,
+
+			}.BindTo(Label.TextColorProperty, nameof(TintColor));
+
+			_titleSwapLabel = new Label
+			{
+				HeightRequest = 44,
+				InputTransparent = true,
+				BindingContext = this,
+				HorizontalTextAlignment = TextAlignment.Center,
+				VerticalTextAlignment = TextAlignment.Center,
+				TextColor = Color.Accent,
+
+			}.BindTo(Label.TextColorProperty, nameof(TintColor));
+
 			_contentGrid = new Grid();
 			_titleContentView = new ContentView
 			{
-				Content = new Label
-				{
-					HeightRequest = 44,
-					InputTransparent = true,
-					BindingContext = this,
-					HorizontalTextAlignment = TextAlignment.Center,
-					VerticalTextAlignment = TextAlignment.Center,
-					TextColor = Color.Accent,
-
-				}.BindTo(Label.TextProperty, nameof(Title))
-				 .BindTo(Label.TextColorProperty, nameof(TintColor))
+				Content = new Grid { 
+					Children = { _titleLabel, _titleSwapLabel }
+				}
 			};
 
 			_contentGrid.Children.Add(_titleContentView);
@@ -102,9 +120,14 @@ namespace NControl.Mvvm.Fluid
 		/// <summary>
 		/// The title property.
 		/// </summary>
-		public static BindableProperty TitleProperty =
-			BindableProperty.Create(nameof(Title), typeof(string), typeof(FluidNavigationBar), null,
-				BindingMode.OneWay);
+		public static BindableProperty TitleProperty = BindableProperty.Create(
+			nameof(Title), typeof(string), typeof(FluidNavigationBar), null,
+			BindingMode.OneWay, null, (bindable, oldValue, newValue) => {
+
+			var ctrl = (FluidNavigationBar)bindable;
+			ctrl._titleLabel.Text = (string)newValue;
+
+		});
 
 		/// <summary>
 		/// Gets or sets the title.

@@ -13,13 +13,15 @@ namespace NControl.Mvvm.Fluid
 		IList<ToolbarItem> ToolbarItems { get; }
 	}
 
-	public abstract class BaseFluidContentsView<TViewModel> : ContentView, IView<TViewModel>, IToolbarItemsContainer
+	public abstract class BaseFluidContentsView<TViewModel> : ContentView, IView<TViewModel>, 
+		IToolbarItemsContainer, ILeftBorderProvider
 		where TViewModel : BaseViewModel
 	{
 
 		#region Private Members
 
 		readonly RelativeLayout _layout;
+		readonly BoxView _leftBorder;
 		readonly ObservableCollectionWithAddRange<ToolbarItem> _toolbarItems = new ObservableCollectionWithAddRange<ToolbarItem>();
 		readonly ICommand _onAppearingCommand;
 		readonly ICommand _onDisappearingCommand;
@@ -38,6 +40,7 @@ namespace NControl.Mvvm.Fluid
 
 			// Main layout
 			_layout = new RelativeLayout();
+			_leftBorder = new BoxView { BackgroundColor = Color.Gray };
 
 			// OnAppearing/OnDisappearing
 			_onAppearingCommand = new AsyncCommand(async (obj) => await ViewModel.OnAppearingAsync());
@@ -71,6 +74,9 @@ namespace NControl.Mvvm.Fluid
 			// Set our content to be the relative layout with progress overlays etc.
 			Content = _layout;
 
+			// Add left border
+			_layout.Children.Add(_leftBorder, () => new Rectangle(0, 0, 0.5, _layout.Height));
+
 			// Listen for changes to busy
 			ListenForPropertyChange(mn => mn.IsBusy, () =>
 			{
@@ -91,6 +97,16 @@ namespace NControl.Mvvm.Fluid
 		#endregion
 
 		#region Public Properties
+
+		/// <summary>
+		/// Hide/Shows the left border
+		/// </summary>
+		/// <value><c>true</c> if left border is visible; otherwise, <c>false</c>.</value>
+		public bool IsLeftBorderVisible 
+		{ 
+			get { return _leftBorder.IsVisible; } 
+			set  { _leftBorder.IsVisible = value; }
+		}
 
 		/// <summary>
 		/// Returns the toolbar items

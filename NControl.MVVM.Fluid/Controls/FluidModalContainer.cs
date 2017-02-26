@@ -106,6 +106,9 @@ namespace NControl.Mvvm.Fluid
 		public void AddChild(View view, PresentationMode presentationMode)
 		{
 			_container.Children.Add(view);
+
+			if (view is ILeftBorderProvider)
+				(view as ILeftBorderProvider).IsLeftBorderVisible = _container.Children.Count > 1;
 		}
 
 		public void RemoveChild(View view, PresentationMode presentationMode)

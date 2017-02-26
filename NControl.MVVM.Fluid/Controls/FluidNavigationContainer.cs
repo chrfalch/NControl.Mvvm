@@ -121,6 +121,7 @@ namespace NControl.Mvvm.Fluid
 
 					break;
 				case PanState.Cancelled:
+
 					view.TranslationX = 0;
 
 					if (fromView != null)
@@ -140,9 +141,12 @@ namespace NControl.Mvvm.Fluid
 		{
 			_container.Children.Add(view);
 
+			if (view is ILeftBorderProvider)
+				(view as ILeftBorderProvider).IsLeftBorderVisible = _container.Children.Count > 1;
+
 			BindingContext = GetViewModel();
 			UpdateToolbarItems(view);
-			OnPropertyChanged(nameof(BackButtonVisible));		
+			OnPropertyChanged(nameof(BackButtonVisible));
 		}
 
 		/// <summary>
@@ -306,7 +310,7 @@ namespace NControl.Mvvm.Fluid
 			}
 			
 			var distance = toViewTranslationX - view.TranslationX;
-			var duration = Math.Max(0.2, velocity.Equals(-1) ? 0.2f : distance / velocity);
+			var duration = Math.Min(0.2, Math.Max(0.2, velocity.Equals(-1) ? 0.2f : distance / velocity));
 
 			new XAnimation.XAnimation(view)
 				.Duration((long)(duration*1000))
