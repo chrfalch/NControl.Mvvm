@@ -21,7 +21,7 @@ namespace NControl.Mvvm
 	/// <summary>
 	/// Default presenter.
 	/// </summary>
-	public class FluidPresenter: IPresenter
+	public class FluidPresenter: IPresenter, IActivityIndicatorViewProvider
 	{
 		#region Private Members
 
@@ -398,6 +398,16 @@ namespace NControl.Mvvm
 		public Task ShowViewModelAsPopupAsync(Type viewModelType, object parameter)			
 		{
 			return ShowViewModelAsync(viewModelType, null, parameter, true, PresentationMode.Popup);
+		}
+
+		public void RemoveFromParent(View view)
+		{
+			(_contentPage as IActivityIndicatorViewProvider).RemoveFromParent(view);
+		}
+
+		public void AddToParent(View view)
+		{
+			(_contentPage as IActivityIndicatorViewProvider).AddToParent(view);
 		}
 
 		#endregion

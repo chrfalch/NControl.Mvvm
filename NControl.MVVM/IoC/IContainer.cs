@@ -62,6 +62,13 @@ namespace NControl.Mvvm
 			where RegisterType : class where RegisterImplementation : class, RegisterType;
 
 		/// <summary>
+		/// Register with callback
+		/// </summary>
+		/// <param name="callback">Callback.</param>
+		/// <typeparam name="RegisterType">The 1st type parameter.</typeparam>
+		void RegisterSingleton<RegisterType>(Func<RegisterType> callback) where RegisterType : class;			
+
+		/// <summary>
 		/// Register a type as a singleton in the container.
 		/// </summary>
 		/// <typeparam name="RegisterType">The 1st type parameter.</typeparam>

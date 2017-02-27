@@ -14,6 +14,8 @@ namespace NControl.Mvvm.Fluid
 		{
 			base.RegisterProviders();
 
+			Container.RegisterSingleton(() => Current.Presenter as IActivityIndicatorViewProvider);
+
 			RegisterNavigationContainerProvider();
 		}
 

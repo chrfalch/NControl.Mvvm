@@ -10,5 +10,10 @@ namespace NControl.Mvvm.Fluid.iOS
 		{
 			var animDummy = new NControl.XAnimation.iOS.TouchXAnimationProvider();
 		}
+
+		public override void RegisterActivityIndicator()
+		{
+			Container.RegisterSingleton<IActivityIndicator, FluidActivityIndicator>();
+		}
 	}
 }

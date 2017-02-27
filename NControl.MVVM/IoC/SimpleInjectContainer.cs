@@ -116,6 +116,17 @@ namespace NControl.Mvvm
 			_container.RegisterSingleton (RegisterType, RegisterImplementation);
 		}
 
+		/// <summary>
+		/// Registers the singleton using a callback
+		/// </summary>
+		/// <param name="callback">Callback.</param>
+		/// <typeparam name="RegisterType">The 1st type parameter.</typeparam>
+		public void RegisterSingleton<RegisterType>(Func<RegisterType> callback)
+			where RegisterType : class
+		{
+			_container.RegisterSingleton<RegisterType>(callback);
+		}
+
 		#endregion
 	}
 }

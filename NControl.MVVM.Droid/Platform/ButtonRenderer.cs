@@ -1,11 +1,11 @@
 ﻿using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms;
-using Foodo.Droid;
+using NControl.Mvvm.Droid;
 using Android.Graphics.Drawables;
 using NControl.Mvvm;
 
 [assembly: ExportRenderer(typeof(ExtendedButton), typeof(ExtendedButtonRenderer))]
-namespace Foodo.Droid
+namespace NControl.Mvvm.Droid
 {
 	public class ExtendedButtonRenderer : ButtonRenderer
 	{

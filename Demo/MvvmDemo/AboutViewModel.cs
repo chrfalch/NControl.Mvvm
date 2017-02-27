@@ -29,11 +29,18 @@ namespace MvvmDemo
 			get
 			{
 				return GetOrCreateCommandAsync(async (arg) => {
+
+					IsBusy = true;
+					IsBusyText = "Counting...";
+					IsBusySubTitle = "the numbers in a sequence from zero to 10 stopping on 10.";
+
 					for (var i = 0; i < 10; i++)
 					{
 						await Task.Delay(150);
 						NumberValue++;
 					}
+
+					IsBusy = false;
 				});
 			}
 		}

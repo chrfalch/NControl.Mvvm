@@ -100,6 +100,11 @@ namespace NControl.Mvvm
 			_containerProvider.RegisterSingleton<RegisterType, RegisterImplementation>();
 		}
 
+		public static void RegisterSingleton<RegisterType>(Func<RegisterType> callback) where RegisterType : class			
+		{
+			_containerProvider.RegisterSingleton<RegisterType>(callback);
+		}
+
 		/// <summary>
 		/// Register a type as a singleton in the container.
 		/// </summary>

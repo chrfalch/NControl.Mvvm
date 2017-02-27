@@ -1,5 +1,4 @@
 ﻿using System;
-using Foodo.Droid;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 using NControl.Mvvm.Droid;

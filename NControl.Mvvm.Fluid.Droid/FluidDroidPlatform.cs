@@ -14,5 +14,10 @@ namespace NControl.Mvvm.Fluid.Droid
 		{
 			var animDummy = new NControl.XAnimation.Droid.DroidXAnimationProvider();
 		}
+
+		public override void RegisterActivityIndicator()
+		{
+			Container.RegisterSingleton<IActivityIndicator, FluidActivityIndicator>();
+		}
 	}
 }

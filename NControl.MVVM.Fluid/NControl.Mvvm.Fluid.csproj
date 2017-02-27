@@ -45,6 +45,8 @@
     <Compile Include="Contracts\INavigationContainerProvider.cs" />
     <Compile Include="Providers\NavigationContainerProvider.cs" />
     <Compile Include="Contracts\ILeftBorderProvider.cs" />
+    <Compile Include="Controls\FluidActivityIndicator.cs" />
+    <Compile Include="Contracts\IActivityIndicatorViewProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">

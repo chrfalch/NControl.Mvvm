@@ -5,17 +5,19 @@ using Xamarin.Forms;
 
 namespace NControl.Mvvm.Fluid
 {
-	public class FluidContainerPage : ContentPage
+	public class FluidContainerPage : ContentPage, IActivityIndicatorViewProvider
 	{
 		#region Members
 		Grid _contentsContainer;
+		Grid _activityContainer;
 		readonly Stack<NavigationContext> _contextStack = new Stack<NavigationContext>();
 		#endregion
 
 		public FluidContainerPage()
-		{
+		{			
 			_contentsContainer = new Grid();
-			Content = _contentsContainer;
+			_activityContainer = new Grid { Children = { _contentsContainer } };
+			Content = _activityContainer;
 		}
 
 		protected override bool OnBackButtonPressed()
@@ -47,6 +49,16 @@ namespace NControl.Mvvm.Fluid
 				MvvmApp.Current.Presenter.DismissViewModelAsync(viewModel.PresentationMode);
 			
 			return true;
+		}
+
+		public void RemoveFromParent(View view)
+		{			
+			_activityContainer.Children.Remove(view);
+		}
+
+		public void AddToParent(View view)
+		{
+			_activityContainer.Children.Add(view, 0, 0);
 		}
 
 		public Grid Container { get { return _contentsContainer; } }
