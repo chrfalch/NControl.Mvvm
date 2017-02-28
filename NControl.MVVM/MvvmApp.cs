@@ -99,6 +99,12 @@ namespace NControl.Mvvm
 		/// <value>The messaging service.</value>
 		public IMessageHub MessageHub { get { return Container.Resolve<IMessageHub>(); } }
 
+		/// <summary>
+		/// Returns the environment information
+		/// </summary>
+		/// <value>The environment.</value>
+		public IEnvironmentProvider Environment{ get { return Container.Resolve<IEnvironmentProvider>(); }}
+
 		#endregion
 
 		#region Protected Members

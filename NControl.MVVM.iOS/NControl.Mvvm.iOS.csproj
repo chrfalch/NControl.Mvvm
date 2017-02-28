@@ -94,6 +94,7 @@
     <Compile Include="Platform\TouchActivityIndicator.cs" />
     <Compile Include="Platform\TouchNavigationPageRenderer.cs" />
     <Compile Include="Platform\ViewCellRenderer.cs" />
+    <Compile Include="Platform\TouchEnvironmentProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>

@@ -36,6 +36,7 @@ namespace NControl.Mvvm.Droid
 
 			RegisterActivityIndicator();
 			Container.Register<IImageProvider, DroidImageProvider>();
+			Container.RegisterSingleton<IEnvironmentProvider, DroidEnvironmentProvider>();
 		}
 
 		public virtual void RegisterActivityIndicator()

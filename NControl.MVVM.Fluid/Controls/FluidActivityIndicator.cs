@@ -269,7 +269,7 @@ namespace NControl.Mvvm.Fluid
 				true, false,
 					new NGraphics.Point(rect.X + rect.Width, rect.Y + rect.Height/2)),
 
-			}, new NGraphics.Pen(SpinnerColor.ToNColor(), 2), null);
+			}, new NGraphics.Pen(SpinnerColor.ToNColor(), 2 * MvvmApp.Current.Environment.DisplayDensity), null);
 
 		}
 		#endregion
