@@ -36,17 +36,15 @@ namespace NControl.XAnimation.iOS
 
 
 		public void Animate(XAnimationInfo animationInfo, Action completed)
-		{			
-			Set(animationInfo);
-
+		{
 			if (animationInfo.OnlyTransform)
+			{
+				Set(animationInfo);
 				return;
+			}
 
 			CATransaction.Begin();
-			CATransaction.CompletionBlock = () =>
-			{
-				completed?.Invoke();				
-			};
+			CATransaction.CompletionBlock = () => completed?.Invoke();			
 
 			foreach (var element in _animation.Elements)
 			{
@@ -67,14 +65,14 @@ namespace NControl.XAnimation.iOS
 				if (!animationInfo.TranslationX.Equals(0.0) || !animationInfo.TranslationY.Equals(0.0))
 				{
 					var animationX = new CABasicAnimation();
-					animationX.KeyPath = "transform.tx";
-					animationX.From = new NSNumber(view.Layer.Transform.m41);
+					animationX.KeyPath = "transform.translation.x";
+					animationX.From = new NSNumber(element.TranslationX);
 					animationX.To = new NSNumber(animationInfo.TranslationX);
 					animations.Add(animationX);
 
 					var animationY = new CABasicAnimation();
-					animationY.KeyPath = "transform.ty";
-					animationY.From = new NSNumber(view.Layer.Transform.m42);
+					animationY.KeyPath = "transform.translation.y";
+					animationY.From = new NSNumber(element.TranslationY);
 					animationY.To = new NSNumber(animationInfo.TranslationY);
 					animations.Add(animationY);
 				}
@@ -84,7 +82,7 @@ namespace NControl.XAnimation.iOS
 				{
 					var animation = new CABasicAnimation();
 					animation.KeyPath = "transform.scale";
-					animation.From = new NSNumber(view.Layer.Transform.m11);
+					animation.From = new NSNumber(element.Scale);
 					animation.To = new NSNumber(animationInfo.Scale);
 					animations.Add(animation);
 				}
@@ -92,11 +90,11 @@ namespace NControl.XAnimation.iOS
 				// Set up rotation
 				if (!animationInfo.Rotate.Equals(0.0))
 				{
-					var rotationAnimation = new CABasicAnimation();
-					rotationAnimation.KeyPath = "transform.rotation";
-					rotationAnimation.From = new NSNumber(view.Layer.Transform.m34);
-					rotationAnimation.To = new NSNumber((animationInfo.Rotate * Math.PI) / 180.0);
-					animations.Add(rotationAnimation);
+					var animation = new CABasicAnimation();
+					animation.KeyPath = "transform.rotation";
+					animation.From = new NSNumber((element.Rotation * Math.PI) / 180.0);
+					animation.To = new NSNumber((animationInfo.Rotate * Math.PI) / 180.0);
+					animations.Add(animation);
 				}
 
 				if (animations.Any())
@@ -110,6 +108,8 @@ namespace NControl.XAnimation.iOS
 				}
 			}
 
+			Set(animationInfo);
+
 			CATransaction.Commit();
 		}
 
@@ -117,19 +117,11 @@ namespace NControl.XAnimation.iOS
 		{
 			foreach (var element in _animation.Elements)
 			{
-				var view = GetView(element);
-
-				//var transform = CGAffineTransform.MakeTranslation((float)animationInfo.TranslationX, (float)animationInfo.TranslationY);
-				//transform = CGAffineTransform.Scale(transform, (float)animationInfo.Scale, (float)animationInfo.Scale);
-				//transform = CGAffineTransform.Rotate(transform, ConvertToRadians(animationInfo.Rotate));
-				//view.Layer.AffineTransform = transform;
-
-				var transform = CATransform3D.Identity;
-				transform = transform.Translate((nfloat)animationInfo.TranslationX, (nfloat)animationInfo.TranslationY, 0);
-				transform = transform.Scale((nfloat)animationInfo.Scale);
-				transform = transform.Rotate((nfloat)(animationInfo.Rotate * (float)Math.PI / 180.0f), 0.0f, 0.0f, 1.0f);
-				view.Layer.Transform = transform;
-				view.Layer.Opacity = (float)animationInfo.Opacity;
+				element.Rotation = animationInfo.Rotate;
+				element.TranslationX = animationInfo.TranslationX;
+				element.TranslationY = animationInfo.TranslationY;
+				element.Scale = animationInfo.Scale;
+				element.Opacity = (float)animationInfo.Opacity;
 			}
 		}
 
