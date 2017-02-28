@@ -20,7 +20,6 @@ namespace MvvmDemo
 			Companies.AddRange (Company.CompanyRepository);
 
 			await Task.Run (async() => {
-				while (true)
 				{
 					MvvmApp.Current.ActivityIndicator.UpdateProgress(true, "Loading...", "Loading everything. This will be so go that... bla bla.");
 
@@ -33,7 +32,7 @@ namespace MvvmDemo
 					await Task.Delay(1500);
 				}
 
-				//MvvmApp.Current.ActivityIndicator.UpdateProgress (false);
+				MvvmApp.Current.ActivityIndicator.UpdateProgress (false);
 			});
 		}
 

@@ -31,12 +31,22 @@ namespace XAnimationDemo
 			var button = new Button
 			{
 				Text = "Animate!",
-				Command = new Command(() => { 
-					new XAnimationPackage(label)
-						.Rotate(0).Set().Then()
-						.Duration(1000).Rotate(slider.Value).Animate().Then()
-						.Rotate(0).Set().Then()
-						.Run();
+				Command = new Command(() => {
+
+					Action action = null;
+					action = () =>
+					{
+						new XAnimationPackage(label)
+							.Duration(1000)
+							.Rotate(360)
+							.Animate()
+							.Rotate(0)
+							.Set()
+							.Animate()
+							.Run(action);
+					};
+
+					action();
 				}),
 			};
 
