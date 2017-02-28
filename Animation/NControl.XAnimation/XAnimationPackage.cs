@@ -49,8 +49,6 @@ namespace NControl.XAnimation
 		public XAnimationPackage(params VisualElement[] elements)
 		{
 			_elements.AddRange(elements.Select(el => new WeakReference<VisualElement>(el)));
-
-			DoLog("Created animation for {0}.", string.Join(", ", _elements.Select(el => el.GetType().Name)));
 		}
 		#endregion
 
@@ -58,8 +56,7 @@ namespace NControl.XAnimation
 		/// Rotates the view around the z axis
 		/// </summary>
 		public XAnimationPackage Rotate(double rotation)
-		{
-			DoLog("Rotate({0})", rotation);
+		{			
 			GetCurrentAnimation().Rotate = rotation;
 			return this;
 		}
@@ -70,7 +67,6 @@ namespace NControl.XAnimation
 		/// <param name="opacity">Opacity.</param>
 		public XAnimationPackage Opacity(double opacity)
 		{
-			DoLog("SetOpacity({0})", opacity);
 			GetCurrentAnimation().Opacity = opacity;
 			return this;
 		}
@@ -82,7 +78,6 @@ namespace NControl.XAnimation
 		/// <param name="scale">Scale.</param>
 		public XAnimationPackage Scale(double scale)
 		{
-			DoLog("Scale({0})", scale);
 			GetCurrentAnimation().Scale = scale;
 			return this;
 		}
@@ -94,7 +89,6 @@ namespace NControl.XAnimation
 		/// <param name="y">The y coordinate.</param>
 		public XAnimationPackage Translate(double x, double y)
 		{
-			DoLog("Translate({0}, {1})", x, y );
 			GetCurrentAnimation().TranslationX = x;
 			GetCurrentAnimation().TranslationY = y;
 			return this;
@@ -107,7 +101,6 @@ namespace NControl.XAnimation
 		/// <param name="milliseconds">Milliseconds.</param>
 		public XAnimationPackage Duration(long milliseconds)
 		{
-			DoLog("SetDuration({0})", milliseconds);
 			GetCurrentAnimation().Duration = milliseconds;
 			return this;
 		}
@@ -117,7 +110,8 @@ namespace NControl.XAnimation
 		/// </summary>
 		public XAnimationPackage Reset()
 		{
-			DoLog("Reset()");
+			_previousInfo = null;
+			_currentInfo = null;
 			GetCurrentAnimation().Reset();
 			return this;
 		}
@@ -127,25 +121,23 @@ namespace NControl.XAnimation
 		/// </summary>
 		public XAnimationPackage Set()
 		{
-			DoLog("Set()");
-			GetCurrentAnimation().OnlyTransform = true;
-			_previousInfo = GetCurrentAnimation();
+			_previousInfo = _animationInfos.LastOrDefault();
 			_currentInfo = null;
+			if(_previousInfo != null)
+				_previousInfo.OnlyTransform = true;	
+			
 			return this;
 		}
 
 		public XAnimationPackage Animate()
 		{
-			DoLog("Animate()");
-			_previousInfo = GetCurrentAnimation();
+			_previousInfo = _animationInfos.LastOrDefault();
 			_currentInfo = null;
-
 			return this;
 		}
 
 		public void Cancel()
 		{
-			DoLog("Cancel()");
 			_runningState = false;
 		}
 
@@ -159,16 +151,12 @@ namespace NControl.XAnimation
 		/// </summary>
 		public void Run(Action completed = null)
 		{
-			DoLog("Run({0})", (completed == null ? "(null)" : "handler"));
-
 			if (_runningState)
 				return;
 
 			if (_animationInfos.Count == 0)
 				return;
 			
-			DoLog("Animate()");
-
 			_runningState = true;
 
 			// Run the first animation in the list of animation objects
@@ -277,7 +265,7 @@ namespace NControl.XAnimation
 				// Tell the animation provider to animate
 				_animationProvider.Animate(animationInfo, () =>
 				{
-					DoLog("Animation Done Callback({0})", animationInfo);
+					// DoLog("Animation Done Callback({0})", animationInfo);
 					HandleCompletedAction();
 				});
 			}
