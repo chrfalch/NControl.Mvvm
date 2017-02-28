@@ -22,7 +22,7 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// The app.
 		/// </summary>
-		public static new MvvmApp Current {get; private set;}
+		public static new MvvmApp Current { get; private set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:NControl.Mvvm.MvvmApp"/> class.
@@ -46,20 +46,24 @@ namespace NControl.Mvvm
 		private void Setup(IMvvmPlatform platform)
 		{
 			// Register container
-			Container.Initialize (CreateContainer());
+			Container.Initialize(CreateContainer());
 
 			// Create view container and presenter
 			RegisterViewContainer();
 			RegisterPresenter();
 
 			// Sets up the messaging service
-			RegisterMessagingService ();
+			RegisterMessagingService();
 
 			// Register providers
 			RegisterProviders();
 
 			// Set up services
 			RegisterServices();
+
+			// Register configuration providers
+			RegisterSizeProvider();
+			RegisterColorProvider();
 
 			// Initialize platform app
 			platform.Initialize();
@@ -79,19 +83,19 @@ namespace NControl.Mvvm
 		/// Returns the presenter.
 		/// </summary>
 		/// <value>The presenter.</value>
-		public IPresenter Presenter { get { return Container.Resolve<IPresenter> (); } }
+		public IPresenter Presenter { get { return Container.Resolve<IPresenter>(); } }
 
 		/// <summary>
 		/// Returns the presenter.
 		/// </summary>
 		/// <value>The presenter.</value>
-		public IViewContainer ViewContainer { get { return Container.Resolve<IViewContainer> (); } }
+		public IViewContainer ViewContainer { get { return Container.Resolve<IViewContainer>(); } }
 
 		/// <summary>
 		/// Gets the activity indicator.
 		/// </summary>
 		/// <value>The view container.</value>
-		public IActivityIndicator ActivityIndicator { get { return Container.Resolve<IActivityIndicator> (); } }
+		public IActivityIndicator ActivityIndicator { get { return Container.Resolve<IActivityIndicator>(); } }
 
 		/// <summary>
 		/// Gets the messaging service.
@@ -103,7 +107,17 @@ namespace NControl.Mvvm
 		/// Returns the environment information
 		/// </summary>
 		/// <value>The environment.</value>
-		public IEnvironmentProvider Environment{ get { return Container.Resolve<IEnvironmentProvider>(); }}
+		public IEnvironmentProvider Environment { get { return Container.Resolve<IEnvironmentProvider>(); } }
+
+		/// <summary>
+		/// Returns the default sizes for the app
+		/// </summary>
+		public ISizeProvider Sizes { get { return Container.Resolve<ISizeProvider>(); } }
+
+		/// <summary>
+		/// Gets the color constants
+		/// </summary>
+		public IColorProvider Colors { get { return Container.Resolve<IColorProvider>(); } }
 
 		#endregion
 
@@ -115,7 +129,7 @@ namespace NControl.Mvvm
 		/// <returns>The container.</returns>
 		protected virtual IContainer CreateContainer()
 		{
-			return new SimpleInjectContainer ();
+			return new SimpleInjectContainer();
 		}
 
 		/// <summary>
@@ -124,6 +138,22 @@ namespace NControl.Mvvm
 		protected virtual void RegisterPresenter()
 		{
 			Container.RegisterSingleton<IPresenter, DefaultPresenter>();
+		}
+
+		/// <summary>
+		/// Registers the size provider.
+		/// </summary>
+		protected virtual void RegisterSizeProvider()
+		{
+			Container.RegisterSingleton<ISizeProvider, DefaultSizeProvider>();
+		}
+
+		/// <summary>
+		/// Registers the color provider.
+		/// </summary>
+		protected virtual void RegisterColorProvider()
+		{
+			Container.RegisterSingleton<IColorProvider, DefaultColorProvider>();
 		}
 
 		/// <summary>

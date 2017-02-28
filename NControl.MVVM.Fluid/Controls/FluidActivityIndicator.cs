@@ -20,13 +20,13 @@ namespace NControl.Mvvm.Fluid
 
 			_titleLabel = new Label { 
 				HorizontalTextAlignment = TextAlignment.Center,
-				TextColor = Color.White,
+				TextColor = MvvmApp.Current.Colors.Get(Config.TextColor),
 			};
 			_subTitleLabel = new Label
 			{
 				HorizontalTextAlignment = TextAlignment.Center,
-				FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label)),
-                TextColor = Color.White,
+				FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
+                TextColor = MvvmApp.Current.Colors.Get(Config.TextColor),
 			};
 
 			_spinner = new CustomActivityIndicator
@@ -36,7 +36,7 @@ namespace NControl.Mvvm.Fluid
 
 			_overlay = new ContentView
 			{
-				BackgroundColor = Color.Black.MultiplyAlpha(0.83),
+				BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewTransparentBackgroundColor),
 				Content = new VerticalWizardStackLayout
 				{
 					HorizontalOptions = LayoutOptions.CenterAndExpand,
@@ -76,24 +76,26 @@ namespace NControl.Mvvm.Fluid
 					_subTitleLabel.Text = subtitle;
 				}
 
-				// Hide
 				if (!visible && _overlay.Parent != null)
 				{
-					new XAnimationPackage(_spinner).Scale(0.0).Run(()=> new XAnimationPackage(_overlay).Opacity(0.0).Run(() =>
+					// Hide
+					new XAnimationPackage(_spinner).Duration(110).Scale(0.0).Run(()=>
+					new XAnimationPackage(_overlay).Duration(150).Opacity(0.0).Run(() =>
 					   {
 						   _provider.RemoveFromParent(_overlay);
 							_titleLabel.Text = title;
 						   _subTitleLabel.Text = subtitle;
 						   _spinner.IsRunning = false;
-					   }));
+						}));
 				}
 				else if (visible && _overlay.Parent == null)
-				{					
+				{		
+					// Show
 					_spinner.IsRunning = true;
 					_overlay.Opacity = 0.0;
 					_provider.AddToParent(_overlay);
-					new XAnimationPackage(_spinner).Scale(1.0).Run();
-					new XAnimationPackage(_overlay).Opacity(1.0).Run();
+					new XAnimationPackage(_overlay).Duration(150).Opacity(1.0).Run(
+						()=>new XAnimationPackage(_spinner).Duration(110).Scale(1.0).Run());
 				}
 			});
 		}
@@ -104,11 +106,13 @@ namespace NControl.Mvvm.Fluid
 		public CustomActivityIndicator()
 		{
 			// add spinners
-			Children.Add(new CustomActivitySpinner { BindingContext = this, Angle = 0, DurationMilliseconds = 2500 }
+			Children.Add(new CustomActivitySpinner { BindingContext = this, Angle = 0, 
+				DurationMilliseconds = 2500 }
 			             .BindTo(CustomActivitySpinner.IsRunningProperty, nameof(IsRunning)), () =>
-						  new Rectangle(0, 0, Width, Height));
+					  		new Rectangle(0, 0, Width, Height));
 
-			Children.Add(new CustomActivitySpinner { BindingContext = this, Angle = -70, DurationMilliseconds = 1500 }
+			Children.Add(new CustomActivitySpinner { BindingContext = this, IsCounterClockWise = true, Angle = 70, 
+				DurationMilliseconds = 1500 }
 			             .BindTo(CustomActivitySpinner.IsRunningProperty, nameof(IsRunning)), () =>
 			             new Rectangle(Width/2 - ((Width*0.75)/2), Height / 2 - ((Height * 0.75) / 2), 
 			                           Width*0.75, Height*0.75));
@@ -153,9 +157,9 @@ namespace NControl.Mvvm.Fluid
 				if (!_isDisposed && IsRunning)
 					new XAnimationPackage(this)
 						.Duration(DurationMilliseconds)
-						.Rotate(Angle + 360)
+						.Rotate(IsCounterClockWise ? -1 * (Angle + 360) : Angle + 360)
 						.Animate()
-						.Rotate(Angle)
+						.Rotate(IsCounterClockWise ? -1 * Angle : Angle)
 						.Set()
 						.Animate()
 						.Run(animationAction);
@@ -186,10 +190,27 @@ namespace NControl.Mvvm.Fluid
 		}
 
 		/// <summary>
+		/// The IsCounterClockWise property.
+		/// </summary>
+		public static BindableProperty IsCounterClockWiseProperty = BindableProperty.Create(
+			nameof(IsCounterClockWise), typeof(bool), typeof(CustomActivitySpinner), false,
+			BindingMode.OneWay);
+
+		/// <summary>
+		/// Gets or sets the IsCounterClockWise of the CustomActivitySpinner instance.
+		/// </summary>
+		public bool IsCounterClockWise
+		{
+			get { return (bool)GetValue(IsCounterClockWiseProperty); }
+			set { SetValue(IsCounterClockWiseProperty, value); }
+		}
+
+		/// <summary>
 		/// The SpinnerColor property.
 		/// </summary>
 		public static BindableProperty SpinnerColorProperty = BindableProperty.Create(
-			nameof(SpinnerColor), typeof(Color), typeof(CustomActivitySpinner), Color.White,
+			nameof(SpinnerColor), typeof(Color), typeof(CustomActivitySpinner), 
+			MvvmApp.Current.Colors.Get(Config.TextColor),
 			BindingMode.OneWay, null, propertyChanged: (bindable, oldValue, newValue) =>
 			{
 				var ctrl = (CustomActivitySpinner)bindable;

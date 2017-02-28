@@ -9,7 +9,8 @@ namespace NControl.Mvvm
 		{
 			ColumnSpacing = 0;
 			RowSpacing = 0;
-			Padding = new Thickness(8 * 2, 8);
+			Padding = new Thickness(MvvmApp.Current.Sizes.Get(Config.DefaultPadding) * 2, 
+           		MvvmApp.Current.Sizes.Get(Config.DefaultPadding));
 		}
 	}
 }

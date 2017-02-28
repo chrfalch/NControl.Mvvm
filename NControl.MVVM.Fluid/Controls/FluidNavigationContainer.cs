@@ -57,7 +57,7 @@ namespace NControl.Mvvm.Fluid
 
 			// Add statusbar container if necessary
 			_layout.Children.Add(
-				new BoxView { BackgroundColor = Color.Accent },
+				new BoxView { BackgroundColor = MvvmApp.Current.Colors.Get(Config.PrimaryDarkColor) },
 			 	() => new Rectangle(0, 0, _layout.Width, statusbarHeight));
 
 			// Add navigation bar

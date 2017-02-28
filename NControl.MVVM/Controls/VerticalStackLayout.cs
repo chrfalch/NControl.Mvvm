@@ -8,7 +8,7 @@ namespace NControl.Mvvm
 		public VerticalStackLayout()
 		{
 			Padding = 0;
-			// TODO: Spacing = SizeConstants.DefaultSpacing;
+			Spacing = MvvmApp.Current.Sizes.Get(Config.DefaultSpacing);
 			Orientation = StackOrientation.Vertical;
 		}
 	}
@@ -17,7 +17,7 @@ namespace NControl.Mvvm
 	{
 		public VerticalStackLayoutWithPadding()
 		{
-			// TODO:// Padding = SizeConstants.DefaultPadding * 2;
+			Padding = MvvmApp.Current.Sizes.Get(Config.DefaultPadding) * 2;
 		}
 	}
 }

@@ -8,15 +8,11 @@ namespace NControl.Mvvm
     /// </summary>
     public class VerticalWizardStackLayout: VerticalStackLayout
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:HomeDrive.App.VerticalWizardStackLayout"/> class.
-        /// </summary>
         public VerticalWizardStackLayout()
         {
-            VerticalOptions = LayoutOptions.Center;
-            // TODO:
-			//Spacing = SizeConstants.WizardSpacing;
-            //Padding = SizeConstants.WizardPadding;
+            VerticalOptions = LayoutOptions.Center;        
+			Spacing = MvvmApp.Current.Sizes.Get(Config.DefaultLargeSpacing);
+            Padding = MvvmApp.Current.Sizes.Get(Config.DefaultLargePadding);
         }
     }
 }

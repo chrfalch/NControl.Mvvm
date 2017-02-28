@@ -32,10 +32,10 @@ namespace NControl.Mvvm.Fluid
 
 		#region Properties
 
-		public static BindableProperty OverlayBackgroundColorProperty =
-			BindableProperty.Create(nameof(OverlayBackgroundColor), typeof(Color),
-									typeof(FluidModalContainer), Color.Gray.MultiplyAlpha(0.4),
-				BindingMode.OneWay);
+		public static BindableProperty OverlayBackgroundColorProperty = BindableProperty.Create(
+			nameof(OverlayBackgroundColor), typeof(Color),
+			typeof(FluidModalContainer), MvvmApp.Current.Colors.Get(Config.ViewTransparentBackgroundColor),
+			BindingMode.OneWay);
 
 		/// <summary>
 		/// Gets or sets the background color for the overlay

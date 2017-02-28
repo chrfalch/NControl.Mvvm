@@ -10,7 +10,6 @@ namespace NControl.Mvvm.Fluid
 {
 	public class FluidNavigationBar: StackLayout
 	{
-		bool _useSwapLabelNextTime = true;
 		readonly Grid _contentGrid;
 		readonly StackLayout _leftViewContainer;
 		readonly StackLayout _rightViewContainer;
@@ -23,7 +22,7 @@ namespace NControl.Mvvm.Fluid
 
 		public FluidNavigationBar()
 		{
-			BackgroundColor = Color.Accent;
+			BackgroundColor = MvvmApp.Current.Colors.Get(Config.PrimaryColor);
 			Spacing = 0;
 			Padding = 0;
 
@@ -52,7 +51,7 @@ namespace NControl.Mvvm.Fluid
 				BindingContext = this,
 				HorizontalTextAlignment = TextAlignment.Center,
 				VerticalTextAlignment = TextAlignment.Center,
-				TextColor = Color.Accent,
+				TextColor = MvvmApp.Current.Colors.Get(Config.AccentTextColor),
 
 			}.BindTo(Label.TextColorProperty, nameof(TintColor));
 
@@ -63,7 +62,7 @@ namespace NControl.Mvvm.Fluid
 				BindingContext = this,
 				HorizontalTextAlignment = TextAlignment.Center,
 				VerticalTextAlignment = TextAlignment.Center,
-				TextColor = Color.Accent,
+				TextColor = MvvmApp.Current.Colors.Get(Config.AccentTextColor),
 
 			}.BindTo(Label.TextColorProperty, nameof(TintColor));
 
@@ -82,8 +81,8 @@ namespace NControl.Mvvm.Fluid
 			Children.Add(_contentGrid);
 			Children.Add(new BoxView
 			{
-				HeightRequest = 0.5,
-				BackgroundColor = Color.Gray,
+				HeightRequest = MvvmApp.Current.Sizes.Get(Config.DefaultBorderSize),
+				BackgroundColor = MvvmApp.Current.Colors.Get(Config.BorderColor),
 			});
 
 			_backButton = new FontMaterialDesignLabel
@@ -107,7 +106,7 @@ namespace NControl.Mvvm.Fluid
 
 		public static BindableProperty TintColorProperty = BindableProperty.Create(
 			nameof(TintColor), typeof(Color), typeof(FluidNavigationBar), 
-			Color.White, BindingMode.OneWay);
+			MvvmApp.Current.Colors.Get(Config.TextColor), BindingMode.OneWay);
 
 		/// <summary>
 		/// Gets or sets the tint color.

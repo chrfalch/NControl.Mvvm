@@ -6,7 +6,7 @@ namespace NControl.Mvvm
 	{
 		public VerticalSpacer()
 		{
-			// TODO HeightRequest = SizeConstants.DefaultSpacing * 2;
+			HeightRequest = MvvmApp.Current.Sizes.Get(Config.DefaultSpacing) * 2;
 		}
 	}
 
@@ -14,7 +14,7 @@ namespace NControl.Mvvm
 	{
 		public LargeVerticalSpacer()
 		{
-			// TODO: HeightRequest = SizeConstants.DefaultSpacing * 4;
+			HeightRequest = MvvmApp.Current.Sizes.Get(Config.DefaultSpacing) * 4;
 		}
 	}
 }
