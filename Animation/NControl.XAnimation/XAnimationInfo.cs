@@ -17,6 +17,11 @@ namespace NControl.XAnimation
 		public double TranslationX { get; set; }
 		public double TranslationY { get; set; }
 		public double Opacity { get; set; }
+
+		/// <summary>
+		/// Set to true to indicate that we should not run this as an animation, just
+		/// apply transformations directly.
+		/// </summary>
 		public bool OnlyTransform { get; set; }
 
 		public XAnimationInfo(): this(null)
@@ -63,7 +68,9 @@ namespace NControl.XAnimation
 
 		public override string ToString()
 		{
-			return string.Format("[#{3}: Delay={0}, Duration={1}, Repeat={2}, Scale={4}, Rotate={5}, TranslationX={6}, TranslationY={7}, Opacity={8}]", Delay, Duration, false, AnimationId, Scale, Rotate, TranslationX, TranslationY, Opacity);
+			return string.Format(OnlyTransform ? "Set" : "Animate" + ": [#{3}: Delay={0}, Duration={1}, Repeat={2}, Scale={4}," + 
+			                     " Rotate={5}, TranslationX={6}, TranslationY={7}, Opacity={8}]", Delay, Duration, false, AnimationId, 
+			                     Scale, Rotate, TranslationX, TranslationY, Opacity);
 		}
 	}
 }

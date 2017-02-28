@@ -15,7 +15,7 @@ namespace NControl.Mvvm
 			{
 				Command = new AsyncCommand(async (obj) =>
 				{
-					var animation = new XAnimation.XAnimation(new[] { bindable });
+					var animation = new XAnimation.XAnimationPackage(new[] { bindable });
 					animation
 						.Duration(70)
 						.Scale(0.75)

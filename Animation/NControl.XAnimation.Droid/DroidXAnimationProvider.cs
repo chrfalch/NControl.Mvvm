@@ -18,10 +18,10 @@ namespace NControl.XAnimation.Droid
 	{
 		#region Private Members
 		float _displayDensity = 1.0f;
-		XAnimation _animation;
+		XAnimationPackage _animation;
 		#endregion
 
-		public void Initialize(XAnimation animation)
+		public void Initialize(XAnimationPackage animation)
 		{
 			_animation = animation;
 

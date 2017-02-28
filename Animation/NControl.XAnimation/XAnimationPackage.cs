@@ -9,7 +9,7 @@ namespace NControl.XAnimation
 	/// <summary>
 	/// Implements the abstract part of a native animation
 	/// </summary>
-	public class XAnimation
+	public class XAnimationPackage
 	{
 		#region Private Members
 
@@ -26,10 +26,16 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// Platform specific animation provider
 		/// </summary>
-		readonly IXAnimationProvider _animationProvider;
+		IXAnimationProvider _animationProvider;
 
 		/// <summary>
-		/// The state of the running.
+		/// The current info.
+		/// </summary>
+		XAnimationInfo _currentInfo;
+		XAnimationInfo _previousInfo;
+
+		/// <summary>
+		/// State of running/not running.
 		/// </summary>
 		bool _runningState = false;
 
@@ -40,12 +46,9 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// Constructs a new xanimation instance
 		/// </summary>
-		public XAnimation(params VisualElement[] elements)
+		public XAnimationPackage(params VisualElement[] elements)
 		{
 			_elements.AddRange(elements.Select(el => new WeakReference<VisualElement>(el)));
-
-			_animationProvider = DependencyService.Get<IXAnimationProvider>(DependencyFetchTarget.NewInstance);
-			_animationProvider.Initialize(this);
 
 			DoLog("Created animation for {0}.", string.Join(", ", _elements.Select(el => el.GetType().Name)));
 		}
@@ -54,7 +57,7 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// Rotates the view around the z axis
 		/// </summary>
-		public XAnimation Rotate(double rotation)
+		public XAnimationPackage Rotate(double rotation)
 		{
 			DoLog("Rotate({0})", rotation);
 			GetCurrentAnimation().Rotate = rotation;
@@ -65,7 +68,7 @@ namespace NControl.XAnimation
 		/// Fade to the specified opacity (between 0.0 -> 1.0 where 1.0 is non-transparent).
 		/// </summary>
 		/// <param name="opacity">Opacity.</param>
-		public XAnimation Opacity(double opacity)
+		public XAnimationPackage Opacity(double opacity)
 		{
 			DoLog("SetOpacity({0})", opacity);
 			GetCurrentAnimation().Opacity = opacity;
@@ -77,7 +80,7 @@ namespace NControl.XAnimation
 		/// </summary>
 		/// <returns>The scale.</returns>
 		/// <param name="scale">Scale.</param>
-		public XAnimation Scale(double scale)
+		public XAnimationPackage Scale(double scale)
 		{
 			DoLog("Scale({0})", scale);
 			GetCurrentAnimation().Scale = scale;
@@ -89,7 +92,7 @@ namespace NControl.XAnimation
 		/// </summary>
 		/// <param name="x">The x coordinate.</param>
 		/// <param name="y">The y coordinate.</param>
-		public XAnimation Translate(double x, double y)
+		public XAnimationPackage Translate(double x, double y)
 		{
 			DoLog("Translate({0}, {1})", x, y );
 			GetCurrentAnimation().TranslationX = x;
@@ -102,7 +105,7 @@ namespace NControl.XAnimation
 		/// Duration the specified milliseconds.
 		/// </summary>
 		/// <param name="milliseconds">Milliseconds.</param>
-		public XAnimation Duration(long milliseconds)
+		public XAnimationPackage Duration(long milliseconds)
 		{
 			DoLog("SetDuration({0})", milliseconds);
 			GetCurrentAnimation().Duration = milliseconds;
@@ -112,7 +115,7 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// Resets the transformation
 		/// </summary>
-		public XAnimation Reset()
+		public XAnimationPackage Reset()
 		{
 			DoLog("Reset()");
 			GetCurrentAnimation().Reset();
@@ -122,20 +125,20 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// Transform according to the animation
 		/// </summary>
-		public XAnimation Set()
+		public XAnimationPackage Set()
 		{
 			DoLog("Set()");
 			GetCurrentAnimation().OnlyTransform = true;
-			var previousAnimation = _animationInfos.LastOrDefault();
-			_animationInfos.Add(new XAnimationInfo(previousAnimation));
+			_previousInfo = GetCurrentAnimation();
+			_currentInfo = null;
 			return this;
 		}
 
-		public XAnimation Animate()
+		public XAnimationPackage Animate()
 		{
 			DoLog("Animate()");
-			var previousAnimation = _animationInfos.LastOrDefault();
-			_animationInfos.Add(new XAnimationInfo(previousAnimation));
+			_previousInfo = GetCurrentAnimation();
+			_currentInfo = null;
 
 			return this;
 		}
@@ -146,7 +149,7 @@ namespace NControl.XAnimation
 			_runningState = false;
 		}
 
-		public XAnimation Then()
+		public XAnimationPackage Then()
 		{
 			return this;
 		}
@@ -187,7 +190,7 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// Run multiple animations and return with completed action when all are done.
 		/// </summary>
-		public static void RunAll(IEnumerable<XAnimation> animations, Action completed = null)
+		public static void RunAll(IEnumerable<XAnimationPackage> animations, Action completed = null)
 		{
 			if (animations == null || animations.Count() == 0)
 			{
@@ -212,7 +215,7 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// Run multiple animations async
 		/// </summary>
-		public static Task RunAllAsync(IEnumerable<XAnimation> animations)
+		public static Task RunAllAsync(IEnumerable<XAnimationPackage> animations)
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			RunAll(animations, () => tcs.TrySetResult(true));
@@ -225,6 +228,11 @@ namespace NControl.XAnimation
 		/// <value>The tag.</value>
 		public int Tag { get; set; }
 
+		/// <summary>
+		/// Returns the animation info list
+		/// </summary>
+		public IEnumerable<XAnimationInfo> AnimationInfos { get { return _animationInfos; } }
+
 		#region Private Members
 
 		/// <summary>
@@ -233,8 +241,6 @@ namespace NControl.XAnimation
 		/// <param name="animationInfo">Animation info.</param>
 		void RunAnimation(XAnimationInfo animationInfo, Action completed)
 		{
-			DoLog("RunAnimation({0})", animationInfo);
-
 			Action HandleCompletedAction = () =>
 			{
 				// Start next
@@ -252,37 +258,53 @@ namespace NControl.XAnimation
 				}
 			};
 
+			if (_animationProvider == null)
+			{
+				_animationProvider = DependencyService.Get<IXAnimationProvider>(DependencyFetchTarget.NewInstance);
+				_animationProvider.Initialize(this);
+			}
+
 			if (animationInfo.OnlyTransform)
 			{
+				DoLog("SetTransformation({0})", animationInfo);
 				_animationProvider.Set(animationInfo);
 				HandleCompletedAction();
 			}
-
-			// Tell the animation provider to animate
-			_animationProvider.Animate(animationInfo, () =>
+			else
 			{
-				DoLog("Animation Done Callback({0})", animationInfo);
+				DoLog("RunAnimation({0})", animationInfo);
 
-				HandleCompletedAction();
-			});
+				// Tell the animation provider to animate
+				_animationProvider.Animate(animationInfo, () =>
+				{
+					DoLog("Animation Done Callback({0})", animationInfo);
+					HandleCompletedAction();
+				});
+			}
 		}
 
 		/// <summary>
 		/// Gets the current animation.
 		/// </summary>
-		/// <returns>The current animation.</returns>
 		XAnimationInfo GetCurrentAnimation()
 		{
-			if (_animationInfos.Count == 0)
-				_animationInfos.Add(new XAnimationInfo());			
+			if (_animationInfos.Count == 0 || _currentInfo == null)
+			{
+				_currentInfo = new XAnimationInfo(_previousInfo);
+				_animationInfos.Add(_currentInfo);
+				_previousInfo = null;
+			}
 
 			return _animationInfos.Last();
 		}
 
+		/// <summary>
+		/// Log
+		/// </summary>
 		void DoLog(string message, params object[] args)
 		{			
-			//var ticks = DateTime.Now;				
-			//System.Diagnostics.Debug.WriteLine(ticks.TimeOfDay + " - XAnimation: " + string.Format(message, args));
+			var ticks = DateTime.Now;				
+			System.Diagnostics.Debug.WriteLine(ticks.TimeOfDay + " - XAnimation: " + string.Format(message, args));
 		}
 
 		#endregion

@@ -164,12 +164,12 @@ namespace NControl.Mvvm.Fluid
 			if (newValue != oldValue)
 			{
 				if((bool)newValue)
-					new XAnimation.XAnimation(ctrl._backButton)
+					new XAnimation.XAnimationPackage(ctrl._backButton)
 					  .Opacity(1.0)
 		              .Animate()
 		              .Run();
 				else
-					new XAnimation.XAnimation(ctrl._backButton)
+					new XAnimation.XAnimationPackage(ctrl._backButton)
 					  .Opacity(0.0)
 					  .Animate()
 		              .Run();

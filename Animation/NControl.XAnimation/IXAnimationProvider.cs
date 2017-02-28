@@ -7,7 +7,7 @@ namespace NControl.XAnimation
 
 	public interface IXAnimationProvider
 	{
-		void Initialize(XAnimation animation);
+		void Initialize(XAnimationPackage animation);
 		void Animate(XAnimationInfo animationInfo, Action completed);
 		void Set(XAnimationInfo animationInfo);
 	}

@@ -67,17 +67,17 @@ namespace NControl.Mvvm.Fluid
 
 		#region Transitions
 
-		public IEnumerable<XAnimation.XAnimation> TransitionIn(
+		public IEnumerable<XAnimation.XAnimationPackage> TransitionIn(
 			View view, PresentationMode presentationMode)
 		{
 			return new[] {
-				new XAnimation.XAnimation(_overlay)
+				new XAnimation.XAnimationPackage(_overlay)
 					  .Opacity(0.0)
 					  .Set()
 					  .Opacity(0.4)
 					  .Animate(),
 
-				new XAnimation.XAnimation(_container)
+				new XAnimation.XAnimationPackage(_container)
 					.Translate(0, Height)
 					.Set()
 					.Translate(0, 0)
@@ -85,15 +85,15 @@ namespace NControl.Mvvm.Fluid
 			};
 		}
 
-		public IEnumerable<XAnimation.XAnimation> TransitionOut(
+		public IEnumerable<XAnimation.XAnimationPackage> TransitionOut(
 			View view, PresentationMode presentationMode)
 		{
 			return new[] {
-				new XAnimation.XAnimation(_overlay)
+				new XAnimation.XAnimationPackage(_overlay)
 					  .Opacity(0.0)
 					  .Animate(),
 
-				new XAnimation.XAnimation(_container)
+				new XAnimation.XAnimationPackage(_container)
 					.Translate(0, Height)
 					.Animate()
 			};

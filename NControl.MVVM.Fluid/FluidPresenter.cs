@@ -222,7 +222,7 @@ namespace NControl.Mvvm
 					var animations = (currentContext.Container as IXAnimatable).TransitionIn(
 						contents, presentationMode);
 
-					XAnimation.XAnimation.RunAll(animations, () => tcs.TrySetResult(true));
+					XAnimation.XAnimationPackage.RunAll(animations, () => tcs.TrySetResult(true));
 				}
 				else
 				{
@@ -264,7 +264,7 @@ namespace NControl.Mvvm
 					var animations = (container as IXAnimatable).TransitionIn(
 						container.GetRootView(), presentationMode);
 
-					XAnimation.XAnimation.RunAll(animations, () => tcs.TrySetResult(true));
+					XAnimation.XAnimationPackage.RunAll(animations, () => tcs.TrySetResult(true));
 				}
 				else
 				{
@@ -304,7 +304,7 @@ namespace NControl.Mvvm
 
 				// Should we animate?
 				if (animate && currentContext.Container is IXAnimatable)
-					XAnimation.XAnimation.RunAll(
+					XAnimation.XAnimationPackage.RunAll(
 						(currentContext.Container as IXAnimatable).TransitionOut(
 						view, presentationMode), removeAction);				
 				else
@@ -340,7 +340,7 @@ namespace NControl.Mvvm
 				};
 
 				if (animate && currentContext.Container is IXAnimatable)
-					XAnimation.XAnimation.RunAll(
+					XAnimation.XAnimationPackage.RunAll(
 						(currentContext.Container as IXAnimatable).TransitionOut(
 							currentContext.Container as View, presentationMode), removeAction);
 				else

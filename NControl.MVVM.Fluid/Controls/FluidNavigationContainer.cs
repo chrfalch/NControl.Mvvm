@@ -201,7 +201,7 @@ namespace NControl.Mvvm.Fluid
 		/// <summary>
 		/// Transition a new view in 
 		/// </summary>
-		public virtual IEnumerable<XAnimation.XAnimation> TransitionIn(
+		public virtual IEnumerable<XAnimation.XAnimationPackage> TransitionIn(
 			View view, PresentationMode presentationMode)
 		{
 			if (presentationMode == PresentationMode.Default)
@@ -210,14 +210,14 @@ namespace NControl.Mvvm.Fluid
 				var fromView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
 
 				// Animate the new contents in
-				var animateContentsIn = new XAnimation.XAnimation(new[] { view });
+				var animateContentsIn = new XAnimation.XAnimationPackage(new[] { view });
 				animateContentsIn
 					.Translate(Width, 0)
 					.Set()
 					.Translate(0, 0);
 
 				// Move previous a litle bit out
-				var animatePreviousOut = new XAnimation.XAnimation(new[] { fromView });
+				var animatePreviousOut = new XAnimation.XAnimationPackage(new[] { fromView });
 				animatePreviousOut
 					.Translate(-(Width / 4), 0);
 
@@ -226,7 +226,7 @@ namespace NControl.Mvvm.Fluid
 			else if (presentationMode == PresentationMode.Modal)
 			{
 				// Animate the new contents in
-				var animateContentsIn = new XAnimation.XAnimation(new[] { view });
+				var animateContentsIn = new XAnimation.XAnimationPackage(new[] { view });
 				animateContentsIn
 					.Translate(0, Height)
 					.Set()
@@ -237,7 +237,7 @@ namespace NControl.Mvvm.Fluid
 			else if (presentationMode == PresentationMode.Popup)
 			{
 				// Animate the new contents in
-				var animateContentsIn = new XAnimation.XAnimation(new[] { view });
+				var animateContentsIn = new XAnimation.XAnimationPackage(new[] { view });
 				animateContentsIn
 					.Translate(0, Height)
 					.Set()
@@ -252,7 +252,7 @@ namespace NControl.Mvvm.Fluid
 		/// <summary>
 		/// Transitions the out.
 		/// </summary>
-		public virtual IEnumerable<XAnimation.XAnimation> TransitionOut(View view, PresentationMode presentationMode)
+		public virtual IEnumerable<XAnimation.XAnimationPackage> TransitionOut(View view, PresentationMode presentationMode)
 		{
 			if (presentationMode == PresentationMode.Default)
 			{
@@ -262,8 +262,8 @@ namespace NControl.Mvvm.Fluid
 				// Animate
 				return new[]
 				{
-					new XAnimation.XAnimation(new[] { view }).Translate(Width, 0),
-					new XAnimation.XAnimation(new[] { toView }).Translate(0, 0)
+					new XAnimation.XAnimationPackage(new[] { view }).Translate(Width, 0),
+					new XAnimation.XAnimationPackage(new[] { toView }).Translate(0, 0)
 				};
 			}
 
@@ -272,7 +272,7 @@ namespace NControl.Mvvm.Fluid
 				// Animate
 				return new[]
 				{
-					new XAnimation.XAnimation(new[] { view }).Translate(0, Height),
+					new XAnimation.XAnimationPackage(new[] { view }).Translate(0, Height),
 				};
 			}
 
@@ -312,7 +312,7 @@ namespace NControl.Mvvm.Fluid
 			var distance = toViewTranslationX - view.TranslationX;
 			var duration = Math.Min(0.2, Math.Max(0.2, velocity.Equals(-1) ? 0.2f : distance / velocity));
 
-			new XAnimation.XAnimation(view)
+			new XAnimation.XAnimationPackage(view)
 				.Duration((long)(duration*1000))
 				.Translate(toViewTranslationX, 0)
 				.Animate()
@@ -323,7 +323,7 @@ namespace NControl.Mvvm.Fluid
 			});
 
 			if(fromView != null)
-				new XAnimation.XAnimation(fromView)
+				new XAnimation.XAnimationPackage(fromView)
 					.Duration((long)(duration * 1000))
 					.Translate(fromViewTranslationX, 0)
 					.Animate()

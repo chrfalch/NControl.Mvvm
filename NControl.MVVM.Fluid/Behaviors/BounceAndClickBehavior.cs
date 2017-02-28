@@ -33,7 +33,7 @@ namespace NControl.Mvvm
 
 					if (_clickCommand != null && _clickCommand.CanExecute(_clickCommandParameter))
 					{
-						var animation = new XAnimation.XAnimation(new[] { bindable });
+						var animation = new XAnimation.XAnimationPackage(new[] { bindable });
 						animation
 							.Duration(70)
 							.Scale(0.75)

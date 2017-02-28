@@ -20,11 +20,20 @@ namespace MvvmDemo
 			Companies.AddRange (Company.CompanyRepository);
 
 			await Task.Run (async() => {
-				MvvmApp.Current.ActivityIndicator.UpdateProgress (true, "Loading...");
+				while (true)
+				{
+					MvvmApp.Current.ActivityIndicator.UpdateProgress(true, "Loading...", "Loading everything. This will be so go that... bla bla.");
 
-				await Task.Delay (1000);
+					await Task.Delay(1500);
+					MvvmApp.Current.ActivityIndicator.UpdateProgress(true, "Preparing...", "Preparing everything. This will be so go that... bla bla.");
 
-				MvvmApp.Current.ActivityIndicator.UpdateProgress (false);
+					await Task.Delay(1500);
+					MvvmApp.Current.ActivityIndicator.UpdateProgress(true, "Finding...", "Finding everything. This will be so go that... bla bla.");
+
+					await Task.Delay(1500);
+				}
+
+				//MvvmApp.Current.ActivityIndicator.UpdateProgress (false);
 			});
 		}
 
