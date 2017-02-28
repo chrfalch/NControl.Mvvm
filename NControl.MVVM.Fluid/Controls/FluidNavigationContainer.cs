@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
+using NControl.XAnimation;
 using Xamarin.Forms;
 
 namespace NControl.Mvvm.Fluid
@@ -201,7 +202,7 @@ namespace NControl.Mvvm.Fluid
 		/// <summary>
 		/// Transition a new view in 
 		/// </summary>
-		public virtual IEnumerable<XAnimation.XAnimationPackage> TransitionIn(
+		public virtual IEnumerable<XAnimationPackage> TransitionIn(
 			View view, PresentationMode presentationMode)
 		{
 			if (presentationMode == PresentationMode.Default)

@@ -15,6 +15,7 @@ using Xamarin.Forms;
 using System.Linq;
 using System.Reflection;
 using NControl.Mvvm.Fluid;
+using NControl.XAnimation;
 
 namespace NControl.Mvvm
 {
@@ -264,7 +265,7 @@ namespace NControl.Mvvm
 					var animations = (container as IXAnimatable).TransitionIn(
 						container.GetRootView(), presentationMode);
 
-					XAnimation.XAnimationPackage.RunAll(animations, () => tcs.TrySetResult(true));
+					XAnimationPackage.RunAll(animations, () => tcs.TrySetResult(true));
 				}
 				else
 				{
@@ -304,7 +305,7 @@ namespace NControl.Mvvm
 
 				// Should we animate?
 				if (animate && currentContext.Container is IXAnimatable)
-					XAnimation.XAnimationPackage.RunAll(
+					XAnimationPackage.RunAll(
 						(currentContext.Container as IXAnimatable).TransitionOut(
 						view, presentationMode), removeAction);				
 				else
@@ -340,7 +341,7 @@ namespace NControl.Mvvm
 				};
 
 				if (animate && currentContext.Container is IXAnimatable)
-					XAnimation.XAnimationPackage.RunAll(
+					XAnimationPackage.RunAll(
 						(currentContext.Container as IXAnimatable).TransitionOut(
 							currentContext.Container as View, presentationMode), removeAction);
 				else

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 using NControl.Mvvm;
+using NControl.XAnimation;
 using Xamarin.Forms;
 
 namespace NControl.Mvvm
@@ -33,7 +34,7 @@ namespace NControl.Mvvm
 
 					if (_clickCommand != null && _clickCommand.CanExecute(_clickCommandParameter))
 					{
-						var animation = new XAnimation.XAnimationPackage(new[] { bindable });
+						var animation = new XAnimationPackage(new[] { bindable });
 						animation
 							.Duration(70)
 							.Scale(0.75)

@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using Xamarin.Forms;
 using NControl.Controls;
 using System.Windows.Input;
+using NControl.XAnimation;
 
 namespace NControl.Mvvm.Fluid
 {
@@ -164,12 +165,12 @@ namespace NControl.Mvvm.Fluid
 			if (newValue != oldValue)
 			{
 				if((bool)newValue)
-					new XAnimation.XAnimationPackage(ctrl._backButton)
+					new XAnimationPackage(ctrl._backButton)
 					  .Opacity(1.0)
 		              .Animate()
 		              .Run();
 				else
-					new XAnimation.XAnimationPackage(ctrl._backButton)
+					new XAnimationPackage(ctrl._backButton)
 					  .Opacity(0.0)
 					  .Animate()
 		              .Run();

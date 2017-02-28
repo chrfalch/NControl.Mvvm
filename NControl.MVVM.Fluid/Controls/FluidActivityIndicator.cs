@@ -151,7 +151,7 @@ namespace NControl.Mvvm.Fluid
 			animationAction = () =>
 			{
 				if (!_isDisposed && IsRunning)
-					new XAnimation.XAnimationPackage(this)
+					new XAnimationPackage(this)
 						.Duration(DurationMilliseconds)
 						.Rotate(Angle + 360)
 						.Animate()

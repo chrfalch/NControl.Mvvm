@@ -1,5 +1,6 @@
 ﻿using System;
 using NControl.Mvvm;
+using NControl.XAnimation;
 using Xamarin.Forms;
 
 namespace NControl.Mvvm
@@ -15,7 +16,7 @@ namespace NControl.Mvvm
 			{
 				Command = new AsyncCommand(async (obj) =>
 				{
-					var animation = new XAnimation.XAnimationPackage(new[] { bindable });
+					var animation = new XAnimationPackage(new[] { bindable });
 					animation
 						.Duration(70)
 						.Scale(0.75)
