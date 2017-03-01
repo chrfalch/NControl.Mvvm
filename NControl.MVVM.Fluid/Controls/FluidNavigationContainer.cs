@@ -37,7 +37,7 @@ namespace NControl.Mvvm.Fluid
 			Content = _layout = new RelativeLayout();
 
 			var statusbarHeight = Device.OnPlatform(22, 0, 22);
-			var navigationBarHeight = 44;
+			var navigationBarHeight = 46;
 
 			_navigationBar = new FluidNavigationBar { 
 				BindingContext = this, 

@@ -20,7 +20,7 @@ namespace NControl.Mvvm
 			_colors[Config.TextColor] = Color.White;
 			_colors[Config.BorderColor] = Color.FromHex("CECECE");
 			_colors[Config.ViewBackgroundColor] = Color.FromHex("FEFEFE");
-			_colors[Config.ViewTransparentBackgroundColor] = Color.Black.MultiplyAlpha(0.85);
+			_colors[Config.ViewTransparentBackgroundColor] = Color.Black.MultiplyAlpha(0.75);
 			_colors[Config.AccentTextColor] = Color.Accent;
 		}
 

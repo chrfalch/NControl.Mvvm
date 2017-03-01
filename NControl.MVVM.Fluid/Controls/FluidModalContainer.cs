@@ -74,7 +74,7 @@ namespace NControl.Mvvm.Fluid
 				new XAnimationPackage(_overlay)
 					  .Opacity(0.0)
 					  .Set()
-					  .Opacity(0.4)
+					  .Opacity(1.0)
 					  .Animate(),
 
 				new XAnimationPackage(_container)
@@ -85,7 +85,7 @@ namespace NControl.Mvvm.Fluid
 			};
 		}
 
-		public IEnumerable<XAnimation.XAnimationPackage> TransitionOut(
+		public IEnumerable<XAnimationPackage> TransitionOut(
 			View view, PresentationMode presentationMode)
 		{
 			return new[] {

@@ -46,7 +46,7 @@ namespace NControl.Mvvm.Fluid
 			// Create two labels
 			_titleLabel = new Label
 			{
-				HeightRequest = 44,
+				HeightRequest = 46,
 				InputTransparent = true,
 				BindingContext = this,
 				HorizontalTextAlignment = TextAlignment.Center,
@@ -57,7 +57,7 @@ namespace NControl.Mvvm.Fluid
 
 			_titleSwapLabel = new Label
 			{
-				HeightRequest = 44,
+				HeightRequest = 46,
 				InputTransparent = true,
 				BindingContext = this,
 				HorizontalTextAlignment = TextAlignment.Center,

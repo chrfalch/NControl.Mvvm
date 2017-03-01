@@ -31,7 +31,7 @@ namespace NControl.Mvvm.Fluid
 
 			_spinner = new CustomActivityIndicator
 			{
-				HeightRequest = 44,
+				HeightRequest = 38,
 			};
 
 			_overlay = new ContentView
@@ -47,8 +47,8 @@ namespace NControl.Mvvm.Fluid
 							Spacing =0,
 							HorizontalOptions = LayoutOptions.Center,
 							VerticalOptions = LayoutOptions.Center,
-							HeightRequest = 44,
-							WidthRequest = 44,
+							HeightRequest = 38,
+							WidthRequest = 38,
 							Children = {
 								_spinner
 							}
@@ -114,13 +114,13 @@ namespace NControl.Mvvm.Fluid
 			Children.Add(new CustomActivitySpinner { BindingContext = this, IsCounterClockWise = true, Angle = 70, 
 				DurationMilliseconds = 1500 }
 			             .BindTo(CustomActivitySpinner.IsRunningProperty, nameof(IsRunning)), () =>
-			             new Rectangle(Width/2 - ((Width*0.75)/2), Height / 2 - ((Height * 0.75) / 2), 
-			                           Width*0.75, Height*0.75));
+			             new Rectangle(Width/2 - ((Width*0.80)/2), Height / 2 - ((Height * 0.80) / 2), 
+			                           Width*0.80, Height*0.80));
 
 			Children.Add(new CustomActivitySpinner { BindingContext = this, Angle = 160, DurationMilliseconds = 1000 }
 			             .BindTo(CustomActivitySpinner.IsRunningProperty, nameof(IsRunning)), () =>
-						 new Rectangle(Width / 2 - ((Width * 0.5) / 2), Height / 2 - ((Height * 0.5) / 2), 
-			                           Width * 0.5, Height * 0.5));
+						 new Rectangle(Width / 2 - ((Width * 0.60) / 2), Height / 2 - ((Height * 0.6) / 2), 
+			                           Width * 0.6, Height * 0.60));
 		}
 
 		/// <summary>
