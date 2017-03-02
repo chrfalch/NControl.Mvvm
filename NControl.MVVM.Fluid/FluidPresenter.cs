@@ -223,7 +223,7 @@ namespace NControl.Mvvm
 					var animations = (currentContext.Container as IXAnimatable).TransitionIn(
 						contents, presentationMode);
 
-					XAnimation.XAnimationPackage.RunAll(animations, () => tcs.TrySetResult(true));
+					XAnimationPackage.RunAll(animations, () => tcs.TrySetResult(true));
 				}
 				else
 				{
@@ -240,11 +240,11 @@ namespace NControl.Mvvm
 
 				if (presentationMode == PresentationMode.Modal)
 				{
-					container = _navigationContainerProvider.CreateNavigationContainer();
+					container = _navigationContainerProvider.CreateModalNavigationContainer();
 				}
 				else
 				{
-					container = _navigationContainerProvider.CreateModalAndPopupNavigationContainer(
+					container = _navigationContainerProvider.CreatePopupNavigationContainer(
 						new Size(_contentPage.Container.Width * 0.8, _contentPage.Container.Height * 0.7));					
 				}
 
@@ -252,10 +252,11 @@ namespace NControl.Mvvm
 				if (navigationContainer == null)
 					throw new InvalidOperationException("Need a INavigationContainer when " +
 														"showing modal or as popup.");
-				
+
+				// Add contents
 				navigationContainer.AddChild(contents, presentationMode);
 
-				// Add to container
+				// Add navigation container to the container
 				_contentPage.Container.Children.Add(container.GetRootView(), 0, 0);
 				_contentPage.Stack.Push(new NavigationContext(navigationContainer, dismissedCallback));
 				_contentPage.Stack.Peek().NavigationStack.Push(contents);

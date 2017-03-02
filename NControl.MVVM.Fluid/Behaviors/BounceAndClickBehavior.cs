@@ -4,52 +4,34 @@ using NControl.Mvvm;
 using NControl.XAnimation;
 using Xamarin.Forms;
 
-namespace NControl.Mvvm
+namespace NControl.Mvvm.Fluid
 {
-	public class BounceAndClickBehavior: Behavior<View>
+	public class BounceAndClickBehavior: ClickBehavior
 	{
-		readonly ICommand _clickCommand;
-		readonly object _clickCommandParameter;
-		readonly Func<ICommand> _commandFunc;
+		BounceBehavior _bouncer = new BounceBehavior(); 
 
-		public BounceAndClickBehavior(ICommand clickCommand)
-		{
-			_clickCommand = clickCommand;
-		}
-
-		public BounceAndClickBehavior(ICommand clickCommand, object clickCommandParameter)
-		{
-			_clickCommand = clickCommand;
-			_clickCommandParameter = clickCommandParameter;
-		}
+		public BounceAndClickBehavior(Func<ICommand> commandFunc) : base(commandFunc) {}
+		public BounceAndClickBehavior(Func<ICommand> commandFunc, Func<object> commandParameterFunc): base(commandFunc, commandParameterFunc) {}
+		public BounceAndClickBehavior(ICommand clickCommand) : base(clickCommand) {}
+		public BounceAndClickBehavior(ICommand clickCommand, object clickCommandParameter) : base(clickCommand, clickCommandParameter) { }
 
 		protected override void OnAttachedTo(View bindable)
-		{
+		{						
 			base.OnAttachedTo(bindable);
+			_bouncer.AttachTo(bindable);
+			_bouncer.Tapped += _bouncer_Tapped;
+		}		
 
-			// Perform setup
-			bindable.AddGestureRecognizerTo(new TapGestureRecognizer
-			{
-				Command = new AsyncCommand(async (obj) => {
+		protected override void OnDetachingFrom(View bindable)
+		{			
+			base.OnDetachingFrom(bindable);
+			_bouncer.DetachingFrom(bindable);
+			_bouncer.Tapped -= _bouncer_Tapped;
+		}
 
-					if (_clickCommand != null && _clickCommand.CanExecute(_clickCommandParameter))
-					{
-						var animation = new XAnimationPackage(new[] { bindable });
-						animation
-							.Duration(70)
-							.Scale(0.75)
-							.Animate()
-							.Duration(70)
-							.Scale(1.0)
-							.Animate();
-
-						_clickCommand.Execute(_clickCommandParameter);
-						await animation.RunAsync();
-					}
-				})
-			});
+		void _bouncer_Tapped(object sender, EventArgs e)
+		{
+			ExecuteCommand();
 		}
 	}
-
-	
 }

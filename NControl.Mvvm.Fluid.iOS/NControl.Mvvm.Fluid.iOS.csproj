@@ -86,7 +86,7 @@
     </ProjectReference>
     <ProjectReference Include="..\NControl.MVVM.Fluid\NControl.MVVM.Fluid.csproj">
       <Project>{D757C407-D204-468E-8A85-8A3C79712FD6}</Project>
-      <Name>NControl.MVVM.Fluid</Name>
+      <Name>NControl.Mvvm.Fluid</Name>
     </ProjectReference>
     <ProjectReference Include="..\Animation\NControl.XAnimation\NControl.XAnimation.csproj">
       <Project>{5417603E-26FE-4000-AEDC-7B13AF7D2909}</Project>

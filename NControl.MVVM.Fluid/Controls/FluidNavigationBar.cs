@@ -5,6 +5,7 @@ using Xamarin.Forms;
 using NControl.Controls;
 using System.Windows.Input;
 using NControl.XAnimation;
+using System.Linq;
 
 namespace NControl.Mvvm.Fluid
 {
@@ -15,7 +16,6 @@ namespace NControl.Mvvm.Fluid
 		readonly StackLayout _rightViewContainer;
 		readonly ContentView _titleContentView;
 		readonly Label _titleLabel;
-		readonly Label _titleSwapLabel;
 		readonly FontMaterialDesignLabel _backButton;
 		readonly ObservableCollectionWithAddRange<ToolbarItem> _toolbarItems =
 			new ObservableCollectionWithAddRange<ToolbarItem>();
@@ -26,38 +26,29 @@ namespace NControl.Mvvm.Fluid
 			Spacing = 0;
 			Padding = 0;
 
+			var navigationBarHeight = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultNavigationBarHeight);
+
 			_toolbarItems.CollectionChanged += HandleToolbarItemsCollectionChanged;
 
 			_leftViewContainer = new StackLayout { 
 				Orientation = StackOrientation.Horizontal,
-				Spacing = 4,
-				Padding = new Thickness(12, 2),
+				Spacing = 0,
+				Padding = new Thickness(0, 0),
 				HorizontalOptions = LayoutOptions.StartAndExpand,
 			};
 
 			_rightViewContainer = new StackLayout
 			{
 				Orientation = StackOrientation.Horizontal,
-				Spacing = 4,
-				Padding = new Thickness(12, 2),
+				Spacing = 0,
+				Padding = new Thickness(0, 0),
 				HorizontalOptions = LayoutOptions.EndAndExpand,
 			};
 
 			// Create two labels
 			_titleLabel = new Label
 			{
-				HeightRequest = 46,
-				InputTransparent = true,
-				BindingContext = this,
-				HorizontalTextAlignment = TextAlignment.Center,
-				VerticalTextAlignment = TextAlignment.Center,
-				TextColor = MvvmApp.Current.Colors.Get(Config.AccentTextColor),
-
-			}.BindTo(Label.TextColorProperty, nameof(TintColor));
-
-			_titleSwapLabel = new Label
-			{
-				HeightRequest = 46,
+				HeightRequest = navigationBarHeight,
 				InputTransparent = true,
 				BindingContext = this,
 				HorizontalTextAlignment = TextAlignment.Center,
@@ -70,7 +61,7 @@ namespace NControl.Mvvm.Fluid
 			_titleContentView = new ContentView
 			{
 				Content = new Grid { 
-					Children = { _titleLabel, _titleSwapLabel }
+					Children = { _titleLabel }
 				}
 			};
 
@@ -79,16 +70,12 @@ namespace NControl.Mvvm.Fluid
 			_contentGrid.Children.Add(_rightViewContainer);
 
 			Children.Add(_contentGrid);
-			Children.Add(new BoxView
-			{
-				HeightRequest = MvvmApp.Current.Sizes.Get(Config.DefaultBorderSize),
-				BackgroundColor = MvvmApp.Current.Colors.Get(Config.BorderColor),
-			});
 
 			_backButton = new FontMaterialDesignLabel
 			{
 				Text = FontMaterialDesignLabel.MDArrowLeft,
 				Opacity = BackButtonVisible ? 1.0 : 0.0,
+				Margin = new Thickness(12, 0, 0, 0),
 				BindingContext = this,
 				HorizontalTextAlignment = TextAlignment.Start,
 
@@ -99,7 +86,10 @@ namespace NControl.Mvvm.Fluid
 					 BackButtonCommand.Execute(null);
 			 })));
 
-			_leftViewContainer.Children.Add(new FluidToolbarControl(_backButton));
+			_leftViewContainer.Children.Add(new FluidToolbarControl(_backButton)
+			{				
+				WidthRequest = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultToolbarItemWidth) + 12,
+			});
 		}
 
 		#region Properties
@@ -253,6 +243,14 @@ namespace NControl.Mvvm.Fluid
 					
 					_rightViewContainer.Children.Add(toolbarControl);
 				}
+			}
+
+			// Update last item with bigger width
+			var lastToolbarItem = _rightViewContainer.Children.LastOrDefault() as FluidToolbarControl;
+			if (lastToolbarItem != null)
+			{
+				lastToolbarItem.Content.Margin = new Thickness(0, 0, 12, 0);
+				lastToolbarItem.WidthRequest = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultToolbarItemWidth) + 12;
 			}
 		}
 		#endregion

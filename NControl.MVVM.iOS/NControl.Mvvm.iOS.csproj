@@ -95,6 +95,8 @@
     <Compile Include="Platform\TouchNavigationPageRenderer.cs" />
     <Compile Include="Platform\ViewCellRenderer.cs" />
     <Compile Include="Platform\TouchEnvironmentProvider.cs" />
+    <Compile Include="Platform\TouchGestureRecognizerProvider.cs" />
+    <Compile Include="Platform\TouchGestureRecognizer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>

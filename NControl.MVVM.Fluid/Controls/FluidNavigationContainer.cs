@@ -25,6 +25,7 @@ namespace NControl.Mvvm.Fluid
 
 		readonly RelativeLayout _layout;
 		readonly Grid _container;
+		readonly StackLayout _navigationContainer;
 		readonly FluidNavigationBar _navigationBar;
 
 		#endregion
@@ -36,8 +37,8 @@ namespace NControl.Mvvm.Fluid
 		{
 			Content = _layout = new RelativeLayout();
 
-			var statusbarHeight = Device.OnPlatform(22, 0, 22);
-			var navigationBarHeight = 46;
+			var statusbarHeight = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultStatusbarHeight);
+			var navigationBarHeight = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultNavigationBarHeight);
 
 			_navigationBar = new FluidNavigationBar { 
 				BindingContext = this, 
@@ -55,23 +56,59 @@ namespace NControl.Mvvm.Fluid
 
 			_container = new Grid();
 
-			// Add statusbar container if necessary
-			_layout.Children.Add(
-				new BoxView { BackgroundColor = MvvmApp.Current.Colors.Get(Config.PrimaryDarkColor) },
-			 	() => new Rectangle(0, 0, _layout.Width, statusbarHeight));
+			_navigationContainer = new StackLayout
+			{
+				Padding = 0,
+				Spacing = 0,
+				Orientation = StackOrientation.Vertical,
+				Children = {
+					new BoxView {
+						BackgroundColor = MvvmApp.Current.Colors.Get(Config.PrimaryColor),
+						HeightRequest = statusbarHeight,
+					},
 
-			// Add navigation bar
-			_layout.Children.Add(_navigationBar, () => new Rectangle(
-				0, statusbarHeight, _layout.Width, navigationBarHeight));
+					_navigationBar,
+				},
+			};
+
+			_AddViewsToBottomOfStack(_layout);
+
+			// Add navigation container
+			_layout.Children.Add(
+				_navigationContainer,() => new Rectangle(0, 0, _layout.Width, statusbarHeight + navigationBarHeight));
 
 			// Add contents container
 			_layout.Children.Add(_container, () => new Rectangle(
 				0, statusbarHeight + navigationBarHeight, _layout.Width,
 				_layout.Height - (statusbarHeight + navigationBarHeight)));
 
+			_AddViewsToTopOfStack(_layout);
+
 			// Bindings
 			this.BindTo(TitleProperty, nameof(IViewModel.Title));
 		}
+
+		#region Protected Members
+
+		void _AddViewsToBottomOfStack(RelativeLayout layout)
+		{
+			AddViewsToBottomOfStack(layout);
+		}
+
+		void _AddViewsToTopOfStack(RelativeLayout layout)
+		{
+			AddViewsToTopOfStack(layout);
+		}
+
+		protected virtual void AddViewsToBottomOfStack(RelativeLayout layout)
+		{
+		}
+
+		protected virtual void AddViewsToTopOfStack(RelativeLayout layout)
+		{
+		}
+
+		#endregion
 
 		#region Properties
 
@@ -95,6 +132,9 @@ namespace NControl.Mvvm.Fluid
 
 		#region Public Members
 
+		/// <summary>
+		/// Callback from gesture recognizer in platform code
+		/// </summary>
 		public void UpdateFromGestureRecognizer(double x, double velocity, PanState state)
 		{
 			var view = _container.Children.Last();
@@ -158,7 +198,7 @@ namespace NControl.Mvvm.Fluid
 			if (_container == null)
 				return "Empty";
 
-			return string.Join(", ", _container.Children.Select(v => v.GetType().Name));
+			return "FluidNavigationContainer: " + string.Join(", ", _container.Children.Select(v => v.GetType().Name));
 		}
 
 		/// <summary>
@@ -197,7 +237,27 @@ namespace NControl.Mvvm.Fluid
 
 		#endregion
 
-		#region Transitions
+		#region Transitions (IXAnimatable)
+
+		public View GetNavigationBarView()
+		{
+			return _navigationContainer;
+		}
+
+		public View GetContainerView()
+		{
+			return _container;
+		}
+
+		public View GetChild(int index)
+		{
+			return _container.Children.ElementAt(index);
+		}
+
+		public virtual View GetOverlayView()
+		{
+			return null;
+		}
 
 		/// <summary>
 		/// Transition a new view in 
@@ -211,40 +271,57 @@ namespace NControl.Mvvm.Fluid
 				var fromView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
 
 				// Animate the new contents in
-				var animateContentsIn = new XAnimation.XAnimationPackage(new[] { view });
+				var animateContentsIn = new XAnimationPackage(new[] { view });
 				animateContentsIn
 					.Translate(Width, 0)
 					.Set()
 					.Translate(0, 0);
 
 				// Move previous a litle bit out
-				var animatePreviousOut = new XAnimation.XAnimationPackage(new[] { fromView });
+				var animatePreviousOut = new XAnimationPackage(new[] { fromView });
 				animatePreviousOut
 					.Translate(-(Width / 4), 0);
 
-				return new[] { animateContentsIn, animatePreviousOut };
+				var retVal = new[] { animateContentsIn, animatePreviousOut };
+
+				if (view is IXViewAnimatable)
+					return (view as IXViewAnimatable).TransitionIn(view, this, retVal, presentationMode);
+
+				return retVal;
+
 			}
 			else if (presentationMode == PresentationMode.Modal)
 			{
 				// Animate the new contents in
-				var animateContentsIn = new XAnimation.XAnimationPackage(new[] { view });
+				var animateContentsIn = new XAnimationPackage(new[] { view });
 				animateContentsIn
 					.Translate(0, Height)
 					.Set()
 					.Translate(0, 0);
 
-				return new[] { animateContentsIn };
+				var retVal = new[] { animateContentsIn };
+
+				var child = GetChild(0);
+				if (child is IXViewAnimatable)
+					return (child as IXViewAnimatable).TransitionIn(child, this, retVal, presentationMode);
+
+				return retVal;
 			}
 			else if (presentationMode == PresentationMode.Popup)
 			{
 				// Animate the new contents in
-				var animateContentsIn = new XAnimation.XAnimationPackage(new[] { view });
+				var animateContentsIn = new XAnimationPackage(new[] { view });
 				animateContentsIn
 					.Translate(0, Height)
 					.Set()
 					.Translate(0, 0);
 
-				return new[] { animateContentsIn };
+				var retVal = new[] { animateContentsIn };
+
+				if (view is IXViewAnimatable)
+					return (view as IXViewAnimatable).TransitionIn(view, this, retVal, presentationMode);
+
+				return retVal;
 			}
 
 			return null;
@@ -253,7 +330,7 @@ namespace NControl.Mvvm.Fluid
 		/// <summary>
 		/// Transitions the out.
 		/// </summary>
-		public virtual IEnumerable<XAnimation.XAnimationPackage> TransitionOut(View view, PresentationMode presentationMode)
+		public virtual IEnumerable<XAnimationPackage> TransitionOut(View view, PresentationMode presentationMode)
 		{
 			if (presentationMode == PresentationMode.Default)
 			{
@@ -261,20 +338,32 @@ namespace NControl.Mvvm.Fluid
 				var toView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
 
 				// Animate
-				return new[]
+				var retVal = new[]
 				{
-					new XAnimation.XAnimationPackage(new[] { view }).Translate(Width, 0),
-					new XAnimation.XAnimationPackage(new[] { toView }).Translate(0, 0)
+					new XAnimationPackage(new[] { view }).Translate(Width, 0),
+					new XAnimationPackage(new[] { toView }).Translate(0, 0)
 				};
+
+				var child = GetChild(0);
+				if (child is IXViewAnimatable)
+					return (child as IXViewAnimatable).TransitionOut(child, this, retVal, presentationMode);
+
+				return retVal;
 			}
 
 			if (presentationMode == PresentationMode.Modal)
 			{
 				// Animate
-				return new[]
+				var retVal = new[]
 				{
-					new XAnimation.XAnimationPackage(new[] { view }).Translate(0, Height),
+					new XAnimationPackage(new[] { view }).Translate(0, Height),
 				};
+
+				var child = GetChild(0);
+				if (child is IXViewAnimatable)
+					return (child as IXViewAnimatable).TransitionOut(child, this, retVal, presentationMode);
+
+				return retVal;
 			}
 
 			return null;
@@ -313,7 +402,7 @@ namespace NControl.Mvvm.Fluid
 			var distance = toViewTranslationX - view.TranslationX;
 			var duration = Math.Min(0.2, Math.Max(0.2, velocity.Equals(-1) ? 0.2f : distance / velocity));
 
-			new XAnimation.XAnimationPackage(view)
+			new XAnimationPackage(view)
 				.Duration((long)(duration*1000))
 				.Translate(toViewTranslationX, 0)
 				.Animate()
@@ -324,7 +413,7 @@ namespace NControl.Mvvm.Fluid
 			});
 
 			if(fromView != null)
-				new XAnimation.XAnimationPackage(fromView)
+				new XAnimationPackage(fromView)
 					.Duration((long)(duration * 1000))
 					.Translate(fromViewTranslationX, 0)
 					.Animate()

@@ -32,7 +32,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FluidPresenter.cs" />
     <Compile Include="Controls\FluidNavigationBar.cs" />
-    <Compile Include="Controls\FluidModalContainer.cs" />
+    <Compile Include="Controls\FluidPopupNavigationContainer.cs" />
     <Compile Include="Controls\FluidNavigationContainer.cs" />
     <Compile Include="Behaviors\BounceAndClickBehavior.cs" />
     <Compile Include="Behaviors\BounceBehavior.cs" />
@@ -47,6 +47,10 @@
     <Compile Include="Contracts\ILeftBorderProvider.cs" />
     <Compile Include="Controls\FluidActivityIndicator.cs" />
     <Compile Include="Contracts\IActivityIndicatorViewProvider.cs" />
+    <Compile Include="FluidConfig.cs" />
+    <Compile Include="Behaviors\BaseViewBehavior.cs" />
+    <Compile Include="Contracts\IXViewAnimatable.cs" />
+    <Compile Include="Controls\FluidModalNavigationContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">

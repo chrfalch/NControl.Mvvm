@@ -36,6 +36,7 @@ namespace NControl.Mvvm.Droid
 
 			RegisterActivityIndicator();
 			Container.Register<IImageProvider, DroidImageProvider>();
+			Container.Register<IGestureRecognizerProvider, DroidGestureRecognizerProvider>();
 			Container.RegisterSingleton<IEnvironmentProvider, DroidEnvironmentProvider>();
 		}
 

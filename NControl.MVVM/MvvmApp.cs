@@ -71,6 +71,10 @@ namespace NControl.Mvvm
 			// Set up views
 			RegisterViews();
 
+			// Set up colors and sizes
+			SetUpSizes();
+			SetUpColors();
+
 			// Set main page
 			Presenter.SetMainPage(GetMainPage());
 		}
@@ -149,11 +153,38 @@ namespace NControl.Mvvm
 		}
 
 		/// <summary>
+		/// Set up default sizes
+		/// </summary>
+		protected virtual void SetUpSizes()
+		{
+			Current.Sizes.Set(Config.DefaultPadding, 8);
+			Current.Sizes.Set(Config.DefaultSpacing, 8);
+			Current.Sizes.Set(Config.DefaultLargePadding, 24);
+			Current.Sizes.Set(Config.DefaultLargeSpacing, 14);
+			Current.Sizes.Set(Config.DefaultBorderSize, 0.5 * Current.Environment.DisplayDensity);
+		}
+
+		/// <summary>
 		/// Registers the color provider.
 		/// </summary>
 		protected virtual void RegisterColorProvider()
 		{
 			Container.RegisterSingleton<IColorProvider, DefaultColorProvider>();
+		}
+
+		/// <summary>
+		/// Sets up colors.
+		/// </summary>
+		protected virtual void SetUpColors()
+		{
+			Current.Colors.Set(Config.PrimaryColor, Color.FromHex("#2196F3"));
+			Current.Colors.Set(Config.PrimaryDarkColor, Color.FromHex("#1976D2"));
+			Current.Colors.Set(Config.AccentColor, Color.Accent);
+			Current.Colors.Set(Config.TextColor, Color.White);
+			Current.Colors.Set(Config.BorderColor, Color.FromHex("CECECE"));
+			Current.Colors.Set(Config.ViewBackgroundColor, Color.FromHex("FEFEFE"));
+			Current.Colors.Set(Config.ViewTransparentBackgroundColor, Color.Black.MultiplyAlpha(0.75));
+            Current.Colors.Set(Config.AccentTextColor, Color.Accent);
 		}
 
 		/// <summary>

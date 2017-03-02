@@ -3,10 +3,10 @@ using System.Windows.Input;
 using NControl.Mvvm;
 using Xamarin.Forms;
 
-namespace NControl.Mvvm
+namespace NControl.Mvvm.Fluid
 {
 
-	public class ClickBehavior : Behavior<View>
+	public class ClickBehavior : BaseViewBehavior
 	{
 		readonly ICommand _clickCommand;
 		readonly object _clickCommandParameter;
@@ -42,24 +42,26 @@ namespace NControl.Mvvm
 			// Perform setup
 			bindable.AddGestureRecognizerTo(new TapGestureRecognizer
 			{
-				Command = new Command((obj) =>
-				{
-					if (_clickCommand != null && _clickCommand.CanExecute(_clickCommandParameter))
-					{
-						_clickCommand.Execute(_clickCommandParameter);
-					}
-					else if (_commandFunc != null)
-					{
-						var command = _commandFunc();
-						object parameter = null;
-						if(_commandParameterFunc != null)
-							parameter = _commandParameterFunc();
-						
-						if (command != null && command.CanExecute(parameter))
-							command.Execute(parameter);
-					}
-				})
+				Command = new Command((obj) => ExecuteCommand())
 			});
+		}
+
+		protected void ExecuteCommand()
+		{
+			if (_clickCommand != null && _clickCommand.CanExecute(_clickCommandParameter))
+			{
+				_clickCommand.Execute(_clickCommandParameter);
+			}
+			else if (_commandFunc != null)
+			{
+				var command = _commandFunc();
+				object parameter = null;
+				if (_commandParameterFunc != null)
+					parameter = _commandParameterFunc();
+
+				if (command != null && command.CanExecute(parameter))
+					command.Execute(parameter);
+			}
 		}
 	}
 }

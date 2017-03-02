@@ -41,6 +41,26 @@ namespace NControl.Mvvm.Fluid
 		}
 
 		/// <summary>
+		/// Sets up sizes.
+		/// </summary>
+		protected override void SetUpSizes()
+		{
+			base.SetUpSizes();
+
+			Current.Sizes.Set(FluidConfig.DefaultNavigationBarHeight, 46);
+			Current.Sizes.Set(FluidConfig.DefaultStatusbarHeight, Device.OnPlatform(22, 0, 22));
+			Current.Sizes.Set(FluidConfig.DefaultToolbarItemWidth, 30);
+		}
+
+		/// <summary>
+		/// Sets up colors.
+		/// </summary>
+		protected override void SetUpColors()
+		{
+			base.SetUpColors();
+		}
+
+		/// <summary>
 		/// Do nothing.
 		/// </summary>
 		protected override Page GetMainPage()

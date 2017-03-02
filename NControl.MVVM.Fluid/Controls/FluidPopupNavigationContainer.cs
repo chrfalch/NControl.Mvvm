@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NControl.XAnimation;
 using Xamarin.Forms;
 
 namespace NControl.Mvvm.Fluid
 {
-	public class FluidModalContainer : ContentView, INavigationContainer, IXAnimatable
+	public class FluidPopupNavigationContainer : ContentView, INavigationContainer, IXAnimatable
 	{
 		readonly RelativeLayout _layout;
 		readonly BoxView _overlay;
 		readonly Grid _container;
 
-		public FluidModalContainer()
+		public FluidPopupNavigationContainer()
 		{
 			Content = _layout = new RelativeLayout();
 
 			// Create overlay
-			_overlay = new BoxView { 
+			_overlay = new BoxView
+			{
 				BindingContext = this,
 			}.BindTo(BackgroundColorProperty, nameof(OverlayBackgroundColor));
 
@@ -34,7 +36,7 @@ namespace NControl.Mvvm.Fluid
 
 		public static BindableProperty OverlayBackgroundColorProperty = BindableProperty.Create(
 			nameof(OverlayBackgroundColor), typeof(Color),
-			typeof(FluidModalContainer), MvvmApp.Current.Colors.Get(Config.ViewTransparentBackgroundColor),
+			typeof(FluidPopupNavigationContainer), MvvmApp.Current.Colors.Get(Config.ViewTransparentBackgroundColor),
 			BindingMode.OneWay);
 
 		/// <summary>
@@ -47,12 +49,12 @@ namespace NControl.Mvvm.Fluid
 		}
 
 		public static BindableProperty ContentSizeProperty = BindableProperty.Create(
-			nameof(ContentSize), typeof(Size), typeof(FluidModalContainer), Size.Zero,               
-			BindingMode.OneWay, propertyChanged:(bindable, oldValue, newValue) =>
-			{
-				var ctrl = (FluidModalContainer)bindable;
-				ctrl._layout.ForceLayout();
-			});
+			nameof(ContentSize), typeof(Size), typeof(FluidPopupNavigationContainer), Size.Zero,
+			BindingMode.OneWay, propertyChanged: (bindable, oldValue, newValue) =>
+			 {
+				 var ctrl = (FluidPopupNavigationContainer)bindable;
+				 ctrl._layout.ForceLayout();
+			 });
 
 		/// <summary>
 		/// Contents size
@@ -70,7 +72,7 @@ namespace NControl.Mvvm.Fluid
 		public IEnumerable<XAnimationPackage> TransitionIn(
 			View view, PresentationMode presentationMode)
 		{
-			return new[] {
+			var retVal = new[] {
 				new XAnimationPackage(_overlay)
 					  .Opacity(0.0)
 					  .Set()
@@ -83,12 +85,18 @@ namespace NControl.Mvvm.Fluid
 					.Translate(0, 0)
 					.Animate()
 			};
+
+			var child = GetChild(0);
+			if (child is IXViewAnimatable)
+				return (child as IXViewAnimatable).TransitionIn(child, this, retVal, presentationMode);
+
+			return retVal;
 		}
 
 		public IEnumerable<XAnimationPackage> TransitionOut(
 			View view, PresentationMode presentationMode)
 		{
-			return new[] {
+			var retVal = new[] {
 				new XAnimationPackage(_overlay)
 					  .Opacity(0.0)
 					  .Animate(),
@@ -97,6 +105,12 @@ namespace NControl.Mvvm.Fluid
 					.Translate(0, Height)
 					.Animate()
 			};
+
+			var child = GetChild(0);
+			if (child is IXViewAnimatable)
+				return (child as IXViewAnimatable).TransitionOut(child, this, retVal, presentationMode);
+
+			return retVal;
 		}
 
 		#endregion
@@ -122,6 +136,26 @@ namespace NControl.Mvvm.Fluid
 		}
 
 		public View GetRootView() { return this; }
+
+		public View GetNavigationBarView()
+		{
+			return null;
+		}
+
+		public View GetContainerView()
+		{
+			return _container;
+		}
+
+		public View GetChild(int index)
+		{
+			return _container.Children.ElementAt(index);
+		}
+
+		public View GetOverlayView()
+		{
+			return _overlay;
+		}
 
 		#endregion
 

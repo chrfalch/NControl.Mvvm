@@ -3,6 +3,8 @@ using NControl.Mvvm;
 using NControl.Controls;
 using NControl.Mvvm.Fluid;
 using Xamarin.Forms;
+using System.Collections.Generic;
+using NControl.XAnimation;
 
 namespace MvvmDemo
 {
@@ -30,6 +32,43 @@ namespace MvvmDemo
 					new ExtendedButton {Text="Close", Command = ViewModel.CloseCommand },
 					new VerticalSeparator(),
 				}						
+			};
+		}
+
+		protected override IEnumerable<XAnimationPackage> ModalTransitionIn(
+			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		{
+			// Swap out original animations
+			return new[] { 
+				new XAnimationPackage(container.GetNavigationBarView())
+					.Translate(0, -container.GetNavigationBarView().Height)
+					.Set()
+					.Easing(EasingFunction.EaseOut)
+					.Translate(0, 0)
+					.Animate(),
+
+				new XAnimationPackage(container.GetContainerView())
+					.Translate(0, container.GetContainerView().Height)
+					.Set()
+					.Easing(EasingFunction.EaseOut)
+					.Translate(0, 0).Animate()
+			};
+		}
+
+		protected override IEnumerable<XAnimationPackage> ModalTransitionOut(
+			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		{
+			// Swap out original animations
+			return new[] {
+				new XAnimationPackage(container.GetNavigationBarView())					
+					.Easing(EasingFunction.EaseOut)
+					.Translate(0, -container.GetNavigationBarView().Height)
+					.Animate(),
+
+				new XAnimationPackage(container.GetContainerView())
+					.Easing(EasingFunction.EaseOut)
+					.Translate(0, container.GetContainerView().Height)
+					.Animate()
 			};
 		}
 	}

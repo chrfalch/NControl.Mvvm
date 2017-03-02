@@ -85,7 +85,7 @@ namespace NControl.XAnimation.iOS
 				rotateAnimation.To = new NSNumber((animationInfo.Rotate * Math.PI) / 180.0);
 				animations.Add(rotateAnimation);
 
-
+				// Create group of animations
 				var group = new CAAnimationGroup();
 				group.Duration = animationInfo.Duration / 1000.0;
 				group.BeginTime = CAAnimation.CurrentMediaTime() + (animationInfo.Delay / 1000.0);
@@ -101,7 +101,7 @@ namespace NControl.XAnimation.iOS
 						group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseOut);
 						break;
 					case EasingFunction.EaseInOut:
-						group.TimingFunction = CAMediaTimingFunction.FromControlPoints(1f, .19f, .17f, 1.57f);
+						group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseInEaseOut);
 						break;
 					default:
 						group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.Linear);

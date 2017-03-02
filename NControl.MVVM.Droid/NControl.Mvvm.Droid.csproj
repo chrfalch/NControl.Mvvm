@@ -123,6 +123,7 @@
     <Compile Include="Platform\ExtendedEntryRenderer.cs" />
     <Compile Include="Platform\ButtonRenderer.cs" />
     <Compile Include="Platform\DroidEnvironmentProvider.cs" />
+    <Compile Include="Platform\DroidGestureRecognizerProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

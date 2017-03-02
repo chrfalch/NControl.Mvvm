@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq.Expressions;
 using System.Windows.Input;
 using NControl.Mvvm;
+using NControl.XAnimation;
 using Xamarin.Forms;
 
 namespace NControl.Mvvm.Fluid
@@ -13,8 +14,8 @@ namespace NControl.Mvvm.Fluid
 		IList<ToolbarItem> ToolbarItems { get; }
 	}
 
-	public abstract class BaseFluidContentsView<TViewModel> : ContentView, IView<TViewModel>, 
-		IToolbarItemsContainer, ILeftBorderProvider
+	public abstract class BaseFluidContentsView<TViewModel> : ContentView, IView<TViewModel>,
+		IToolbarItemsContainer, ILeftBorderProvider, IXViewAnimatable
 		where TViewModel : BaseViewModel
 	{
 
@@ -102,17 +103,17 @@ namespace NControl.Mvvm.Fluid
 		/// Hide/Shows the left border
 		/// </summary>
 		/// <value><c>true</c> if left border is visible; otherwise, <c>false</c>.</value>
-		public bool IsLeftBorderVisible 
-		{ 
-			get { return _leftBorder.IsVisible; } 
-			set  { _leftBorder.IsVisible = value; }
+		public bool IsLeftBorderVisible
+		{
+			get { return _leftBorder.IsVisible; }
+			set { _leftBorder.IsVisible = value; }
 		}
 
 		/// <summary>
 		/// Returns the toolbar items
 		/// </summary>
 		/// <value>The toolbar items.</value>
-		public IList<ToolbarItem> ToolbarItems {get{return _toolbarItems;}}
+		public IList<ToolbarItem> ToolbarItems { get { return _toolbarItems; } }
 
 		/// <summary>
 		/// Returns the ViewModel
@@ -241,7 +242,89 @@ namespace NControl.Mvvm.Fluid
 		{
 			if (e.Action != NotifyCollectionChangedAction.Add)
 				return;
-		
+
+		}
+
+		#endregion
+
+		#region IXViewAnimatable
+
+		public IEnumerable<XAnimationPackage> TransitionIn(View view, INavigationContainer container, IEnumerable<XAnimationPackage> animations, PresentationMode presentationMode)
+		{
+			switch (presentationMode)
+			{				
+				case PresentationMode.Modal:
+					return ModalTransitionIn(container, animations);
+				case PresentationMode.Popup:
+					return PopupTransitionIn(container, animations);
+				
+				case PresentationMode.Default:
+				default:
+					return DefaultTransitionIn(container, animations);
+			}
+		}
+
+		public IEnumerable<XAnimationPackage> TransitionOut(View view, INavigationContainer container, IEnumerable<XAnimationPackage> animations, PresentationMode presentationMode)
+		{
+			switch (presentationMode)
+			{
+				case PresentationMode.Modal:
+					return ModalTransitionOut(container, animations);
+				case PresentationMode.Popup:
+					return PopupTransitionOut(container, animations);
+
+				case PresentationMode.Default:
+				default:
+					return DefaultTransitionOut(container, animations);
+			}
+		}
+
+		/// <summary>
+		/// Override to provide custom default transition code for the view or its container
+		/// </summary>
+		protected virtual IEnumerable<XAnimationPackage> DefaultTransitionIn(INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		{
+			return animations;
+		}
+
+		/// <summary>
+		/// Override to provide custom modal transition code for the view or its container
+		/// </summary>
+		protected virtual IEnumerable<XAnimationPackage> ModalTransitionIn(INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		{
+			return animations;
+		}
+
+		/// <summary>
+		/// Override to provide custom popup transition code for the view or its container
+		/// </summary>
+		protected virtual IEnumerable<XAnimationPackage> PopupTransitionIn(INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		{
+			return animations;
+		}
+
+		/// <summary>
+		/// Override to provide custom default transition code for the view or its container
+		/// </summary>
+		protected virtual IEnumerable<XAnimationPackage> DefaultTransitionOut(INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		{
+			return animations;
+		}
+
+		/// <summary>
+		/// Override to provide custom modal transition code for the view or its container
+		/// </summary>
+		protected virtual IEnumerable<XAnimationPackage> ModalTransitionOut(INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		{
+			return animations;
+		}
+
+		/// <summary>
+		/// Override to provide custom popup transition code for the view or its container
+		/// </summary>
+		protected virtual IEnumerable<XAnimationPackage> PopupTransitionOut(INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		{
+			return animations;
 		}
 
 		#endregion

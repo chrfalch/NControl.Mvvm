@@ -12,18 +12,6 @@ namespace NControl.Mvvm
 
 		#endregion
 
-		public DefaultColorProvider()
-		{
-			_colors[Config.PrimaryColor] = Color.FromHex("#2196F3");
-			_colors[Config.PrimaryDarkColor] = Color.FromHex("#1976D2");
-			_colors[Config.AccentColor] = Color.Accent;
-			_colors[Config.TextColor] = Color.White;
-			_colors[Config.BorderColor] = Color.FromHex("CECECE");
-			_colors[Config.ViewBackgroundColor] = Color.FromHex("FEFEFE");
-			_colors[Config.ViewTransparentBackgroundColor] = Color.Black.MultiplyAlpha(0.75);
-			_colors[Config.AccentTextColor] = Color.Accent;
-		}
-
 		#region Constants
 
 		#endregion

@@ -5,17 +5,22 @@ namespace NControl.Mvvm.Fluid
 {
 	public class NavigationContainerProvider: INavigationContainerProvider
 	{
-		public INavigationContainer CreateModalAndPopupNavigationContainer(Size containerSize)
+		public INavigationContainer CreateModalNavigationContainer()
 		{
-			return new FluidModalContainer
-			{
-				ContentSize = containerSize
-			};
+			return new FluidModalNavigationContainer();
 		}
 
 		public INavigationContainer CreateNavigationContainer()
 		{
-			return new FluidNavigationContainer();
+			return new FluidNavigationContainer();	
+		}
+
+		public INavigationContainer CreatePopupNavigationContainer(Size containerSize)
+		{
+			return new FluidPopupNavigationContainer
+			{
+				ContentSize = containerSize
+			};
 		}
 	}
 }

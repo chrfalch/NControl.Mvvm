@@ -6,6 +6,7 @@ namespace NControl.Mvvm.Fluid
 	public interface INavigationContainerProvider
 	{
 		INavigationContainer CreateNavigationContainer();
-		INavigationContainer CreateModalAndPopupNavigationContainer(Size containerSize);
+		INavigationContainer CreateModalNavigationContainer();
+		INavigationContainer CreatePopupNavigationContainer(Size containerSize);
 	}
 }
