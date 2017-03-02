@@ -215,6 +215,7 @@ namespace NControl.Mvvm.Fluid
 					else if (!string.IsNullOrEmpty(((ToolbarItemEx)item).MaterialDesignIcon))
 						toolbarControl = new FluidToolbarControl(new FontMaterialDesignLabel
 						{
+							FontSize = 20.0,
 							Text = ((ToolbarItemEx)item).MaterialDesignIcon,
 							TextColor = TintColor,
 						});

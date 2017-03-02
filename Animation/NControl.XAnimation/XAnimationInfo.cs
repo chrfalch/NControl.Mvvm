@@ -74,6 +74,7 @@ namespace NControl.XAnimation
 			TranslationX = 0;
 			TranslationY = 0;
 			Opacity = 1;
+			Easing = EasingFunction.EaseIn;
 		}
 
 		public override string ToString()
