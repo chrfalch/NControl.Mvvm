@@ -42,6 +42,7 @@ namespace NControl.XAnimation.Droid
 				nativeAnimation
 					.SetDuration(animationInfo.Duration)
 					.SetStartDelay(animationInfo.Delay)
+					.SetInterpolator(GetInterpolator(animationInfo))
 					.SetListener(new AnimationListener(null, (obj) => 
 				{
 					animationCount--;
@@ -99,6 +100,21 @@ namespace NControl.XAnimation.Droid
 		
 		}
 		#endregion
+
+		ITimeInterpolator GetInterpolator(XAnimationInfo animationInfo)
+		{
+			switch (animationInfo.Easing)
+			{
+				case EasingFunction.EaseIn:
+					return new AccelerateInterpolator();					
+				case EasingFunction.EaseOut:
+					return new DecelerateInterpolator();					
+				case EasingFunction.EaseInOut:
+					return new AccelerateDecelerateInterpolator();
+				default:
+					return new LinearInterpolator();
+			}
+		}
 	}
 
 	class AnimationListener : Java.Lang.Object, Animator.IAnimatorListener

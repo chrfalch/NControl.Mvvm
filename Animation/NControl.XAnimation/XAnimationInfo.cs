@@ -1,6 +1,14 @@
 ﻿using System;
 namespace NControl.XAnimation
 {
+	public enum EasingFunction
+	{
+		Linear,
+		EaseIn,
+		EaseOut,
+		EaseInOut,
+	}
+
 	/// <summary>
 	/// Contains information about an animation 
 	/// </summary>
@@ -17,6 +25,8 @@ namespace NControl.XAnimation
 		public double TranslationX { get; set; }
 		public double TranslationY { get; set; }
 		public double Opacity { get; set; }
+
+		public EasingFunction Easing { get; set; }
 
 		/// <summary>
 		/// Set to true to indicate that we should not run this as an animation, just

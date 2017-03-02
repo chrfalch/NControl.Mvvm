@@ -44,7 +44,7 @@ namespace NControl.XAnimation.iOS
 			}
 
 			CATransaction.Begin();
-			CATransaction.CompletionBlock = () => completed?.Invoke();			
+			CATransaction.CompletionBlock = () => completed?.Invoke();
 
 			foreach (var element in _animation.Elements)
 			{
@@ -57,7 +57,7 @@ namespace NControl.XAnimation.iOS
 				opacityAnimation.From = new NSNumber(element.Opacity);
 				opacityAnimation.To = new NSNumber(animationInfo.Opacity);
 				animations.Add(opacityAnimation);
-			
+
 				// Set up translation
 				var translationAnimationX = new CABasicAnimation();
 				translationAnimationX.KeyPath = "transform.translation.x";
@@ -69,14 +69,14 @@ namespace NControl.XAnimation.iOS
 				translationAnimationY.KeyPath = "transform.translation.y";
 				translationAnimationY.From = new NSNumber(element.TranslationY);
 				translationAnimationY.To = new NSNumber(animationInfo.TranslationY);
-				animations.Add(translationAnimationY);			
+				animations.Add(translationAnimationY);
 
 				// Set up scale
 				var scaleAnimation = new CABasicAnimation();
 				scaleAnimation.KeyPath = "transform.scale";
 				scaleAnimation.From = new NSNumber(element.Scale);
 				scaleAnimation.To = new NSNumber(animationInfo.Scale);
-				animations.Add(scaleAnimation);				
+				animations.Add(scaleAnimation);
 
 				// Set up rotation
 				var rotateAnimation = new CABasicAnimation();
@@ -84,12 +84,30 @@ namespace NControl.XAnimation.iOS
 				rotateAnimation.From = new NSNumber((element.Rotation * Math.PI) / 180.0);
 				rotateAnimation.To = new NSNumber((animationInfo.Rotate * Math.PI) / 180.0);
 				animations.Add(rotateAnimation);
-			
+
 
 				var group = new CAAnimationGroup();
 				group.Duration = animationInfo.Duration / 1000.0;
 				group.BeginTime = CAAnimation.CurrentMediaTime() + (animationInfo.Delay / 1000.0);
 				group.Animations = animations.ToArray();
+
+
+				switch (animationInfo.Easing)
+				{
+					case EasingFunction.EaseIn:
+						group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseIn);
+						break;
+					case EasingFunction.EaseOut:
+						group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseOut);
+						break;
+					case EasingFunction.EaseInOut:
+						group.TimingFunction = CAMediaTimingFunction.FromControlPoints(1f, .19f, .17f, 1.57f);
+						break;
+					default:
+						group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.Linear);
+						break;
+				}
+
 				view.Layer.AddAnimation(group, "animinfo-anims");
 				animations.Clear();			
 			}

@@ -61,6 +61,12 @@ namespace NControl.XAnimation
 			return this;
 		}
 
+		public XAnimationPackage Easing(EasingFunction easing)
+		{
+			GetCurrentAnimation().Easing = easing;
+			return this;
+		}
+
 		/// <summary>
 		/// Fade to the specified opacity (between 0.0 -> 1.0 where 1.0 is non-transparent).
 		/// </summary>

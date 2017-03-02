@@ -39,6 +39,7 @@ namespace XAnimationDemo
 						new XAnimationPackage(label)
 							.Duration(1000)
 							.Rotate(360)
+							.Easing(EasingFunction.EaseInOut)
 							.Animate()
 							.Rotate(0)
 							.Set()

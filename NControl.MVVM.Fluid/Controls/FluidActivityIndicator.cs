@@ -157,6 +157,7 @@ namespace NControl.Mvvm.Fluid
 				if (!_isDisposed && IsRunning)
 					new XAnimationPackage(this)
 						.Duration(DurationMilliseconds)
+						.Easing(EasingFunction.EaseInOut)
 						.Rotate(IsCounterClockWise ? -1 * (Angle + 360) : Angle + 360)
 						.Animate()
 						.Rotate(IsCounterClockWise ? -1 * Angle : Angle)
