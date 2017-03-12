@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Xamarin.Forms;
 using System.Linq;
 using System.Collections.Generic;
+using NControl.XAnimation;
 
 namespace NControl.Mvvm
 {
@@ -49,24 +50,15 @@ namespace NControl.Mvvm
 				.BindTo(ListView.IsPullToRefreshEnabledProperty, nameof(IsPullToRefreshEnabled));
 
 			// Setup default empty message view
-			_emptyMessageView = new ContentView { 
-				BindingContext = this,
-				IsVisible = IsEmptyMessageVisible,
-				//BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewBackgroundColor),
-			}.BindTo(IsVisibleProperty, nameof(IsEmptyMessageVisible));
+			_emptyMessageView = new ContentView { Opacity = 0.0 };
 
 			// Setup default loading view
-			_loadingView = new ContentView { 
-				BindingContext = this,
-				IsVisible = IsLoadingVisible,
-				//BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewBackgroundColor),
-			}.BindTo(IsVisibleProperty, nameof(IsLoadingVisible));
+			_loadingView = new ContentView { Opacity = 0.0 };
 
 			// Add default values to the loading view and empty view
-			_loadingView.Content = new ActivityIndicator { 
-				BindingContext = this 
-			}.BindTo(ActivityIndicator.IsRunningProperty, nameof(IsLoadingVisible));
+			_loadingView.Content = new ActivityIndicator { IsRunning = true };
 
+			// Set up empty message
 			_emptyMessageView.Content = new VerticalWizardStackLayout
 			{
 				Children = {
@@ -84,7 +76,7 @@ namespace NControl.Mvvm
 								RefreshCommand != null &&
 								RefreshCommand.CanExecute(null))
 							{
-								IsLoadingVisible = true;
+								AnimateVisibility(true, _loadingView);
 								RefreshCommand.Execute(null);
 							}
 						}),
@@ -215,16 +207,18 @@ namespace NControl.Mvvm
 			switch (newValue)
 			{
 				case CollectionState.NotLoaded:
-					IsLoadingVisible = true;
-					IsEmptyMessageVisible = false;
+					AnimateVisibility(true, _loadingView);
+					AnimateVisibility(false, _emptyMessageView);
 					break;
 					
 				case CollectionState.Loaded:
 
-					IsEmptyMessageVisible = ItemsSource == null ||
-						(ItemsSource is ICollection && (ItemsSource as ICollection).Count == 0);
+					AnimateVisibility(
+						ItemsSource == null || 
+						(ItemsSource is ICollection && (ItemsSource as ICollection).Count == 0),
+						_emptyMessageView);
 
-					IsLoadingVisible = false;
+					AnimateVisibility(false, _loadingView);
 
 					IsRefreshing = false;
 					_refreshCommand.ChangeCanExecute();
@@ -232,7 +226,7 @@ namespace NControl.Mvvm
 					break;
 
 				case CollectionState.Loading:	
-					IsEmptyMessageVisible = false;
+					AnimateVisibility(false, _emptyMessageView);
 					break;
 					
 				case CollectionState.Reloading:
@@ -253,24 +247,24 @@ namespace NControl.Mvvm
 			set { SetValue(IsRefreshingProperty, value); }
 		}
 
-		public static BindableProperty IsLoadingVisibleProperty =
-			BindableProperty.Create(nameof(IsLoadingVisible), typeof(bool), typeof(ListViewControl), false,
-				BindingMode.OneWay);
-
-		public bool IsLoadingVisible
+		void AnimateVisibility(bool setVisibleTo, VisualElement element)
 		{
-			get { return (bool)GetValue(IsLoadingVisibleProperty); }
-			set { SetValue(IsLoadingVisibleProperty, value); }
-		}
-
-		public static BindableProperty IsEmptyMessageVisibleProperty =
-			BindableProperty.Create(nameof(IsEmptyMessageVisible), typeof(bool), typeof(ListViewControl), false,
-				BindingMode.OneWay);
-
-		public bool IsEmptyMessageVisible
-		{
-			get { return (bool)GetValue(IsEmptyMessageVisibleProperty); }
-			set { SetValue(IsEmptyMessageVisibleProperty, value); }
+			if (setVisibleTo && element.Opacity.Equals(0.0))
+			{
+				new XAnimationPackage(element)
+					.Duration(75)
+					.Opacity(1.0)
+					.Animate()
+					.Run();
+			}
+			else if (!setVisibleTo && element.Opacity.Equals(1.0))
+			{ 
+				new XAnimationPackage(element)
+					.Duration(75)
+					.Opacity(0.0)
+					.Animate()
+					.Run();
+			}
 		}
 		#endregion
 	}

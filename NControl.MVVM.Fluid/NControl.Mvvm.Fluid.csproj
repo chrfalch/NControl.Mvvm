@@ -51,6 +51,7 @@
     <Compile Include="Behaviors\BaseViewBehavior.cs" />
     <Compile Include="Contracts\IXViewAnimatable.cs" />
     <Compile Include="Controls\FluidModalNavigationContainer.cs" />
+    <Compile Include="Controls\ListViewControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">

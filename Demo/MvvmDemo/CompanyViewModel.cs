@@ -88,7 +88,6 @@ namespace MvvmDemo
 					{						
 						await Task.Delay(1500);
 						Companies.Clear();
-						// Companies.AddRange(Company.CompanyRepository);
 					}
 					finally
 					{
