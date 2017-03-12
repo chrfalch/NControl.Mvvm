@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NControl.Abstractions;
 using NControl.Controls;
 using NControl.XAnimation;
@@ -79,14 +80,13 @@ namespace NControl.Mvvm.Fluid
 				if (!visible && _overlay.Parent != null)
 				{
 					// Hide
-					new XAnimationPackage(_spinner).Duration(110).Scale(0.0).Run(()=>
 					new XAnimationPackage(_overlay).Duration(150).Opacity(0.0).Run(() =>
 					   {
 						   _provider.RemoveFromParent(_overlay);
 							_titleLabel.Text = title;
 						   _subTitleLabel.Text = subtitle;
 						   _spinner.IsRunning = false;
-						}));
+						});
 				}
 				else if (visible && _overlay.Parent == null)
 				{		
@@ -94,33 +94,54 @@ namespace NControl.Mvvm.Fluid
 					_spinner.IsRunning = true;
 					_overlay.Opacity = 0.0;
 					_provider.AddToParent(_overlay);
-					new XAnimationPackage(_overlay).Duration(150).Opacity(1.0).Run(
-						()=>new XAnimationPackage(_spinner).Duration(110).Scale(1.0).Run());
+					new XAnimationPackage(_overlay).Duration(150).Opacity(1.0).Run();
 				}
 			});
 		}
 	}
 
-	public class CustomActivityIndicator: RelativeLayout
+	public class CustomActivityIndicator: ContentView
 	{
+		readonly RelativeLayout _layout;
+
 		public CustomActivityIndicator()
 		{
+			HeightRequest = MvvmApp.Current.Sizes.Get(Config.DefaultActivityIndicatorSize);
+			WidthRequest = MvvmApp.Current.Sizes.Get(Config.DefaultActivityIndicatorSize);
+
+			Content = _layout = new RelativeLayout();
+
 			// add spinners
-			Children.Add(new CustomActivitySpinner { BindingContext = this, Angle = 0, 
-				DurationMilliseconds = 2500 }
-			             .BindTo(CustomActivitySpinner.IsRunningProperty, nameof(IsRunning)), () =>
-					  		new Rectangle(0, 0, Width, Height));
+			_layout.Children.Add(new SpinningCircleControl { 
+				BindingContext = this,
+				Angle = 0, 
+				DurationMilliseconds = 2500 
+			}
+	            .BindTo(SpinningCircleControl.ColorProperty, nameof(Color))
+	            .BindTo(SpinningCircleControl.IsRunningProperty, nameof(IsRunning)), 
+				() => new Rectangle(0, 0, Width, Height));
 
-			Children.Add(new CustomActivitySpinner { BindingContext = this, IsCounterClockWise = true, Angle = 70, 
-				DurationMilliseconds = 1500 }
-			             .BindTo(CustomActivitySpinner.IsRunningProperty, nameof(IsRunning)), () =>
-			             new Rectangle(Width/2 - ((Width*0.80)/2), Height / 2 - ((Height * 0.80) / 2), 
-			                           Width*0.80, Height*0.80));
+			_layout.Children.Add(new SpinningCircleControl { 
+				BindingContext = this, 
+				IsCounterClockWise = true, 
+				Angle = 70, 
+				DurationMilliseconds = 1500 
+			}
+	            .BindTo(SpinningCircleControl.ColorProperty, nameof(Color))
+	            .BindTo(SpinningCircleControl.IsRunningProperty, nameof(IsRunning)), 
+         		() => new Rectangle(Width/2 - ((Width*0.80)/2), Height / 2 - ((Height * 0.80) / 2), 
+               		Width*0.80, Height*0.80));
 
-			Children.Add(new CustomActivitySpinner { BindingContext = this, Angle = 160, DurationMilliseconds = 1000 }
-			             .BindTo(CustomActivitySpinner.IsRunningProperty, nameof(IsRunning)), () =>
-						 new Rectangle(Width / 2 - ((Width * 0.60) / 2), Height / 2 - ((Height * 0.6) / 2), 
-			                           Width * 0.6, Height * 0.60));
+			_layout.Children.Add(new SpinningCircleControl 
+			{ 
+				BindingContext = this, 
+				Angle = 160, 
+				DurationMilliseconds = 1000 
+			}
+             	.BindTo(SpinningCircleControl.ColorProperty, nameof(Color))
+             	.BindTo(SpinningCircleControl.IsRunningProperty, nameof(IsRunning)), 
+             	() => new Rectangle(Width / 2 - ((Width * 0.60) / 2), Height / 2 - ((Height * 0.6) / 2), 
+               		Width * 0.6, Height * 0.60));
 		}
 
 		/// <summary>
@@ -138,32 +159,101 @@ namespace NControl.Mvvm.Fluid
 			get { return (bool)GetValue(IsRunningProperty); }
 			set { SetValue(IsRunningProperty, value); }
 		}
+
+		/// <summary>
+		/// The Color property.
+		/// </summary>
+		public static BindableProperty ColorProperty = BindableProperty.Create(
+			nameof(Color), typeof(Color), typeof(CustomActivityIndicator), 
+			MvvmApp.Current.Colors.Get(Config.TextColor), BindingMode.OneWay);
+
+		/// <summary>
+		/// Gets or sets the Color of the CustomActivitySpinner instance.
+		/// </summary>
+		public Color Color
+		{
+			get { return (Color)GetValue(ColorProperty); }
+			set { SetValue(ColorProperty, value); }
+		}
 	}
 
-	public class CustomActivitySpinner : NControlView, IDisposable
+	class SpinningCircleControl : NControlView, IDisposable
 	{
-		bool _isDisposed;
+		enum SpinnerState {
+			NotRunning,
+			Starting,
+			Running,
+			Stopping,
+		};
 
-		public CustomActivitySpinner()
+		bool _isDisposed;
+		SpinnerState _state;
+
+		public SpinningCircleControl()
 		{
 			StartAnimation();
 		}
 
 		void StartAnimation()
 		{
+			Invalidate();
 			Action animationAction = null;
 			animationAction = () =>
 			{
-				if (!_isDisposed && IsRunning)
-					new XAnimationPackage(this)
-						.Duration(DurationMilliseconds)
-						.Easing(EasingFunction.EaseInOut)
-						.Rotate(IsCounterClockWise ? -1 * (Angle + 360) : Angle + 360)
-						.Animate()
-						.Rotate(IsCounterClockWise ? -1 * Angle : Angle)
-						.Set()
-						.Animate()
-						.Run(animationAction);
+				if (_isDisposed)
+					return;
+
+				switch (_state)
+				{
+					case SpinnerState.Starting:
+
+						// Animate in
+						_state = SpinnerState.Running;
+
+						new XAnimationPackage(this)
+							.Opacity(0.0)
+							.Set()
+							.Duration(150)
+							.Easing(EasingFunction.EaseInOut)
+							.Opacity(1.0)	
+							.Animate()
+							.Run(animationAction);
+
+						break;
+
+					case SpinnerState.Running:
+
+						// Animate running
+						new XAnimationPackage(this)
+							.Duration(DurationMilliseconds)
+							.Easing(EasingFunction.EaseInOut)
+							.Rotate(IsCounterClockWise ? -1 * (Angle + 360) : Angle + 360)
+							.Animate()
+							.Rotate(IsCounterClockWise ? -1 * Angle : Angle)
+							.Set()
+							.Animate()
+							.Run(animationAction);
+
+						break;
+						
+					case SpinnerState.Stopping:
+
+						// Animate stopping
+						_state = SpinnerState.NotRunning;
+
+						new XAnimationPackage(this)
+							.Duration(150)
+							.Easing(EasingFunction.EaseInOut)
+							.Opacity(0.0)
+							.Animate()
+							.Run(animationAction);
+
+						break;
+
+					case SpinnerState.NotRunning:
+						// No animation
+						break;
+				}
 			};
 
 			animationAction();
@@ -173,12 +263,22 @@ namespace NControl.Mvvm.Fluid
 		/// The IsRunning property.
 		/// </summary>
 		public static BindableProperty IsRunningProperty = BindableProperty.Create(
-			nameof(IsRunning), typeof(bool), typeof(CustomActivitySpinner), false,
+			nameof(IsRunning), typeof(bool), typeof(SpinningCircleControl), false,
 			BindingMode.OneWay, null, propertyChanged: (bindable, oldValue, newValue) =>
 			{
-				var ctrl = (CustomActivitySpinner)bindable;
-				if(oldValue != newValue && (bool)newValue == true)				
+				var ctrl = (SpinningCircleControl)bindable;
+				if(oldValue == newValue)
+					return;
+
+				if ((bool)newValue == true)
+				{
+					ctrl._state = SpinnerState.Starting;
 					ctrl.StartAnimation();
+				}
+				else
+				{
+					ctrl._state = SpinnerState.Stopping;
+				}
 			});
 
 		/// <summary>
@@ -194,7 +294,7 @@ namespace NControl.Mvvm.Fluid
 		/// The IsCounterClockWise property.
 		/// </summary>
 		public static BindableProperty IsCounterClockWiseProperty = BindableProperty.Create(
-			nameof(IsCounterClockWise), typeof(bool), typeof(CustomActivitySpinner), false,
+			nameof(IsCounterClockWise), typeof(bool), typeof(SpinningCircleControl), false,
 			BindingMode.OneWay);
 
 		/// <summary>
@@ -209,29 +309,29 @@ namespace NControl.Mvvm.Fluid
 		/// <summary>
 		/// The SpinnerColor property.
 		/// </summary>
-		public static BindableProperty SpinnerColorProperty = BindableProperty.Create(
-			nameof(SpinnerColor), typeof(Color), typeof(CustomActivitySpinner), 
-			MvvmApp.Current.Colors.Get(Config.TextColor),
-			BindingMode.OneWay, null, propertyChanged: (bindable, oldValue, newValue) =>
+		public static BindableProperty ColorProperty = BindableProperty.Create(
+			nameof(Color), typeof(Color), typeof(SpinningCircleControl), 
+			MvvmApp.Current.Colors.Get(Config.TextColor), BindingMode.OneWay, 
+			null, propertyChanged: (bindable, oldValue, newValue) =>
 			{
-				var ctrl = (CustomActivitySpinner)bindable;
+				var ctrl = (SpinningCircleControl)bindable;
 				ctrl.Invalidate();
 			});
 
 		/// <summary>
 		/// Gets or sets the SpinnerColor of the CustomActivitySpinner instance.
 		/// </summary>
-		public Color SpinnerColor
+		public Color Color
 		{
-			get { return (Color)GetValue(SpinnerColorProperty); }
-			set { SetValue(SpinnerColorProperty, value); }
+			get { return (Color)GetValue(ColorProperty); }
+			set { SetValue(ColorProperty, value); }
 		}
 
 		/// <summary>
 		/// The Angle property.
 		/// </summary>
 		public static BindableProperty AngleProperty = BindableProperty.Create(
-			nameof(Angle), typeof(double), typeof(CustomActivitySpinner), 0.0,
+			nameof(Angle), typeof(double), typeof(SpinningCircleControl), 0.0,
 			BindingMode.OneWay);
 
 		/// <summary>
@@ -247,7 +347,7 @@ namespace NControl.Mvvm.Fluid
 		/// The DurationMilliseconds property.
 		/// </summary>
 		public static BindableProperty DurationMillisecondsProperty = BindableProperty.Create(
-			nameof(DurationMilliseconds), typeof(int), typeof(CustomActivitySpinner), 1250,
+			nameof(DurationMilliseconds), typeof(int), typeof(SpinningCircleControl), 1250,
 			BindingMode.OneWay);
 
 		/// <summary>
@@ -277,12 +377,18 @@ namespace NControl.Mvvm.Fluid
 		{
 			base.Draw(canvas, rect);
 
+			if (!IsRunning)
+				return;
+
 			if (rect.Width > rect.Height)
 				rect = new NGraphics.Rect((rect.Width - rect.Height) / 2, rect.Y, rect.Height, rect.Height);
 			else if (rect.Height > rect.Width)
 				rect = new NGraphics.Rect(rect.X, (rect.Height - rect.Width) / 2, rect.Width, rect.Width);
 
 			rect.Inflate(-2, -2);
+
+			canvas.DrawEllipse(rect, new NGraphics.Pen(
+				Color.MultiplyAlpha(0.15).ToNColor(), 2 * MvvmApp.Current.Environment.DisplayDensity), null);
 
 			canvas.DrawPath(new NGraphics.PathOp[]{
 				new NGraphics.MoveTo(rect.X, rect.Y + rect.Height/2),
@@ -291,7 +397,7 @@ namespace NControl.Mvvm.Fluid
 				true, false,
 					new NGraphics.Point(rect.X + rect.Width, rect.Y + rect.Height/2)),
 
-			}, new NGraphics.Pen(SpinnerColor.ToNColor(), 2 * MvvmApp.Current.Environment.DisplayDensity), null);
+			}, new NGraphics.Pen(Color.ToNColor(), 2 * MvvmApp.Current.Environment.DisplayDensity), null);
 
 		}
 		#endregion

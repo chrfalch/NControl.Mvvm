@@ -11,13 +11,16 @@ namespace MvvmDemo
 		public CompanyViewModel ()
 		{
 			Title = "NControl.Mvvm";
+
 		}
 
 		public override async Task InitializeAsync ()
 		{
 			await base.InitializeAsync ();
 
+			await Task.Delay(1550);
 			Companies.AddRange (Company.CompanyRepository);
+			CollectionState = CollectionState.Loaded;
 
 			//await Task.Run (async() => {
 			//	{
@@ -44,6 +47,12 @@ namespace MvvmDemo
 			}
 		}
 
+		public CollectionState CollectionState
+		{
+			get { return GetValue<CollectionState>(); }
+			set { SetValue(value); }
+		}
+
 		public ICommand SelectCompanyCommand
 		{
 			get {
@@ -63,6 +72,30 @@ namespace MvvmDemo
 					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<AboutViewModel>();
 
 				});
+			}
+		}
+
+		[DependsOn(nameof(CollectionState))]
+		public ICommand RefreshCommand
+		{
+			get 
+			{ 
+				return GetOrCreateCommandAsync(async _ =>{					
+
+					CollectionState = CollectionState.Loading;
+
+					try
+					{						
+						await Task.Delay(1500);
+						Companies.Clear();
+						// Companies.AddRange(Company.CompanyRepository);
+					}
+					finally
+					{
+						CollectionState = CollectionState.Loaded;
+					}
+
+				}, _=> CollectionState != CollectionState.Loading);
 			}
 		}
 

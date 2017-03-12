@@ -26,6 +26,7 @@ namespace MvvmDemo
 					new ExtendedButton {Text="Call Command through message.", Command = ViewModel.ClickMeCommand },
 					new VerticalSeparator(),
 					new ExtendedButton {Text="Run async command", Command = ViewModel.CountAsyncCommand },
+					new CustomActivityIndicator{Color = MvvmApp.Current.Colors.Get(Config.AccentColor)}.BindTo(CustomActivityIndicator.IsRunningProperty, nameof(ViewModel.IsRunningAsyncCommand)),
 					new Label {HorizontalTextAlignment = TextAlignment.Center}.BindTo(Label.TextProperty, nameof(ViewModel.NumberValue), stringFormat:"Number Value: {0}"),
 					new VerticalSeparator(),
 					new ExtendedButton {Text="Push new about", Command = ViewModel.PushNewAboutCommand },
@@ -40,16 +41,20 @@ namespace MvvmDemo
 		{
 			// Swap out original animations
 			return new[] { 
-				new XAnimationPackage(container.GetNavigationBarView())
+				new XAnimationPackage(container.GetNavigationBarView())					
 					.Translate(0, -container.GetNavigationBarView().Height)
+					.Rotate(360)
 					.Set()
+					.Duration(1500)
 					.Easing(EasingFunction.EaseOut)
 					.Translate(0, 0)
+					.Rotate(0)
 					.Animate(),
 
 				new XAnimationPackage(container.GetContainerView())
 					.Translate(0, container.GetContainerView().Height)
 					.Set()
+					.Duration(1500)
 					.Easing(EasingFunction.EaseOut)
 					.Translate(0, 0).Animate()
 			};
@@ -63,11 +68,16 @@ namespace MvvmDemo
 				new XAnimationPackage(container.GetNavigationBarView())					
 					.Easing(EasingFunction.EaseOut)
 					.Translate(0, -container.GetNavigationBarView().Height)
+					.Duration(1500)
+					.Rotate(360)
+					.Easing(EasingFunction.EaseIn)
 					.Animate(),
 
 				new XAnimationPackage(container.GetContainerView())
 					.Easing(EasingFunction.EaseOut)
 					.Translate(0, container.GetContainerView().Height)
+					.Duration(350)
+					.Easing(EasingFunction.EaseIn)
 					.Animate()
 			};
 		}

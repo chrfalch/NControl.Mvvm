@@ -24,15 +24,22 @@ namespace MvvmDemo
 			}
 		}
 
+		public bool IsRunningAsyncCommand
+		{
+			get { return GetValue<bool>();}
+			set { SetValue(value);}
+		}
+
 		public ICommand CountAsyncCommand
 		{
 			get
 			{
 				return GetOrCreateCommandAsync(async (arg) => {
 
-					IsBusy = true;
-					IsBusyText = "Counting...";
-					IsBusySubTitle = "the numbers in a sequence from zero to 10 stopping on 10.";
+					//IsBusy = true;
+					//IsBusyText = "Counting...";
+					//IsBusySubTitle = "the numbers in a sequence from zero to 10 stopping on 10.";
+					IsRunningAsyncCommand = true;
 
 					for (var i = 0; i < 10; i++)
 					{
@@ -40,7 +47,8 @@ namespace MvvmDemo
 						NumberValue++;
 					}
 
-					IsBusy = false;
+					//IsBusy = false;
+					IsRunningAsyncCommand = false;
 				});
 			}
 		}

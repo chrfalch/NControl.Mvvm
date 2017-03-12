@@ -23,7 +23,8 @@ namespace NControl.Mvvm
         /// <summary>
         /// The ItemSelectedCommand property.
         /// </summary>
-		public static BindableProperty ItemSelectedCommandProperty = BindableProperty.Create(nameof(ItemSelectedCommand), typeof(ICommand), typeof(ListViewEx), null, BindingMode.Default, 
+		public static BindableProperty ItemSelectedCommandProperty = 
+			BindableProperty.Create(nameof(ItemSelectedCommand), typeof(ICommand), typeof(ListViewEx), null, BindingMode.Default, 
             propertyChanged: (bindable, oldValue, newValue) => {
             var ctrl = (ListViewEx)bindable;
 			ctrl.ItemSelectedCommand = (ICommand)newValue;                       

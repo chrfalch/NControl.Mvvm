@@ -27,12 +27,15 @@ namespace MvvmDemo
 				Orientation = StackOrientation.Vertical,
 				Spacing = 0,
 				Children = {
-					new ListViewEx{
+					new ListViewControl{
 						ItemsSource = ViewModel.Companies,
+						IsPullToRefreshEnabled = true,
 						ItemSelectedCommand = ViewModel.SelectCompanyCommand,
 						ItemTemplate = new DataTemplate(typeof(TextCell))
 							.BindTo(TextCell.TextProperty, NameOf<Company>(cw => cw.Name)),						
-					},
+					}
+					.BindTo(ListViewControl.RefreshCommandProperty, NameOf(vm => vm.RefreshCommand))
+					.BindTo(ListViewControl.StateProperty, NameOf(vm => vm.CollectionState)),
 
 					new ExtendedButton{
 						Text = "Open Da Thing",
