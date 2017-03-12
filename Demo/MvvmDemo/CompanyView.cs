@@ -23,7 +23,8 @@ namespace MvvmDemo
 
 		protected override View CreateContents ()
 		{
-			return new StackLayout {
+			return new StackLayout
+			{
 				Orientation = StackOrientation.Vertical,
 				Spacing = 0,
 				Children = {
@@ -32,7 +33,21 @@ namespace MvvmDemo
 						IsPullToRefreshEnabled = true,
 						ItemSelectedCommand = ViewModel.SelectCompanyCommand,
 						ItemTemplate = new DataTemplate(typeof(TextCell))
-							.BindTo(TextCell.TextProperty, NameOf<Company>(cw => cw.Name)),						
+							.BindTo(TextCell.TextProperty, NameOf<Company>(cw => cw.Name)),
+						EmptyListView = new VerticalWizardStackLayout{
+							Children = {
+								new FontMaterialDesignLabel{
+									Text = FontMaterialDesignLabel.MDNaturePeople,
+									FontSize = 36,
+									TextColor = MvvmApp.Current.Colors.Get(Config.LightTextColor),
+								},
+
+								new Label{
+									Text = "No Items Found",
+									HorizontalTextAlignment = TextAlignment.Center,
+								}
+							},
+						},
 					}
 					.BindTo(ListViewControl.RefreshCommandProperty, NameOf(vm => vm.RefreshCommand))
 					.BindTo(ListViewControl.StateProperty, NameOf(vm => vm.CollectionState)),

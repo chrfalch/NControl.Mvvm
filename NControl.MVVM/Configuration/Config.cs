@@ -20,6 +20,7 @@ namespace NControl.Mvvm
 		public static string PrimaryDarkColor = "PrimaryDarkColor";
 		public static string AccentColor = "AccentColor";
 		public static string TextColor = "TextColor";
+		public static string NegativeTextColor = "NegativeTextColor";
 		public static string LightTextColor = "LightTextColor";
 		public static string AccentTextColor = "AccentTextColor";
 		public static string BorderColor = "BorderColor";

@@ -92,6 +92,18 @@ namespace NControl.Mvvm
 
 		#region Properties
 
+		public View EmptyListView
+		{
+			get { return _emptyMessageView.Content; }
+			set { _emptyMessageView.Content = value; }
+		}
+
+		public View LoadingView
+		{
+			get { return _loadingView.Content; }
+			set { _loadingView.Content = value; }
+		}
+
 		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(
 			nameof(ItemsSource), typeof(IEnumerable), typeof(ListViewControl), null,
 			BindingMode.OneWay);
@@ -252,7 +264,7 @@ namespace NControl.Mvvm
 			if (setVisibleTo && element.Opacity.Equals(0.0))
 			{
 				new XAnimationPackage(element)
-					.Duration(75)
+					.Duration(50)
 					.Opacity(1.0)
 					.Animate()
 					.Run();
@@ -260,7 +272,7 @@ namespace NControl.Mvvm
 			else if (!setVisibleTo && element.Opacity.Equals(1.0))
 			{ 
 				new XAnimationPackage(element)
-					.Duration(75)
+					.Duration(50)
 					.Opacity(0.0)
 					.Animate()
 					.Run();

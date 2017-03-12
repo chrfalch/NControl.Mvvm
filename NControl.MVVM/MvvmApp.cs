@@ -181,11 +181,17 @@ namespace NControl.Mvvm
 			Current.Colors.Set(Config.PrimaryColor, Color.FromHex("#2196F3"));
 			Current.Colors.Set(Config.PrimaryDarkColor, Color.FromHex("#1976D2"));
 			Current.Colors.Set(Config.AccentColor, Color.Accent);
-			Current.Colors.Set(Config.TextColor, Color.White);
+
+			Current.Colors.Set(Config.TextColor, Color.Black);
+			Current.Colors.Set(Config.NegativeTextColor, Color.White);
+			Current.Colors.Set(Config.AccentTextColor, Color.Accent);
+			Current.Colors.Set(Config.LightTextColor, Color.FromHex("CECECE"));
+
 			Current.Colors.Set(Config.BorderColor, Color.FromHex("CECECE"));
+
 			Current.Colors.Set(Config.ViewBackgroundColor, Color.FromHex("FEFEFE"));
 			Current.Colors.Set(Config.ViewTransparentBackgroundColor, Color.Black.MultiplyAlpha(0.75));
-            Current.Colors.Set(Config.AccentTextColor, Color.Accent);
+            
 		}
 
 		/// <summary>

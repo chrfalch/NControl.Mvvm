@@ -21,13 +21,14 @@ namespace NControl.Mvvm.Fluid
 
 			_titleLabel = new Label { 
 				HorizontalTextAlignment = TextAlignment.Center,
-				TextColor = MvvmApp.Current.Colors.Get(Config.TextColor),
+				TextColor = MvvmApp.Current.Colors.Get(Config.NegativeTextColor),
 			};
+
 			_subTitleLabel = new Label
 			{
 				HorizontalTextAlignment = TextAlignment.Center,
 				FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
-                TextColor = MvvmApp.Current.Colors.Get(Config.TextColor),
+                TextColor = MvvmApp.Current.Colors.Get(Config.NegativeTextColor),
 			};
 
 			_spinner = new CustomActivityIndicator
@@ -165,7 +166,7 @@ namespace NControl.Mvvm.Fluid
 		/// </summary>
 		public static BindableProperty ColorProperty = BindableProperty.Create(
 			nameof(Color), typeof(Color), typeof(CustomActivityIndicator), 
-			MvvmApp.Current.Colors.Get(Config.TextColor), BindingMode.OneWay);
+			MvvmApp.Current.Colors.Get(Config.NegativeTextColor), BindingMode.OneWay);
 
 		/// <summary>
 		/// Gets or sets the Color of the CustomActivitySpinner instance.

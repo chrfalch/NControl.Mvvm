@@ -96,7 +96,7 @@ namespace NControl.Mvvm.Fluid
 
 		public static BindableProperty TintColorProperty = BindableProperty.Create(
 			nameof(TintColor), typeof(Color), typeof(FluidNavigationBar), 
-			MvvmApp.Current.Colors.Get(Config.TextColor), BindingMode.OneWay);
+			MvvmApp.Current.Colors.Get(Config.NegativeTextColor), BindingMode.OneWay);
 
 		/// <summary>
 		/// Gets or sets the tint color.
