@@ -20,42 +20,64 @@ namespace MvvmDemo
 			});
 		}
 
-		protected override View CreateContents ()
+		protected override View CreateContents()
 		{
-			return new StackLayout
-			{
-				Orientation = StackOrientation.Vertical,
-				Spacing = 0,
+			return new Grid
+			{				
 				Children = {
-					new ListViewControl{
-						ItemsSource = ViewModel.Companies,
-						IsPullToRefreshEnabled = true,
-						ItemSelectedCommand = ViewModel.SelectCompanyCommand,
-						ItemTemplate = new DataTemplate(typeof(TextCell))
-							.BindTo(TextCell.TextProperty, NameOf<Company>(cw => cw.Name)),
+					new VerticalStackLayout
+					{				
+						
+						Children = {
+							new ListViewControl{								
+								
+								ItemsSource = ViewModel.Companies,
+								IsPullToRefreshEnabled = true,
+								ItemSelectedCommand = ViewModel.SelectCompanyCommand,
+								ItemTemplate = new DataTemplate(typeof(TextCell))
+									.BindTo(TextCell.TextProperty, NameOf<Company>(cw => cw.Name)),
 
-						EmptyListView = new VerticalWizardStackLayout{
-							Children = {
-								new FontMaterialDesignLabel{
-									Text = FontMaterialDesignLabel.MDNaturePeople,
-									FontSize = 36,
-									TextColor = MvvmApp.Current.Colors.Get(Config.LightTextColor),
+								EmptyListView = new VerticalWizardStackLayout{
+									Children = {
+										new FontMaterialDesignLabel{
+											Text = FontMaterialDesignLabel.MDNaturePeople,
+											FontSize = 66,
+											TextColor = MvvmApp.Current.Colors.Get(Config.LightTextColor),
+										},
+
+										new Label{
+											Text = "No Items Found",
+											HorizontalTextAlignment = TextAlignment.Center,
+										}
+									},
 								},
 
-								new Label{
-									Text = "No Items Found",
-									HorizontalTextAlignment = TextAlignment.Center,
+								LoadingView = new Grid{
+									Children = {
+										new ActivityIndicator{
+											IsRunning = true,
+											VerticalOptions = LayoutOptions.Center,
+											HorizontalOptions = LayoutOptions.Center
+										}
+									}
 								}
-							},
-						},
-					}
-					.BindTo(ListViewControl.RefreshCommandProperty, NameOf(vm => vm.RefreshCommand))
-					.BindTo(ListViewControl.StateProperty, NameOf(vm => vm.CollectionState)),
+							}
+							.BindTo(ListViewControl.RefreshCommandProperty, NameOf(vm => vm.RefreshCommand))
+							.BindTo(ListViewControl.StateProperty, NameOf(vm => vm.CollectionState)),
 
-					new ExtendedButton{
-						Text = "Open Da Thing",
-						Command = ViewModel.ShowAboutCommand,
-					}
+							new ExtendedButton{
+								Margin = 16,
+								Text = "Open Da Thing",
+								BorderColor = Color.Blue,
+								BorderRadius = 12,
+								BorderWidth = 1,
+								Command = ViewModel.ShowAboutCommand,
+							}
+						}
+					},
+
+					//new FluidBlurOverlay{						
+					//},
 				}
 			};
 		}

@@ -52,6 +52,7 @@
     <Compile Include="Controls\FluidModalNavigationContainer.cs" />
     <Compile Include="Controls\ListViewControl.cs" />
     <Compile Include="Controls\FluidActivityIndicator.cs" />
+    <Compile Include="Controls\FluidBlurOverlay.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">

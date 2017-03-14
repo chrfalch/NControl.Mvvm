@@ -24,16 +24,18 @@ namespace NControl.Mvvm
 		readonly ContentView _emptyMessageView;
 		readonly ContentView _loadingView;
 		readonly Command _refreshCommand;
-		readonly FluidActivityIndicator _activityIndicator;
+		readonly ActivityIndicator _activityIndicator;
 
 		#endregion
 
 		public ListViewControl()
 		{
+			VerticalOptions = LayoutOptions.FillAndExpand;
+			HorizontalOptions = LayoutOptions.FillAndExpand;
+
 			// Create refresh command
 			_refreshCommand = new Command((arg) =>
 			{
-
 				if (State != CollectionState.Loading &&
 					RefreshCommand != null &&
 					RefreshCommand.CanExecute(null))
@@ -43,7 +45,7 @@ namespace NControl.Mvvm
 
 			// Setup listview
 			_listView = new ListViewEx
-			{
+			{				
 				BindingContext = this,
 				RefreshCommand = _refreshCommand,
 				SeparatorVisibility = SeparatorVisibility.None,
@@ -54,11 +56,14 @@ namespace NControl.Mvvm
 				.BindTo(ListView.IsPullToRefreshEnabledProperty, nameof(IsPullToRefreshEnabled));
 
 			// Setup default empty message view
-			_emptyMessageView = new ContentView { Opacity = 0.0 };
+			_emptyMessageView = new ContentView { 
+				Opacity = 0.0,
+			};
 
 			// Setup default loading view
-			_loadingView = new ContentView { InputTransparent = true};
-			_activityIndicator = new FluidActivityIndicator { };
+			_loadingView = new ContentView{};
+
+			_activityIndicator = new ActivityIndicator { };
 
 			// Add default values to the loading view and empty view
 			_loadingView.Content = new VerticalStackLayoutWithPadding
@@ -71,7 +76,7 @@ namespace NControl.Mvvm
 
 			// Set up empty message
 			_emptyMessageView.Content = new VerticalWizardStackLayout
-			{
+			{				
 				Children = {
 					new Label
 					{
@@ -273,7 +278,7 @@ namespace NControl.Mvvm
 
 		void AnimateVisibility(bool setVisibleTo, VisualElement element, Action callback = null)
 		{
-			if (setVisibleTo && element.Opacity.Equals(0.0))
+			if (setVisibleTo)
 			{
 				new XAnimationPackage(element)
 					.Duration(150)
@@ -281,7 +286,7 @@ namespace NControl.Mvvm
 					.Animate()
 					.Run(callback);
 			}
-			else if (!setVisibleTo && element.Opacity.Equals(1.0))
+			else if (!setVisibleTo)
 			{
 				new XAnimationPackage(element)
 					.Duration(150)
@@ -296,11 +301,11 @@ namespace NControl.Mvvm
 
 		void ShowLoadingView(bool show)
 		{
-			_activityIndicator.IsRunning = show;				
+			AnimateVisibility(show, _loadingView);
 		}
 
 		void ShowEmptyListView(bool show) 
-		{ 
+		{
 			AnimateVisibility(show, _emptyMessageView);
 		}
 		#endregion

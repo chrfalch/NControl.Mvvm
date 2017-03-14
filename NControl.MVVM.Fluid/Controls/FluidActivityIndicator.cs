@@ -18,12 +18,16 @@ namespace NControl.Mvvm
 			WidthRequest = MvvmApp.Current.Sizes.Get(Config.DefaultActivityIndicatorSize);
 
 			Content = _layout = new RelativeLayout();
+			Opacity = 0.0;
+			IsVisible = false;
+
+			var random = new Random();
 
 			// add spinners
 			_layout.Children.Add(new SpinningCircleControl
 			{
 				BindingContext = this,
-				Angle = 0,
+				Angle = random.Next(0, 360),
 				DurationMilliseconds = 2500
 			}
 				.BindTo(SpinningCircleControl.ColorProperty, nameof(Color))
@@ -34,7 +38,7 @@ namespace NControl.Mvvm
 			{
 				BindingContext = this,
 				IsCounterClockWise = true,
-				Angle = 70,
+				Angle = random.Next(0, 360),
 				DurationMilliseconds = 1500
 			}
 				.BindTo(SpinningCircleControl.ColorProperty, nameof(Color))
@@ -45,7 +49,7 @@ namespace NControl.Mvvm
 			_layout.Children.Add(new SpinningCircleControl
 			{
 				BindingContext = this,
-				Angle = 160,
+				Angle = random.Next(0, 360),
 				DurationMilliseconds = 1000
 			}
 				 .BindTo(SpinningCircleControl.ColorProperty, nameof(Color))
@@ -59,7 +63,33 @@ namespace NControl.Mvvm
 		/// </summary>
 		public static BindableProperty IsRunningProperty = BindableProperty.Create(
 			nameof(IsRunning), typeof(bool), typeof(FluidActivityIndicator), false,
-			BindingMode.OneWay);
+			BindingMode.OneWay, null, propertyChanged: (bindable, oldValue, newValue) =>
+			{
+				var ctrl = (FluidActivityIndicator)bindable;
+				if (oldValue == newValue)
+					return;
+
+				if ((bool)newValue == true)
+				{
+					ctrl.IsVisible = true;
+					var random = new Random();
+					foreach (var spinner in ctrl._layout.Children)
+						if (spinner is SpinningCircleControl)
+							((SpinningCircleControl)spinner).Angle = random.Next(0, 360);
+
+					new XAnimationPackage(ctrl)
+						.Opacity(1.0)
+						.Animate()
+						.Run();
+				}
+				else
+				{
+					new XAnimationPackage(ctrl)
+						.Opacity(0.0)
+						.Animate()
+						.Run(() => ctrl.IsVisible = false);
+				}
+			});
 
 		/// <summary>
 		/// Gets or sets the IsRunning of the CustomActivityIndicator instance.
@@ -120,38 +150,23 @@ namespace NControl.Mvvm
 
 						// Animate in
 						_state = SpinnerState.Running;
-
-						new XAnimationPackage(this)
-							.Duration(DurationMilliseconds)
-							.Easing(EasingFunction.EaseInOut)
-							.Rotate(IsCounterClockWise ? -1 * (Angle + 360) : Angle + 360)
-							.Animate()
-							.Rotate(IsCounterClockWise ? -1 * Angle : Angle)
-							.Set()
-							.Animate()
-							.Run(animationAction);
-
-						new XAnimationPackage(this)
-							.Opacity(0.0)
-							.Rotate(Angle)
-							.Set()
-							.Duration(150)
-							.Easing(EasingFunction.EaseInOut)
-							.Opacity(1.0)
-							.Animate()
-							.Run();
-
+						animationAction();
+						
 						break;
 
 					case SpinnerState.Running:
 
+						var firstAngle = IsCounterClockWise ? -1 * (Angle + 360) : Angle + 360;
+						var resetAngle = IsCounterClockWise ? -1 * Angle : Angle;
+						System.Diagnostics.Debug.WriteLine(this.Height + ": " + firstAngle + " to " + resetAngle + " (angle: " + this.Angle + ")");
+
 						// Animate running
 						new XAnimationPackage(this)
 							.Duration(DurationMilliseconds)
-							.Easing(EasingFunction.EaseInOut)
-							.Rotate(IsCounterClockWise ? -1 * (Angle + 360) : Angle + 360)
+							.Easing(EasingFunction.Linear)
+							.Rotate(firstAngle)
 							.Animate()
-							.Rotate(IsCounterClockWise ? -1 * Angle : Angle)
+							.Rotate(resetAngle)
 							.Set()
 							.Animate()
 							.Run(animationAction);
@@ -162,13 +177,6 @@ namespace NControl.Mvvm
 
 						// Animate stopping
 						_state = SpinnerState.NotRunning;
-
-						//new XAnimationPackage(this)
-						//	.Duration(150)
-						//	.Easing(EasingFunction.EaseInOut)
-						//	.Opacity(0.0)
-						//	.Animate()
-						//	.Run(animationAction);
 
 						break;
 
@@ -200,13 +208,6 @@ namespace NControl.Mvvm
 				else
 				{
 					ctrl._state = SpinnerState.Stopping;
-
-					new XAnimationPackage(ctrl)
-						.Duration(150)
-						.Easing(EasingFunction.EaseInOut)
-						.Scale(0.0)
-						.Animate()
-						.Run(()=> ctrl.Scale = 1.0);
 				}
 			});
 

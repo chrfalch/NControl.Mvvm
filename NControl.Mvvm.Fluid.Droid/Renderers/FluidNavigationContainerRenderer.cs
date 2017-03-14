@@ -6,7 +6,6 @@ using Android.Views;
 using Android.Animation;
 using Android.App;
 using NControl.Mvvm;
-using NControl.Mvvm;
 using NControl.Mvvm.Droid;
 
 [assembly: ExportRenderer(typeof(FluidNavigationContainer), typeof(FluidNavigationContainerRenderer))]

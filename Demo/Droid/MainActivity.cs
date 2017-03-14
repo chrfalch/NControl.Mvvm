@@ -9,7 +9,6 @@ using Android.Widget;
 using Android.OS;
 using NControl.Mvvm.Droid;
 using NControl.Controls.Droid;
-using NControl.Mvvm.Droid;
 
 namespace MvvmDemo.Droid
 {
