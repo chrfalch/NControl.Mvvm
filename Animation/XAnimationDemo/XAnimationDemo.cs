@@ -40,7 +40,7 @@ namespace XAnimationDemo
 							.Duration(1000)
 							.Color(Color.Red)
 							.Rotate(slider.Value)
-							.Easing(EasingFunction.EaseInOut)
+							.Easing(.07, .62, .58, 1.51)
 							.Animate()
 							.Color(Color.Transparent)
 							.Animate()

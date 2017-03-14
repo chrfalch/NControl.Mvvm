@@ -9,6 +9,7 @@ namespace NControl.XAnimation
 		EaseIn,
 		EaseOut,
 		EaseInOut,
+		Custom,
 	}
 
 	/// <summary>
@@ -31,6 +32,7 @@ namespace NControl.XAnimation
 		public Color Color { get; set; }
 
 		public EasingFunction Easing { get; set; }
+		public EasingFunctionBezier EasingBezier { get; set; }
 
 		/// <summary>
 		/// Set to true to indicate that we should not run this as an animation, just
@@ -80,6 +82,7 @@ namespace NControl.XAnimation
 			TranslationY = 0;
 			Opacity = 1;
 			Easing = EasingFunction.EaseIn;
+			EasingBezier = new EasingFunctionBezier(new Point(0, 0), new Point(1.0, 1.0));
 		}
 
 		public override string ToString()
@@ -87,6 +90,17 @@ namespace NControl.XAnimation
 			return string.Format(OnlyTransform ? "Set" : "Animate" + ": [#{3}: Delay={0}, Duration={1}, Repeat={2}, Scale={4}," + 
 			                     " Rotate={5}, TranslationX={6}, TranslationY={7}, Opacity={8}]", Delay, Duration, false, AnimationId, 
 			                     Scale, Rotate, TranslationX, TranslationY, Opacity);
+		}
+	}
+
+	public sealed class EasingFunctionBezier
+	{
+		public Point Start { get; private set; }
+		public Point End { get; private set; }
+		public EasingFunctionBezier(Point start, Point end)
+		{
+			Start = start;
+			End = end;
 		}
 	}
 }

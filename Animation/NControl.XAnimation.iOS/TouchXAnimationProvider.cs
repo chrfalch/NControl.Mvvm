@@ -115,6 +115,12 @@ namespace NControl.XAnimation.iOS
 					case EasingFunction.EaseInOut:
 						group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseInEaseOut);
 						break;
+					case EasingFunction.Custom:
+						group.TimingFunction = CAMediaTimingFunction.FromControlPoints(
+							(float)animationInfo.EasingBezier.Start.X, (float)animationInfo.EasingBezier.Start.Y, 
+							(float)animationInfo.EasingBezier.End.X, (float)animationInfo.EasingBezier.End.Y);
+						
+						break;
 					default:
 						group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.Linear);
 						break;

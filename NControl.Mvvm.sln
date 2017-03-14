@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{7531
 		NControl.MVVM.nuspec = NControl.MVVM.nuspec
 		README.MD = README.MD
 		LICENSE.md = LICENSE.md
+		NControl.MVVM.Fluid.nuspec = NControl.MVVM.Fluid.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.Mvvm", "NControl.MVVM\NControl.Mvvm.csproj", "{6AF0AE38-F4D7-4A23-9E9F-4B11DF18ECC7}"

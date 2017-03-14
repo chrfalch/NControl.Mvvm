@@ -136,10 +136,18 @@ namespace NControl.XAnimation.Droid
 			{
 				case EasingFunction.EaseIn:
 					return new AccelerateInterpolator();					
+					
 				case EasingFunction.EaseOut:
 					return new DecelerateInterpolator();					
+					
 				case EasingFunction.EaseInOut:
 					return new AccelerateDecelerateInterpolator();
+					
+				case EasingFunction.Custom:
+					return new DroidBezierInterpolator(
+					(float)animationInfo.EasingBezier.Start.X, (float)animationInfo.EasingBezier.Start.Y,
+					(float)animationInfo.EasingBezier.End.X, (float)animationInfo.EasingBezier.End.Y);
+
 				default:
 					return new LinearInterpolator();
 			}

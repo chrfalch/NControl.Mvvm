@@ -56,7 +56,7 @@ namespace NControl.XAnimation
 		/// Rotates the view around the z axis
 		/// </summary>
 		public XAnimationPackage Rotate(double rotation)
-		{			
+		{
 			GetCurrentAnimation().Rotate = rotation;
 			return this;
 		}
@@ -129,9 +129,9 @@ namespace NControl.XAnimation
 		{
 			_previousInfo = _animationInfos.LastOrDefault();
 			_currentInfo = null;
-			if(_previousInfo != null)
-				_previousInfo.OnlyTransform = true;	
-			
+			if (_previousInfo != null)
+				_previousInfo.OnlyTransform = true;
+
 			return this;
 		}
 
@@ -146,6 +146,24 @@ namespace NControl.XAnimation
 		{
 			GetCurrentAnimation().Color = color;
 			return this;
+		}
+
+		/// <summary>
+		/// Creates a custom easing curve. See more here: http://cubic-bezier.com
+		/// </summary>
+		public XAnimationPackage Easing(Point start, Point end)
+		{
+			GetCurrentAnimation().Easing = EasingFunction.Custom;
+			GetCurrentAnimation().EasingBezier = new EasingFunctionBezier(start, end);
+			return this;
+		}
+
+		/// <summary>
+		/// Creates a custom easing curve. See more here: http://cubic-bezier.com
+		/// </summary>
+		public XAnimationPackage Easing(double startX, double startY, double endX, double endY)
+		{
+			return Easing(new Point(startX, startY), new Point(endX, endY));
 		}
 
 		public XAnimationPackage Then()
