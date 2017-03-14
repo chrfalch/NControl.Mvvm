@@ -28,4 +28,5 @@ xbuild /p:Configuration=Release /p:Platform=Release /target:build /p:OutputPath=
 xbuild /p:Configuration=Release /p:Platform=Release /target:build /p:OutputPath=build NControl.MVVM.Fluid.Droid/NControl.Mvvm.Fluid.Droid.csproj
 
 mkdir -p ../build
-nuget pack -OutputDirectory ../build
+nuget pack -OutputDirectory ../build ../build NControl.MVVM.Fluid.nuspec 
+nuget pack -OutputDirectory ../build ../build NControl.MVVM.nuspec 
