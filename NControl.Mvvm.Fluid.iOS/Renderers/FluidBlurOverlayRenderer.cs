@@ -23,6 +23,13 @@ namespace NControl.Mvvm.iOS
 			if (e.NewElement != null)
 			{
 				e.NewElement.OnScreenshotRequest += Handle_OnScreenshotRequest;
+
+				if (_effect == null)
+				{
+					_effect = new UIVisualEffectView(UIBlurEffect.FromStyle(UIBlurEffectStyle.ExtraLight));
+					SetNativeControl(_effect);
+					SetNeedsLayout();
+				}
 			}
 		}
 
@@ -30,19 +37,13 @@ namespace NControl.Mvvm.iOS
 		{
 			base.UpdateNativeWidget();
 			NativeView.BackgroundColor = UIColor.Clear;
-
-			if (_effect == null)
-			{
-				var blur = UIBlurEffect.FromStyle(UIBlurEffectStyle.ExtraLight);
-				_effect = new UIVisualEffectView(blur);
-				NativeView.AddSubview(_effect);
-			}
 		}
 
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
-			_effect.Frame = NativeView.Bounds;
+			if(_effect != null)
+				_effect.Frame = NativeView.Bounds;
 		}
 
 		void Handle_OnScreenshotRequest(object sender, EventArgs e)

@@ -20,7 +20,10 @@ namespace NControl.Mvvm
 			Content = _layout = new RelativeLayout();
 			Opacity = 0.0;
 			IsVisible = false;
+		}
 
+		void AddSpinners()
+		{
 			var random = new Random();
 
 			// add spinners
@@ -72,10 +75,8 @@ namespace NControl.Mvvm
 				if ((bool)newValue == true)
 				{
 					ctrl.IsVisible = true;
-					var random = new Random();
-					foreach (var spinner in ctrl._layout.Children)
-						if (spinner is SpinningCircleControl)
-							((SpinningCircleControl)spinner).Angle = random.Next(0, 360);
+
+					ctrl.AddSpinners();
 
 					new XAnimationPackage(ctrl)
 						.Opacity(1.0)
@@ -87,7 +88,11 @@ namespace NControl.Mvvm
 					new XAnimationPackage(ctrl)
 						.Opacity(0.0)
 						.Animate()
-						.Run(() => ctrl.IsVisible = false);
+					.Run(() =>
+					{
+						ctrl.IsVisible = false;
+						ctrl._layout.Children.Clear();
+					});
 				}
 			});
 
@@ -158,7 +163,6 @@ namespace NControl.Mvvm
 
 						var firstAngle = IsCounterClockWise ? -1 * (Angle + 360) : Angle + 360;
 						var resetAngle = IsCounterClockWise ? -1 * Angle : Angle;
-						System.Diagnostics.Debug.WriteLine(this.Height + ": " + firstAngle + " to " + resetAngle + " (angle: " + this.Angle + ")");
 
 						// Animate running
 						new XAnimationPackage(this)

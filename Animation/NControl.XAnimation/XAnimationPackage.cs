@@ -315,8 +315,7 @@ namespace NControl.XAnimation
 		/// Log
 		/// </summary>
 		void DoLog(string message, params object[] args)
-		{
-			return;
+		{			
 			var ticks = DateTime.Now;				
 			System.Diagnostics.Debug.WriteLine(ticks.TimeOfDay + " - XAnimation: " + string.Format(message, args));
 		}

@@ -52,15 +52,15 @@ namespace MvvmDemo
 									},
 								},
 
-								LoadingView = new Grid{
-									Children = {
-										new ActivityIndicator{
-											IsRunning = true,
-											VerticalOptions = LayoutOptions.Center,
-											HorizontalOptions = LayoutOptions.Center
-										}
-									}
-								}
+								//LoadingView = new Grid{
+								//	Children = {
+								//		new ActivityIndicator{
+								//			IsRunning = true,
+								//			VerticalOptions = LayoutOptions.Center,
+								//			HorizontalOptions = LayoutOptions.Center
+								//		}
+								//	}
+								//}
 							}
 							.BindTo(ListViewControl.RefreshCommandProperty, NameOf(vm => vm.RefreshCommand))
 							.BindTo(ListViewControl.StateProperty, NameOf(vm => vm.CollectionState)),
@@ -76,8 +76,7 @@ namespace MvvmDemo
 						}
 					},
 
-					//new FluidBlurOverlay{						
-					//},
+					// new FluidBlurOverlay{},
 				}
 			};
 		}

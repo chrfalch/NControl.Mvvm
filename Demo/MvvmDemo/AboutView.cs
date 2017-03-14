@@ -46,7 +46,7 @@ namespace MvvmDemo
 					.Translate(0, -container.GetNavigationBarView().Height)
 					.Rotate(360)
 					.Set()
-					.Duration(1500)
+					.Duration(350)
 					.Easing(EasingFunction.EaseOut)
 					.Translate(0, 0)
 					.Rotate(0)
@@ -55,7 +55,7 @@ namespace MvvmDemo
 				new XAnimationPackage(container.GetContainerView())
 					.Translate(0, container.GetContainerView().Height)
 					.Set()
-					.Duration(1500)
+					.Duration(350)
 					.Easing(EasingFunction.EaseOut)
 					.Translate(0, 0).Animate()
 			};
@@ -69,7 +69,7 @@ namespace MvvmDemo
 				new XAnimationPackage(container.GetNavigationBarView())					
 					.Easing(EasingFunction.EaseOut)
 					.Translate(0, -container.GetNavigationBarView().Height)
-					.Duration(1500)
+					.Duration(350)
 					.Rotate(360)
 					.Easing(EasingFunction.EaseIn)
 					.Animate(),
