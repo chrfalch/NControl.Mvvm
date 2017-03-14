@@ -120,7 +120,12 @@ namespace XAnimationDemo
 											 	 	.Opacity(0)
 												 .Animate()
 												 	.Reset()
-												 .Animate();
+												 .Animate()
+													.Color(Color.Red)
+												 .Animate()
+													.Color(Color.Green)
+												 .Animate()
+													.Color(Color.Blue);
 
 											animation.Run(()=> System.Diagnostics.Debug.WriteLine("Animation done"));
 										})

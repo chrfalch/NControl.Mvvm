@@ -1,4 +1,6 @@
 ﻿using System;
+using Xamarin.Forms;
+
 namespace NControl.XAnimation
 {
 	public enum EasingFunction
@@ -25,6 +27,8 @@ namespace NControl.XAnimation
 		public double TranslationX { get; set; }
 		public double TranslationY { get; set; }
 		public double Opacity { get; set; }
+
+		public Color Color { get; set; }
 
 		public EasingFunction Easing { get; set; }
 
@@ -60,6 +64,7 @@ namespace NControl.XAnimation
 				TranslationX = prevAnimationInfo.TranslationX;
 				TranslationY = prevAnimationInfo.TranslationY;
 				Opacity = prevAnimationInfo.Opacity;
+				Color = prevAnimationInfo.Color;
 			}
 			else
 			{

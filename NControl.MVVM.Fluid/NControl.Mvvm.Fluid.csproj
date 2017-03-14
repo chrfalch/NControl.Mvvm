@@ -45,13 +45,14 @@
     <Compile Include="Contracts\INavigationContainerProvider.cs" />
     <Compile Include="Providers\NavigationContainerProvider.cs" />
     <Compile Include="Contracts\ILeftBorderProvider.cs" />
-    <Compile Include="Controls\FluidActivityIndicator.cs" />
+    <Compile Include="Controls\FluidActivityIndicatorView.cs" />
     <Compile Include="Contracts\IActivityIndicatorViewProvider.cs" />
     <Compile Include="FluidConfig.cs" />
     <Compile Include="Behaviors\BaseViewBehavior.cs" />
     <Compile Include="Contracts\IXViewAnimatable.cs" />
     <Compile Include="Controls\FluidModalNavigationContainer.cs" />
     <Compile Include="Controls\ListViewControl.cs" />
+    <Compile Include="Controls\FluidActivityIndicator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">

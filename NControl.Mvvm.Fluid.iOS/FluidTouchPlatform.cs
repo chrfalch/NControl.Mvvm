@@ -13,7 +13,7 @@ namespace NControl.Mvvm.Fluid.iOS
 
 		public override void RegisterActivityIndicator()
 		{
-			Container.RegisterSingleton<IActivityIndicator, FluidActivityIndicator>();
+			Container.RegisterSingleton<IActivityIndicator, FluidActivityIndicatorView>();
 		}
 	}
 }

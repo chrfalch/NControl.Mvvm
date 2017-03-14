@@ -11,8 +11,8 @@ namespace MvvmDemo
 		public CompanyView ()
 		{
 			ToolbarItems.Add (new ToolbarItemEx {
-				MaterialDesignIcon = FontMaterialDesignLabel.MDInformationOutline,
-				Command = ViewModel.ShowAboutCommand,
+				MaterialDesignIcon = FontMaterialDesignLabel.MDRefresh,
+				Command = ViewModel.RefreshCommand,
 			});
 
 			ToolbarItems.Add (new ToolbarItemEx {
@@ -34,6 +34,7 @@ namespace MvvmDemo
 						ItemSelectedCommand = ViewModel.SelectCompanyCommand,
 						ItemTemplate = new DataTemplate(typeof(TextCell))
 							.BindTo(TextCell.TextProperty, NameOf<Company>(cw => cw.Name)),
+
 						EmptyListView = new VerticalWizardStackLayout{
 							Children = {
 								new FontMaterialDesignLabel{

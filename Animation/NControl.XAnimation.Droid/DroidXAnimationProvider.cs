@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Android.Animation;
+using Android.Graphics.Drawables;
 using Android.Views;
 using Android.Views.Animations;
 using NControl.XAnimation.Droid;
@@ -32,7 +33,7 @@ namespace NControl.XAnimation.Droid
 
 		public void Animate(XAnimationInfo animationInfo, Action completed)
 		{
-			var animations = new List<ViewPropertyAnimator>();
+			var animations = new List<object>();
 			var animationCount = 0;
 
 			foreach (var element in _animation.Elements)
@@ -58,12 +59,39 @@ namespace NControl.XAnimation.Droid
 				nativeAnimation.TranslationX((float)animationInfo.TranslationX * _displayDensity);
 				nativeAnimation.TranslationY((float)animationInfo.TranslationY * _displayDensity);
 
+				if (element.BackgroundColor != animationInfo.Color)
+				{
+					var fromColor = (viewGroup.Background as ColorDrawable)?.Color;
+					var toColor = animationInfo.Color.ToAndroid();
+
+					var colorAnimator = ObjectAnimator.OfInt(viewGroup, "backgroundColor", (int)fromColor, (int)toColor);
+					colorAnimator.SetDuration(animationInfo.Duration);
+					colorAnimator.SetTarget(viewGroup);
+					colorAnimator.SetEvaluator(new ArgbEvaluator());
+					colorAnimator.SetInterpolator(GetInterpolator(animationInfo));
+					colorAnimator.StartDelay = animationInfo.Delay;
+					colorAnimator.AddListener(new AnimationListener(null, (obj) =>
+					{
+						animationCount--;
+						if (animationCount == 0)
+							completed?.Invoke();
+
+					}, null, null));
+
+					animations.Add(colorAnimator);
+				}
+
 				animations.Add(nativeAnimation);
 			}
 
 			animationCount = animations.Count;
 			foreach (var anim in animations)
-				anim.Start();
+			{
+				if (anim is ViewPropertyAnimator)
+					(anim as ViewPropertyAnimator).Start();
+				else if (anim is ObjectAnimator)
+					(anim as ObjectAnimator).Start();
+			}
 		}
 
 		public void Set(XAnimationInfo animationInfo)
@@ -78,6 +106,7 @@ namespace NControl.XAnimation.Droid
 				viewGroup.ScaleY = (float)animationInfo.Scale;
 				viewGroup.TranslationX = (float)animationInfo.TranslationX * _displayDensity;
 				viewGroup.TranslationY = (float)animationInfo.TranslationY * _displayDensity;
+				viewGroup.SetBackgroundColor( animationInfo.Color.ToAndroid());
 			}
 		}
 

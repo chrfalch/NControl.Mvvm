@@ -5,6 +5,7 @@ using Xamarin.Forms;
 using System.Linq;
 using System.Collections.Generic;
 using NControl.XAnimation;
+using NControl.Mvvm.Fluid;
 
 namespace NControl.Mvvm
 {
@@ -23,26 +24,29 @@ namespace NControl.Mvvm
 		readonly ContentView _emptyMessageView;
 		readonly ContentView _loadingView;
 		readonly Command _refreshCommand;
+		readonly FluidActivityIndicator _activityIndicator;
 
 		#endregion
 
 		public ListViewControl()
 		{
 			// Create refresh command
-			_refreshCommand = new Command((arg) => {
+			_refreshCommand = new Command((arg) =>
+			{
 
-				if (State != CollectionState.Loading && 
-				    RefreshCommand != null && 
-				    RefreshCommand.CanExecute(null))
+				if (State != CollectionState.Loading &&
+					RefreshCommand != null &&
+					RefreshCommand.CanExecute(null))
 					RefreshCommand.Execute(null);
 
 			}, (arg) => State != CollectionState.Loading);
 
 			// Setup listview
-			_listView = new ListViewEx { 
-				BindingContext = this, 
+			_listView = new ListViewEx
+			{
+				BindingContext = this,
 				RefreshCommand = _refreshCommand,
-				SeparatorVisibility= SeparatorVisibility.None,
+				SeparatorVisibility = SeparatorVisibility.None,
 			}
 				.BindTo(ItemsView<Cell>.ItemsSourceProperty, nameof(ItemsSource))
 				.BindTo(ListView.IsRefreshingProperty, nameof(IsRefreshing))
@@ -53,10 +57,17 @@ namespace NControl.Mvvm
 			_emptyMessageView = new ContentView { Opacity = 0.0 };
 
 			// Setup default loading view
-			_loadingView = new ContentView { Opacity = 0.0 };
+			_loadingView = new ContentView { InputTransparent = true};
+			_activityIndicator = new FluidActivityIndicator { };
 
 			// Add default values to the loading view and empty view
-			_loadingView.Content = new ActivityIndicator { IsRunning = true };
+			_loadingView.Content = new VerticalStackLayoutWithPadding
+			{
+				VerticalOptions = LayoutOptions.CenterAndExpand,
+				Children = {
+					_activityIndicator
+				}
+			};
 
 			// Set up empty message
 			_emptyMessageView.Content = new VerticalWizardStackLayout
@@ -76,7 +87,7 @@ namespace NControl.Mvvm
 								RefreshCommand != null &&
 								RefreshCommand.CanExecute(null))
 							{
-								AnimateVisibility(true, _loadingView);
+								ShowLoadingView(true);
 								RefreshCommand.Execute(null);
 							}
 						}),
@@ -219,31 +230,32 @@ namespace NControl.Mvvm
 			switch (newValue)
 			{
 				case CollectionState.NotLoaded:
-					AnimateVisibility(true, _loadingView);
-					AnimateVisibility(false, _emptyMessageView);
+					ShowLoadingView(true);
+					ShowEmptyListView(false);
 					break;
-					
+
 				case CollectionState.Loaded:
 
-					AnimateVisibility(
-						ItemsSource == null || 
-						(ItemsSource is ICollection && (ItemsSource as ICollection).Count == 0),
-						_emptyMessageView);
+					ShowEmptyListView(
+						ItemsSource == null ||
+						(ItemsSource is ICollection && (ItemsSource as ICollection).Count == 0));
 
-					AnimateVisibility(false, _loadingView);
+					ShowLoadingView(false);
 
 					IsRefreshing = false;
 					_refreshCommand.ChangeCanExecute();
 
 					break;
 
-				case CollectionState.Loading:	
-					AnimateVisibility(false, _emptyMessageView);
+				case CollectionState.Loading:
+					ShowEmptyListView(false);
+					ShowLoadingView(!IsRefreshing);
+
 					break;
-					
+
 				case CollectionState.Reloading:
 					break;
-					
+
 			}
 		}
 		#endregion
@@ -259,24 +271,37 @@ namespace NControl.Mvvm
 			set { SetValue(IsRefreshingProperty, value); }
 		}
 
-		void AnimateVisibility(bool setVisibleTo, VisualElement element)
+		void AnimateVisibility(bool setVisibleTo, VisualElement element, Action callback = null)
 		{
 			if (setVisibleTo && element.Opacity.Equals(0.0))
 			{
 				new XAnimationPackage(element)
-					.Duration(50)
+					.Duration(150)
 					.Opacity(1.0)
 					.Animate()
-					.Run();
+					.Run(callback);
 			}
 			else if (!setVisibleTo && element.Opacity.Equals(1.0))
-			{ 
+			{
 				new XAnimationPackage(element)
-					.Duration(50)
+					.Duration(150)
 					.Opacity(0.0)
 					.Animate()
-					.Run();
+					.Run(callback);
 			}
+		}
+		#endregion
+
+		#region Private Members
+
+		void ShowLoadingView(bool show)
+		{
+			_activityIndicator.IsRunning = show;				
+		}
+
+		void ShowEmptyListView(bool show) 
+		{ 
+			AnimateVisibility(show, _emptyMessageView);
 		}
 		#endregion
 	}

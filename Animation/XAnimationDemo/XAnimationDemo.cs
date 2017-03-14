@@ -38,13 +38,13 @@ namespace XAnimationDemo
 					{
 						new XAnimationPackage(label)
 							.Duration(1000)
-							.Rotate(360)
+							.Color(Color.Red)
+							.Rotate(slider.Value)
 							.Easing(EasingFunction.EaseInOut)
 							.Animate()
-							.Rotate(0)
-							.Set()
+							.Color(Color.Transparent)
 							.Animate()
-							.Run(action);
+							.Run();
 					};
 
 					action();

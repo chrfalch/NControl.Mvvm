@@ -142,9 +142,10 @@ namespace NControl.XAnimation
 			return this;
 		}
 
-		public void Cancel()
+		public XAnimationPackage Color(Color color)
 		{
-			_runningState = false;
+			GetCurrentAnimation().Color = color;
+			return this;
 		}
 
 		public XAnimationPackage Then()

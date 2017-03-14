@@ -85,12 +85,24 @@ namespace NControl.XAnimation.iOS
 				rotateAnimation.To = new NSNumber((animationInfo.Rotate * Math.PI) / 180.0);
 				animations.Add(rotateAnimation);
 
+				// Color
+				if (animationInfo.Color != null)
+				{
+					var fromColor = view.BackgroundColor;
+					var toColor = animationInfo.Color.ToUIColor();
+
+					var colorAnimation = new CABasicAnimation();
+					colorAnimation.KeyPath = "backgroundColor";
+					colorAnimation.From = fromColor;
+					colorAnimation.To = toColor;
+					animations.Add(colorAnimation);
+				}
+
 				// Create group of animations
 				var group = new CAAnimationGroup();
 				group.Duration = animationInfo.Duration / 1000.0;
 				group.BeginTime = CAAnimation.CurrentMediaTime() + (animationInfo.Delay / 1000.0);
 				group.Animations = animations.ToArray();
-
 
 				switch (animationInfo.Easing)
 				{
@@ -126,6 +138,7 @@ namespace NControl.XAnimation.iOS
 				element.TranslationY = animationInfo.TranslationY;
 				element.Scale = animationInfo.Scale;
 				element.Opacity = (float)animationInfo.Opacity;
+				element.BackgroundColor = animationInfo.Color;
 			}
 		}
 

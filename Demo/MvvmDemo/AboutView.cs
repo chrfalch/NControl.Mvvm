@@ -26,7 +26,9 @@ namespace MvvmDemo
 					new ExtendedButton {Text="Call Command through message.", Command = ViewModel.ClickMeCommand },
 					new VerticalSeparator(),
 					new ExtendedButton {Text="Run async command", Command = ViewModel.CountAsyncCommand },
-					new CustomActivityIndicator{Color = MvvmApp.Current.Colors.Get(Config.AccentColor)}.BindTo(CustomActivityIndicator.IsRunningProperty, nameof(ViewModel.IsRunningAsyncCommand)),
+					new FluidActivityIndicator{Color = MvvmApp.Current.Colors.Get(Config.AccentColor)}
+						.BindTo(FluidActivityIndicator.IsRunningProperty, nameof(ViewModel.IsRunningAsyncCommand)),
+
 					new Label {HorizontalTextAlignment = TextAlignment.Center}.BindTo(Label.TextProperty, nameof(ViewModel.NumberValue), stringFormat:"Number Value: {0}"),
 					new VerticalSeparator(),
 					new ExtendedButton {Text="Push new about", Command = ViewModel.PushNewAboutCommand },

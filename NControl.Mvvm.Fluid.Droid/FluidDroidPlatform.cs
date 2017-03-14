@@ -17,7 +17,7 @@ namespace NControl.Mvvm.Fluid.Droid
 
 		public override void RegisterActivityIndicator()
 		{
-			Container.RegisterSingleton<IActivityIndicator, FluidActivityIndicator>();
+			Container.RegisterSingleton<IActivityIndicator, FluidActivityIndicatorView>();
 		}
 	}
 }
