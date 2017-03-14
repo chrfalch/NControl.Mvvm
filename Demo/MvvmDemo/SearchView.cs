@@ -1,7 +1,6 @@
 using System;
 using NControl.Controls;
 using NControl.Mvvm;
-using NControl.Mvvm;
 using Xamarin.Forms;
 
 namespace MvvmDemo
