@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using NControl.Mvvm;
 using Xamarin.Forms;
 
-namespace NControl.Mvvm.Fluid
+namespace NControl.Mvvm
 {
 	public abstract class FluidMvvmApp: MvvmApp
 	{

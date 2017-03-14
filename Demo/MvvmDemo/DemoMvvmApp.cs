@@ -1,5 +1,5 @@
-﻿using System;
-using NControl.Mvvm.Fluid;
+using System;
+using NControl.Mvvm;
 using NControl.Mvvm;
 using Xamarin.Forms;
 

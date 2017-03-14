@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Android.App;
 using NControl.Mvvm;
 using NControl.Mvvm.Droid;
 
-namespace NControl.Mvvm.Fluid.Droid
+namespace NControl.Mvvm.Droid
 {
 	/// <summary>
 	/// Droid mvvm app.

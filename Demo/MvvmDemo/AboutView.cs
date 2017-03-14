@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using NControl.Mvvm;
 using NControl.Controls;
-using NControl.Mvvm.Fluid;
+using NControl.Mvvm;
 using Xamarin.Forms;
 using System.Collections.Generic;
 using NControl.XAnimation;

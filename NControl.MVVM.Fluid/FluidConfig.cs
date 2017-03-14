@@ -1,5 +1,5 @@
-﻿using System;
-namespace NControl.Mvvm.Fluid
+using System;
+namespace NControl.Mvvm
 {
 	public static class FluidConfig
 	{

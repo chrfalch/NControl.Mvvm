@@ -6,7 +6,7 @@
     <ProjectGuid>{E252288B-A091-4D4A-A6B9-89631F13FC48}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>NControl.Mvvm.Fluid.iOS</RootNamespace>
+    <RootNamespace>NControl.Mvvm.iOS</RootNamespace>
     <AssemblyName>NControl.Mvvm.Fluid.iOS</AssemblyName>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
   </PropertyGroup>

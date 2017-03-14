@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Windows.Input;
 using NControl.Mvvm;
 using NControl.XAnimation;
 using Xamarin.Forms;
 
-namespace NControl.Mvvm.Fluid
+namespace NControl.Mvvm
 {
 	public class BounceAndClickBehavior: ClickBehavior
 	{

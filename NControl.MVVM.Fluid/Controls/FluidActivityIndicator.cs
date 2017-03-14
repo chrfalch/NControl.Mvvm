@@ -5,7 +5,7 @@ using NControl.Controls;
 using NControl.XAnimation;
 using Xamarin.Forms;
 
-namespace NControl.Mvvm.Fluid
+namespace NControl.Mvvm
 {
 
 	public class FluidActivityIndicator : ContentView

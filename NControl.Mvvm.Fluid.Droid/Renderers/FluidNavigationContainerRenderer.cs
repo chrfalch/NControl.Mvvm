@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 using System.Linq;
@@ -6,11 +6,11 @@ using Android.Views;
 using Android.Animation;
 using Android.App;
 using NControl.Mvvm;
-using NControl.Mvvm.Fluid;
-using NControl.Mvvm.Fluid.Droid;
+using NControl.Mvvm;
+using NControl.Mvvm.Droid;
 
 [assembly: ExportRenderer(typeof(FluidNavigationContainer), typeof(FluidNavigationContainerRenderer))]
-namespace NControl.Mvvm.Fluid.Droid
+namespace NControl.Mvvm.Droid
 {
 	public class FluidNavigationContainerRenderer: ViewRenderer<FluidNavigationContainer, Android.Views.View>
 	{

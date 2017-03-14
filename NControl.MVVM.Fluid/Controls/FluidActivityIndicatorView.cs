@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using NControl.Abstractions;
 using NControl.Controls;
 using NControl.XAnimation;
 using Xamarin.Forms;
 
-namespace NControl.Mvvm.Fluid
+namespace NControl.Mvvm
 {
 	public class FluidActivityIndicatorView: IActivityIndicator
 	{

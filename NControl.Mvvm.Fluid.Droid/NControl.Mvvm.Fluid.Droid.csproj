@@ -6,7 +6,7 @@
     <ProjectGuid>{EA027B4B-F1E1-4418-8A26-066DEDEFA4F0}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>NControl.Mvvm.Fluid.Droid</RootNamespace>
+    <RootNamespace>NControl.Mvvm.Droid</RootNamespace>
     <AssemblyName>NControl.Mvvm.Fluid.Droid</AssemblyName>
     <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>

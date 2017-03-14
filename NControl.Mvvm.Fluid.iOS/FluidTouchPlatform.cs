@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using NControl.Mvvm;
 using NControl.Mvvm.iOS;
 
-namespace NControl.Mvvm.Fluid.iOS
+namespace NControl.Mvvm.iOS
 {
 	public class FluidTouchPlatform: TouchPlatform
 	{

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq.Expressions;
@@ -7,7 +7,7 @@ using NControl.Mvvm;
 using NControl.XAnimation;
 using Xamarin.Forms;
 
-namespace NControl.Mvvm.Fluid
+namespace NControl.Mvvm
 {
 	public interface IToolbarItemsContainer: IView
 	{

@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Windows.Input;
 using Xamarin.Forms;
 using System.Linq;
 using System.Collections.Generic;
 using NControl.XAnimation;
-using NControl.Mvvm.Fluid;
+using NControl.Mvvm;
 
 namespace NControl.Mvvm
 {

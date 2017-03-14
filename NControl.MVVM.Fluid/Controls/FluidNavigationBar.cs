@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Xamarin.Forms;
@@ -7,7 +7,7 @@ using System.Windows.Input;
 using NControl.XAnimation;
 using System.Linq;
 
-namespace NControl.Mvvm.Fluid
+namespace NControl.Mvvm
 {
 	public class FluidNavigationBar: StackLayout
 	{

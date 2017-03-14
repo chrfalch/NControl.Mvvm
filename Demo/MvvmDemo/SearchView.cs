@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using NControl.Controls;
 using NControl.Mvvm;
-using NControl.Mvvm.Fluid;
+using NControl.Mvvm;
 using Xamarin.Forms;
 
 namespace MvvmDemo

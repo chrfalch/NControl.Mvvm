@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Linq;
 using CoreGraphics;
-using NControl.Mvvm.Fluid;
-using NControl.Mvvm.Fluid.iOS;
+using NControl.Mvvm;
+using NControl.Mvvm.iOS;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
 [assembly:ExportRenderer(typeof(FluidNavigationContainer), typeof(FluidNavigationContainerRenderer))]
-namespace NControl.Mvvm.Fluid.iOS
+namespace NControl.Mvvm.iOS
 {
 	public class FluidNavigationContainerRenderer: ViewRenderer<FluidNavigationContainer, UIView> 
 	{

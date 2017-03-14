@@ -3,7 +3,7 @@ using System.Windows.Input;
 using NControl.Mvvm;
 using Xamarin.Forms;
 
-namespace NControl.Mvvm.Fluid
+namespace NControl.Mvvm
 {
 
 	public class ClickBehavior : BaseViewBehavior

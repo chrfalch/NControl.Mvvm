@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using Xamarin.Forms;
 
-namespace NControl.Mvvm.Fluid
+namespace NControl.Mvvm
 {
 	public interface INavigationContainerProvider
 	{

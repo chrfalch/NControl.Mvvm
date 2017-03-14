@@ -1,4 +1,4 @@
-﻿/****************************** Module Header ******************************\
+/****************************** Module Header ******************************\
 Module Name:  DefaultPresenter.cs
 Copyright (c) Christian Falch
 All rights reserved.
@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using Xamarin.Forms;
 using System.Linq;
 using System.Reflection;
-using NControl.Mvvm.Fluid;
+using NControl.Mvvm;
 using NControl.XAnimation;
 
 namespace NControl.Mvvm
