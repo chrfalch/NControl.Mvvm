@@ -1,13 +1,14 @@
 ﻿using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms;
 using NControl.Mvvm.Droid;
+using NControl.Controls.Droid;
 using Android.Graphics.Drawables;
 using NControl.Mvvm;
 
 [assembly: ExportRenderer(typeof(ExtendedButton), typeof(ExtendedButtonRenderer))]
 namespace NControl.Mvvm.Droid
 {
-	public class ExtendedButtonRenderer : ButtonRenderer
+	public class ExtendedButtonRenderer : FontAwareButtonRenderer
 	{
 		GradientDrawable _normal, _pressed;
 		float _displayDensity = 1.0f;
@@ -27,10 +28,10 @@ namespace NControl.Mvvm.Droid
 				var button = e.NewElement;
 
 				// Create a drawable for the button's normal state
-				_normal = new Android.Graphics.Drawables.GradientDrawable();
+				_normal = new GradientDrawable();
 
 				// Create a drawable for the button's pressed state
-				_pressed = new Android.Graphics.Drawables.GradientDrawable();
+				_pressed = new GradientDrawable();
 
 				UpdateBorder();
 

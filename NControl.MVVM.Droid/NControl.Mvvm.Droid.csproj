@@ -121,7 +121,7 @@
     <Compile Include="DroidPlatform.cs" />
     <Compile Include="Platform\DroidProgressIndicator.cs" />
     <Compile Include="Platform\ExtendedEntryRenderer.cs" />
-    <Compile Include="Platform\ButtonRenderer.cs" />
+    <Compile Include="Platform\ExtendedButtonRenderer.cs" />
     <Compile Include="Platform\DroidEnvironmentProvider.cs" />
     <Compile Include="Platform\DroidGestureRecognizerProvider.cs" />
   </ItemGroup>

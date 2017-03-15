@@ -167,6 +167,14 @@ namespace NControl.XAnimation
 			return Easing(new Point(startX, startY), new Point(endX, endY));
 		}
 
+		/// <summary>
+		/// Creates a custom easing curve. See more here: http://cubic-bezier.com
+		/// </summary>
+		public XAnimationPackage Easing(EasingFunctionBezier easingFunction)
+		{
+			return Easing(easingFunction.Start, easingFunction.End);
+		}
+
 		public XAnimationPackage Then()
 		{
 			return this;

@@ -162,6 +162,7 @@ namespace NControl.Mvvm
 			Current.Sizes.Set(Config.DefaultLargePadding, 24);
 			Current.Sizes.Set(Config.DefaultLargeSpacing, 14);
 			Current.Sizes.Set(Config.DefaultBorderSize, 0.5 * Current.Environment.DisplayDensity);
+			Current.Sizes.Set(Config.DefaultBoldBorderSize, 1.0 * Current.Environment.DisplayDensity);
 			Current.Sizes.Set(Config.DefaultActivityIndicatorSize, 44);
 		}
 

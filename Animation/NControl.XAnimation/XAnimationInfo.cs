@@ -104,5 +104,10 @@ namespace NControl.XAnimation
 			Start = start;
 			End = end;
 		}
+
+		public EasingFunctionBezier(double startX, double startY, double endX, double endY):
+			this(new Point(startX, startY), new Point(endX, endY))
+		{			
+		}
 	}
 }

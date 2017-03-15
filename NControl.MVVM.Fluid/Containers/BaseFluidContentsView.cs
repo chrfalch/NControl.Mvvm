@@ -185,7 +185,7 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Contents size
 		/// </summary>
-		public Size ContentSize
+		public virtual Size ContentSize
 		{
 			get { return _contentSize; }
 			set { _contentSize = value; }

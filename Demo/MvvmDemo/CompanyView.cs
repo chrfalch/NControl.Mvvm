@@ -65,13 +65,22 @@ namespace MvvmDemo
 							.BindTo(ListViewControl.RefreshCommandProperty, NameOf(vm => vm.RefreshCommand))
 							.BindTo(ListViewControl.StateProperty, NameOf(vm => vm.CollectionState)),
 
-							new ExtendedButton{
-								Margin = 16,
-								Text = "Open Da Thing",
-								BorderColor = Color.Blue,
-								BorderRadius = 12,
-								BorderWidth = 1,
-								Command = ViewModel.ShowAboutCommand,
+							new ExpandingButtonPanel{
+								VerticalOptions = LayoutOptions.End,
+								Buttons = {
+									new RoundButton{
+										Text = FontMaterialDesignLabel.MDInformationVariant,
+										Command = ViewModel.ShowAboutCommand,
+									},
+
+									new RoundButton{
+										Text = FontMaterialDesignLabel.MDCar,
+									},
+
+									new RoundButton{
+										Text = FontMaterialDesignLabel.MDKey,
+									}
+								}
 							}
 						}
 					},

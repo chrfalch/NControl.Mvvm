@@ -17,13 +17,15 @@ namespace MvvmDemo
 
 		protected override View CreateContents ()
 		{
-			return new StackLayout {
+			return new StackLayout
+			{
 				Orientation = StackOrientation.Vertical,
 				Spacing = 8,
 				Children = {
 					new ListViewEx{
 						ItemsSource = ViewModel.Employees,
 						ItemSelectedCommand = ViewModel.SelectEmployeeCommand,
+						SeparatorVisibility= SeparatorVisibility.None,
 						ItemTemplate = new DataTemplate(typeof(TextCell))
 							.BindTo(TextCell.TextProperty, NameOf<Employee>(e => e.Name))
 					},

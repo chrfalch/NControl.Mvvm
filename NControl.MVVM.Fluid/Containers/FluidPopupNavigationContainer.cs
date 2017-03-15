@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NControl.XAnimation;
+using NControl.Controls;
 using Xamarin.Forms;
 
 namespace NControl.Mvvm
@@ -11,6 +12,7 @@ namespace NControl.Mvvm
 		readonly RelativeLayout _layout;
 		readonly FluidBlurOverlay _overlay;
 		readonly Grid _container;
+		readonly RoundCornerView _containerBorders;
 
 		public FluidPopupNavigationContainer()
 		{
@@ -18,18 +20,18 @@ namespace NControl.Mvvm
 
 			// Create overlay
 			_overlay = new FluidBlurOverlay();
-
 			_layout.Children.Add(_overlay, () => _layout.Bounds);
 
 			// Create container
-			_container = new Grid { 
-				BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewBackgroundColor),
-				Children = {
-					new Frame {  OutlineColor = Color.Red, HasShadow = false, Opacity = 1.0 },
-				},
+			_container = new Grid();
+			_containerBorders = new RoundCornerView{ 
+				CornerRadius = 8,
+				BorderColor = MvvmApp.Current.Colors.Get(Config.BorderColor),
+				BorderWidth = MvvmApp.Current.Sizes.Get(Config.DefaultBorderSize),
+				Content = _container,				
 			};
 
-			_layout.Children.Add(_container, () => GetContentSize());
+			_layout.Children.Add(_containerBorders, () => GetContentSize());
 		}
 
 		#region Properties
@@ -74,15 +76,21 @@ namespace NControl.Mvvm
 		{
 			var retVal = new[] {
 				new XAnimationPackage(_overlay)
-					  .Opacity(0.0)
-					  .Set()
-					  .Opacity(1.0)
-					  .Animate(),
-
-				new XAnimationPackage(_container)
-					.Translate(0, Height)
+					.Opacity(0.0)
 					.Set()
-					.Translate(0, 0)
+					.Duration(150)
+					.Easing(EasingFunction.EaseIn)
+					.Opacity(1.0)
+					.Animate(),
+
+				new XAnimationPackage(_containerBorders)
+					.Scale(1.3)
+					.Opacity(0.0)
+					.Set()
+					.Duration(150)
+					.Easing(EasingFunction.EaseIn)
+					.Opacity(1.0)
+					.Scale(1.0)
 					.Animate()
 			};
 
@@ -97,12 +105,16 @@ namespace NControl.Mvvm
 			View view, PresentationMode presentationMode)
 		{
 			var retVal = new[] {
-				new XAnimationPackage(_overlay)
-					  .Opacity(0.0)
-					  .Animate(),
+				new XAnimationPackage(_overlay)					
+					.Opacity(0.0)
+					.Easing(EasingFunction.EaseOut)
+				    .Animate(),
 
-				new XAnimationPackage(_container)
-					.Translate(0, Height)
+				new XAnimationPackage(_containerBorders)
+					.Scale(1.3)
+					.Opacity(0.0)
+					.Duration(150)
+					.Easing(EasingFunction.EaseOut)
 					.Animate()
 			};
 
@@ -120,6 +132,9 @@ namespace NControl.Mvvm
 		public void AddChild(View view, PresentationMode presentationMode)
 		{
 			_container.Children.Add(view);
+
+			if (view is ILeftBorderProvider)
+				(view as ILeftBorderProvider).IsLeftBorderVisible = _container.Children.Count > 1;
 		}
 
 		public void RemoveChild(View view, PresentationMode presentationMode)
@@ -159,16 +174,21 @@ namespace NControl.Mvvm
 		Rectangle GetContentSize()
 		{
 			var lastView = _container.Children.LastOrDefault() as IContentSizeProvider;
-			if (lastView == null || lastView.ContentSize == Size.Zero)
-				return new Rectangle(
-						(_layout.Width / 2) - (ContentSize.Width / 2),
-						(_layout.Height / 2) - (ContentSize.Height / 2),
-					ContentSize.Width, ContentSize.Height);
+			var contentSize = ContentSize;
+			if (lastView != null)
+			{
+				if (lastView.ContentSize.Width != 0)
+					contentSize.Width = lastView.ContentSize.Width;
+
+				if (lastView.ContentSize.Height != 0)
+					contentSize.Height = lastView.ContentSize.Height;
+			}
 
 			return new Rectangle(
-				(_layout.Width / 2) - (lastView.ContentSize.Width / 2),
-				(_layout.Height / 2) - (lastView.ContentSize.Height / 2),
-				lastView.ContentSize.Width, lastView.ContentSize.Height);
+				(_layout.Width / 2) - (contentSize.Width / 2),
+				(_layout.Height / 2) - (contentSize.Height / 2),
+				contentSize.Width, contentSize.Height);
+
 		}
 	}
 }

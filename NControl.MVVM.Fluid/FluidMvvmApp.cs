@@ -47,7 +47,7 @@ namespace NControl.Mvvm
 		{
 			base.SetupSizes();
 
-			Current.Sizes.Set(FluidConfig.DefaultNavigationBarHeight, 46);
+			Current.Sizes.Set(FluidConfig.DefaultNavigationBarHeight, Device.OnPlatform(46, 56, 46));
 			Current.Sizes.Set(FluidConfig.DefaultStatusbarHeight, Device.OnPlatform(22, 0, 22));
 			Current.Sizes.Set(FluidConfig.DefaultToolbarItemWidth, 30);
 		}

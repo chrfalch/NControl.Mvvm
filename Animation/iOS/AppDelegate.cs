@@ -18,7 +18,7 @@ namespace XAnimationDemo.iOS
 
 			LoadApplication(new App());
 
-			new TouchXAnimationProvider();
+			XAnimation.Init();
 
 			return base.FinishedLaunching(app, options);
 		}

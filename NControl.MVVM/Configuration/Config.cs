@@ -8,6 +8,7 @@ namespace NControl.Mvvm
 		public static string DefaultPadding = "DefaultPadding";
 		public static string DefaultSpacing = "DefaultSpacing";
 		public static string DefaultBorderSize = "DefaultBorderSize";
+		public static string DefaultBoldBorderSize = "DefaultBoldBorderSize";
 		public static string DefaultLargeSpacing = "DefaultLargeSpacing";
 		public static string DefaultLargePadding = "DefaultLargePadding";
 		public static string DefaultActivityIndicatorSize = "DefaultActivityIndicatorSize";

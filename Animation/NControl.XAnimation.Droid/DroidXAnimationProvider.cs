@@ -36,6 +36,16 @@ namespace NControl.XAnimation.Droid
 			var animations = new List<object>();
 			var animationCount = 0;
 
+			Action<Animator> animationFinishedAction = (animator) =>
+			{
+				animationCount--;
+				if (animationCount == 0)
+				{
+					Set(animationInfo);
+					completed?.Invoke();
+				}
+			};
+
 			foreach (var element in _animation.Elements)
 			{
 				var viewGroup = GetViewGroup(element);
@@ -44,13 +54,7 @@ namespace NControl.XAnimation.Droid
 					.SetDuration(animationInfo.Duration)
 					.SetStartDelay(animationInfo.Delay)
 					.SetInterpolator(GetInterpolator(animationInfo))
-					.SetListener(new AnimationListener(null, (obj) => 
-				{
-					animationCount--;
-					if(animationCount == 0)
-						completed?.Invoke();
-
-				}, null, null));
+					.SetListener(new AnimationListener(null, animationFinishedAction, null, null));
 
 				nativeAnimation.Alpha((float)animationInfo.Opacity);
 				nativeAnimation.Rotation((float)animationInfo.Rotate);
@@ -70,13 +74,7 @@ namespace NControl.XAnimation.Droid
 					colorAnimator.SetEvaluator(new ArgbEvaluator());
 					colorAnimator.SetInterpolator(GetInterpolator(animationInfo));
 					colorAnimator.StartDelay = animationInfo.Delay;
-					colorAnimator.AddListener(new AnimationListener(null, (obj) =>
-					{
-						animationCount--;
-						if (animationCount == 0)
-							completed?.Invoke();
-
-					}, null, null));
+					colorAnimator.AddListener(new AnimationListener(null, animationFinishedAction, null, null));
 
 					animations.Add(colorAnimator);
 				}
@@ -98,17 +96,14 @@ namespace NControl.XAnimation.Droid
 		{
 			foreach (var element in _animation.Elements)
 			{
-				var viewGroup = GetViewGroup(element);
-
-				viewGroup.Alpha = (float)animationInfo.Opacity;
-				viewGroup.Rotation = (float)animationInfo.Rotate;
-				viewGroup.ScaleX = (float)animationInfo.Scale;
-				viewGroup.ScaleY = (float)animationInfo.Scale;
-				viewGroup.TranslationX = (float)animationInfo.TranslationX * _displayDensity;
-				viewGroup.TranslationY = (float)animationInfo.TranslationY * _displayDensity;
+				element.Opacity = (float)animationInfo.Opacity;
+				element.Rotation = (float)animationInfo.Rotate;
+				element.Scale = (float)animationInfo.Scale;
+				element.TranslationX = (float)animationInfo.TranslationX;
+				element.TranslationY = (float)animationInfo.TranslationY;
 
 				if(animationInfo.AnimateColor)
-					viewGroup.SetBackgroundColor( animationInfo.Color.ToAndroid());
+					element.BackgroundColor = animationInfo.Color;
 			}
 		}
 

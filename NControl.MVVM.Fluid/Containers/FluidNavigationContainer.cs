@@ -285,6 +285,8 @@ namespace NControl.Mvvm
 				animateContentsIn
 					.Translate(0, Height)
 					.Set()
+					.Duration(350)
+					.Easing(EasingFunction.EaseIn)
 					.Translate(0, 0);
 
 				var retVal = new[] { animateContentsIn };
@@ -344,7 +346,9 @@ namespace NControl.Mvvm
 				// Animate
 				var retVal = new[]
 				{
-					new XAnimationPackage(view).Translate(0, Height),
+					new XAnimationPackage(view)
+						.Easing(EasingFunction.EaseOut)
+						.Translate(0, Height),
 				};
 
 				var child = GetChild(0);

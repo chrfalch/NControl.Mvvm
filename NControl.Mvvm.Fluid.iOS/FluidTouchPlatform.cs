@@ -1,6 +1,7 @@
 using System;
 using NControl.Mvvm;
 using NControl.Mvvm.iOS;
+using NControl.XAnimation.iOS;
 
 namespace NControl.Mvvm.iOS
 {
@@ -8,7 +9,7 @@ namespace NControl.Mvvm.iOS
 	{
 		public FluidTouchPlatform()
 		{
-			var animDummy = new NControl.XAnimation.iOS.TouchXAnimationProvider();
+			XAnimation.iOS.XAnimation.Init();
 		}
 
 		public override void RegisterActivityIndicator()

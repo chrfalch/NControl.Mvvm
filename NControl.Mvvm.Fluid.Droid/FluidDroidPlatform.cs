@@ -12,7 +12,7 @@ namespace NControl.Mvvm.Droid
 	{
 		public FluidDroidPlatform(Activity activity) : base(activity)
 		{
-			var animDummy = new NControl.XAnimation.Droid.DroidXAnimationProvider();
+			XAnimation.Droid.XAnimation.Init();
 		}
 
 		public override void RegisterActivityIndicator()

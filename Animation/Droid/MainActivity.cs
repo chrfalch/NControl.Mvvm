@@ -24,7 +24,7 @@ namespace XAnimationDemo.Droid
 
 			global::Xamarin.Forms.Forms.Init(this, bundle);
 
-			new DroidXAnimationProvider();
+			XAnimation.Init();
 
 			LoadApplication(new App());
 		}

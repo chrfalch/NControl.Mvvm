@@ -9,6 +9,7 @@ using Android.Graphics.Drawables;
 using Android.Views;
 using System.Threading.Tasks;
 using Android.App;
+using Android.Util;
 
 [assembly: ExportRenderer(typeof(FluidBlurOverlay), typeof(FluidBlurOverlayRenderer))]
 namespace NControl.Mvvm.Droid
@@ -29,26 +30,61 @@ namespace NControl.Mvvm.Droid
 			var newRect = new Rect(0, 0, w, h);
 			if (_lastRect != newRect)
 			{
-				// Find our top view
-				var view = (Context as Activity).Window.DecorView;
+				var screenBmp = TakeScreenShot(Context as Activity);
 
-				// Statusbar height
-				Rect rect = new Rect();
-				view.GetWindowVisibleDisplayFrame(rect);
+				var resizedBmp = GetResizedBitmap(screenBmp, (int)(screenBmp.Width * 0.25), (int)(screenBmp.Height * 0.25));
 
-				// Take screenshot
-				view.DrawingCacheEnabled = true;
-				var bitmap = Bitmap.CreateBitmap(view.DrawingCache);
-				view.DrawingCacheEnabled = false;
-
-				//var resultBmp = Bitmap.CreateBitmap(rect.Width(), rect.Height() - rect.Top, bitmap.GetConfig());
-				//new Canvas(resultBmp).DrawBitmap(bitmap, 0, -rect.Top, null);
-				var resultBmp = Bitmap.CreateBitmap(bitmap, 0, rect.Top, rect.Width(), rect.Height() - rect.Top);
-
-				Background = new BitmapDrawable(CreateBlurredImage(25, resultBmp));
+				Background = new BitmapDrawable(CreateBlurredImage(25, resizedBmp));
 
 				_lastRect = newRect;
 			}
+		}
+
+		Bitmap GetResizedBitmap(Bitmap bm, int newWidth, int newHeight)
+		{
+			var width = bm.Width;
+			var height = bm.Height;
+			var scaleWidth = ((float)newWidth) / width;
+			var scaleHeight = ((float)newHeight) / height;
+
+			// CREATE A MATRIX FOR THE MANIPULATION
+			Matrix matrix = new Matrix();
+
+			// RESIZE THE BIT MAP
+			matrix.PostScale(scaleWidth, scaleHeight);
+
+			// "RECREATE" THE NEW BITMAP
+			Bitmap resizedBitmap = Bitmap.CreateBitmap(
+				bm, 0, 0, width, height, matrix, false);
+
+			bm.Recycle();
+
+			return resizedBitmap;
+		}
+
+		Bitmap TakeScreenShot(Activity activity)
+		{
+			var view = activity.Window.DecorView;
+
+			view.DrawingCacheEnabled = true;
+			view.BuildDrawingCache();
+
+			var bitmap = view.DrawingCache;
+			var rect = new Rect();
+			activity.Window.DecorView.GetWindowVisibleDisplayFrame(rect);
+
+			int statusBarHeight = rect.Top;
+
+			Android.Graphics.Point displaySize = new Android.Graphics.Point();
+			activity.WindowManager.DefaultDisplay.GetSize(displaySize);
+			int width = displaySize.X;
+			int height = displaySize.Y;
+
+			var screenShotBitmap = Bitmap.CreateBitmap(bitmap, 0, statusBarHeight, width,
+				 height - statusBarHeight);
+			
+			view.DestroyDrawingCache();
+			return screenShotBitmap;
 		}
 
 		Bitmap CreateBlurredImage(int radius, Bitmap originalBitmap)

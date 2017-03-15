@@ -42,9 +42,9 @@ namespace NControl.Mvvm.iOS
 					_currentImageView.ContentMode = UIViewContentMode.ScaleAspectFill;
 					_currentImageView.Frame = Bounds;
 
-					var effectView = new UIVisualEffectView(UIBlurEffect.FromStyle(UIBlurEffectStyle.Light));
+					var blurEffect = UIBlurEffect.FromStyle(UIBlurEffectStyle.Light);
+					var effectView = new UIVisualEffectView(blurEffect);
 					effectView.Frame = _currentImageView.Bounds;
-					effectView.Alpha = 0.9f;
 					_currentImageView.AddSubview(effectView);
 
 					AddSubview(_currentImageView);
