@@ -53,6 +53,7 @@
     <Compile Include="Controls\ListViewControl.cs" />
     <Compile Include="Controls\FluidActivityIndicator.cs" />
     <Compile Include="Controls\FluidBlurOverlay.cs" />
+    <Compile Include="Contracts\IContentSizeProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">

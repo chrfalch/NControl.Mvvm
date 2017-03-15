@@ -75,8 +75,6 @@ namespace MvvmDemo
 							}
 						}
 					},
-
-					// new FluidBlurOverlay{},
 				}
 			};
 		}

@@ -15,12 +15,13 @@ namespace NControl.Mvvm
 	}
 
 	public abstract class BaseFluidContentsView<TViewModel> : ContentView, IView<TViewModel>,
-		IToolbarItemsContainer, ILeftBorderProvider, IXViewAnimatable
+		IToolbarItemsContainer, ILeftBorderProvider, IXViewAnimatable, IContentSizeProvider
 		where TViewModel : BaseViewModel
 	{
 
 		#region Private Members
 
+		Size _contentSize;
 		readonly RelativeLayout _layout;
 		readonly BoxView _leftBorder;
 		readonly ObservableCollectionWithAddRange<ToolbarItem> _toolbarItems = new ObservableCollectionWithAddRange<ToolbarItem>();
@@ -180,6 +181,15 @@ namespace NControl.Mvvm
 		/// </summary>
 		/// <value>The image provide.</value>
 		protected IImageProvider ImageProvider { get; private set; }
+
+		/// <summary>
+		/// Contents size
+		/// </summary>
+		public Size ContentSize
+		{
+			get { return _contentSize; }
+			set { _contentSize = value; }
+		}
 
 		/// <summary>
 		/// Implement to create the layout on the page

@@ -9,7 +9,7 @@ namespace NControl.Mvvm
 	public class FluidPopupNavigationContainer : ContentView, INavigationContainer, IXAnimatable
 	{
 		readonly RelativeLayout _layout;
-		readonly BoxView _overlay;
+		readonly FluidBlurOverlay _overlay;
 		readonly Grid _container;
 
 		public FluidPopupNavigationContainer()
@@ -17,19 +17,19 @@ namespace NControl.Mvvm
 			Content = _layout = new RelativeLayout();
 
 			// Create overlay
-			_overlay = new BoxView
-			{
-				BindingContext = this,
-			}.BindTo(BackgroundColorProperty, nameof(OverlayBackgroundColor));
+			_overlay = new FluidBlurOverlay();
 
 			_layout.Children.Add(_overlay, () => _layout.Bounds);
 
 			// Create container
-			_container = new Grid();
-			_layout.Children.Add(_container, () => new Rectangle(
-				(_layout.Width / 2) - (ContentSize.Width / 2),
-				(_layout.Height / 2) - (ContentSize.Height / 2),
-				ContentSize.Width, ContentSize.Height));
+			_container = new Grid { 
+				BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewBackgroundColor),
+				Children = {
+					new Frame {  OutlineColor = Color.Red, HasShadow = false, Opacity = 1.0 },
+				},
+			};
+
+			_layout.Children.Add(_container, () => GetContentSize());
 		}
 
 		#region Properties
@@ -120,13 +120,10 @@ namespace NControl.Mvvm
 		public void AddChild(View view, PresentationMode presentationMode)
 		{
 			_container.Children.Add(view);
-
-			if (view is ILeftBorderProvider)
-				(view as ILeftBorderProvider).IsLeftBorderVisible = _container.Children.Count > 1;
 		}
 
 		public void RemoveChild(View view, PresentationMode presentationMode)
-		{
+		{			
 			_container.Children.Remove(view);
 		}
 
@@ -159,5 +156,19 @@ namespace NControl.Mvvm
 
 		#endregion
 
+		Rectangle GetContentSize()
+		{
+			var lastView = _container.Children.LastOrDefault() as IContentSizeProvider;
+			if (lastView == null || lastView.ContentSize == Size.Zero)
+				return new Rectangle(
+						(_layout.Width / 2) - (ContentSize.Width / 2),
+						(_layout.Height / 2) - (ContentSize.Height / 2),
+					ContentSize.Width, ContentSize.Height);
+
+			return new Rectangle(
+				(_layout.Width / 2) - (lastView.ContentSize.Width / 2),
+				(_layout.Height / 2) - (lastView.ContentSize.Height / 2),
+				lastView.ContentSize.Width, lastView.ContentSize.Height);
+		}
 	}
 }

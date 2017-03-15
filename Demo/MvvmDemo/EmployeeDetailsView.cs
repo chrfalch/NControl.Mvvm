@@ -6,11 +6,7 @@ namespace MvvmDemo
 {
 	public class EmployeeDetailsView: BaseFluidContentsView<EmployeeDetailsViewModel>
 	{
-		public EmployeeDetailsView ()
-		{				 		
-		}
-
-		protected override Xamarin.Forms.View CreateContents ()
+		protected override View CreateContents ()
 		{
 			return new StackLayout
 			{
