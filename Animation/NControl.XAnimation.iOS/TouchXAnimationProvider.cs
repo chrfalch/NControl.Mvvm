@@ -86,18 +86,18 @@ namespace NControl.XAnimation.iOS
 				animations.Add(rotateAnimation);
 
 				// Color
-				if (animationInfo.Color != null)
-				{
-					var fromColor = view.BackgroundColor;
-					var toColor = animationInfo.Color.ToUIColor();
+				var fromColor = view.BackgroundColor;
+				var toColor = animationInfo.Color.ToUIColor();
 
+				if (fromColor != toColor)
+				{
 					var colorAnimation = new CABasicAnimation();
 					colorAnimation.KeyPath = "backgroundColor";
 					colorAnimation.From = fromColor;
 					colorAnimation.To = toColor;
 					animations.Add(colorAnimation);
 				}
-
+			
 				// Create group of animations
 				var group = new CAAnimationGroup();
 				group.Duration = animationInfo.Duration / 1000.0;

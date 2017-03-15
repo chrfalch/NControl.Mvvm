@@ -24,7 +24,7 @@ namespace NControl.Mvvm
 		readonly ContentView _emptyMessageView;
 		readonly ContentView _loadingView;
 		readonly Command _refreshCommand;
-		readonly View _activityIndicator;
+		readonly FluidActivityIndicator _activityIndicator;
 
 		#endregion
 
@@ -63,7 +63,7 @@ namespace NControl.Mvvm
 			// Setup default loading view
 			_loadingView = new ContentView{};
 
-			_activityIndicator = new FluidActivityIndicator { IsRunning=true };
+			_activityIndicator = new FluidActivityIndicator {};
 
 			// Add default values to the loading view and empty view
 			_loadingView.Content = new VerticalStackLayoutWithPadding
@@ -301,6 +301,7 @@ namespace NControl.Mvvm
 
 		void ShowLoadingView(bool show)
 		{
+			_activityIndicator.IsRunning = show;
 			AnimateVisibility(show, _loadingView);
 		}
 

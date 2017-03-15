@@ -17,7 +17,7 @@ namespace MvvmDemo
 			});
 		}
 
-		protected override Xamarin.Forms.View CreateContents ()
+		protected override View CreateContents ()
 		{
 			return new VerticalStackLayoutWithPadding {								
 				Children = {
@@ -25,7 +25,7 @@ namespace MvvmDemo
 					new ExtendedButton {Text="Call Command through message.", Command = ViewModel.ClickMeCommand },
 					new VerticalSeparator(),
 					new ExtendedButton {Text="Run async command", Command = ViewModel.CountAsyncCommand },
-					new FluidActivityIndicator{Color = MvvmApp.Current.Colors.Get(Config.AccentColor)}
+					new FluidActivityIndicator{}
 						.BindTo(FluidActivityIndicator.IsRunningProperty, nameof(ViewModel.IsRunningAsyncCommand)),
 
 					new Label {HorizontalTextAlignment = TextAlignment.Center}.BindTo(Label.TextProperty, nameof(ViewModel.NumberValue), stringFormat:"Number Value: {0}"),
@@ -37,51 +37,48 @@ namespace MvvmDemo
 			};
 		}
 
-		protected override IEnumerable<XAnimationPackage> ModalTransitionIn(
-			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
-		{
-			// Swap out original animations
-			return new[] { 
-				new XAnimationPackage(container.GetNavigationBarView())					
-					.Translate(0, -container.GetNavigationBarView().Height)
-					.Rotate(360)
-					.Set()
-					.Duration(350)
-					.Easing(EasingFunction.EaseOut)
-					.Translate(0, 0)
-					.Rotate(0)
-					.Animate(),
+		//protected override IEnumerable<XAnimationPackage> ModalTransitionIn(
+		//	INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		//{
+		//	// Swap out original animations
+		//	return new[] { 
+		//		new XAnimationPackage(container.GetNavigationBarView())					
+		//			.Translate(0, -container.GetNavigationBarView().Height)
+		//			.Set()
+		//			.Duration(350)
+		//			.Easing(EasingFunction.EaseOut)
+		//			.Translate(0, 0)
+		//			.Animate(),
 
-				new XAnimationPackage(container.GetContainerView())
-					.Translate(0, container.GetContainerView().Height)
-					.Set()
-					.Duration(350)
-					.Easing(EasingFunction.EaseOut)
-					.Translate(0, 0).Animate()
-			};
-		}
+		//		new XAnimationPackage(container.GetContainerView())
+		//			.Translate(0, container.GetContainerView().Height)
+		//			.Set()
+		//			.Duration(350)
+		//			.Easing(EasingFunction.EaseOut)
+		//			.Translate(0, 0).Animate()
+		//	};
+		//}
 
-		protected override IEnumerable<XAnimationPackage> ModalTransitionOut(
-			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
-		{
-			// Swap out original animations
-			return new[] {
-				new XAnimationPackage(container.GetNavigationBarView())					
-					.Easing(EasingFunction.EaseOut)
-					.Translate(0, -container.GetNavigationBarView().Height)
-					.Duration(350)
-					.Rotate(360)
-					.Easing(EasingFunction.EaseIn)
-					.Animate(),
+		//protected override IEnumerable<XAnimationPackage> ModalTransitionOut(
+		//	INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		//{
+		//	// Swap out original animations
+		//	return new[] {
+		//		new XAnimationPackage(container.GetNavigationBarView())					
+		//			.Easing(EasingFunction.EaseOut)
+		//			.Translate(0, -container.GetNavigationBarView().Height)
+		//			.Duration(350)
+		//			.Easing(EasingFunction.EaseIn)
+		//			.Animate(),
 
-				new XAnimationPackage(container.GetContainerView())
-					.Easing(EasingFunction.EaseOut)
-					.Translate(0, container.GetContainerView().Height)
-					.Duration(350)
-					.Easing(EasingFunction.EaseIn)
-					.Animate()
-			};
-		}
+		//		new XAnimationPackage(container.GetContainerView())
+		//			.Easing(EasingFunction.EaseOut)
+		//			.Translate(0, container.GetContainerView().Height)
+		//			.Duration(350)
+		//			.Easing(EasingFunction.EaseIn)
+		//			.Animate()
+		//	};
+		//}
 	}
 }
 

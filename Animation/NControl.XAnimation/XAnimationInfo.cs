@@ -81,7 +81,7 @@ namespace NControl.XAnimation
 			TranslationX = 0;
 			TranslationY = 0;
 			Opacity = 1;
-			Easing = EasingFunction.EaseIn;
+			Easing = EasingFunction.Linear;
 			EasingBezier = new EasingFunctionBezier(new Point(0, 0), new Point(1.0, 1.0));
 		}
 

@@ -20,45 +20,42 @@ namespace NControl.Mvvm
 			Content = _layout = new RelativeLayout();
 			Opacity = 0.0;
 			IsVisible = false;
-		}
-
-		void AddSpinners()
-		{
-			var random = new Random();
+		
+			// var random = new Random();
 
 			// add spinners
 			_layout.Children.Add(new SpinningCircleControl
 			{
 				BindingContext = this,
-				Angle = random.Next(0, 360),
-				DurationMilliseconds = 2500
-			}
-				.BindTo(SpinningCircleControl.ColorProperty, nameof(Color))
-				.BindTo(SpinningCircleControl.IsRunningProperty, nameof(IsRunning)),
-				() => new Rectangle(0, 0, Width, Height));
-
-			_layout.Children.Add(new SpinningCircleControl
-			{
-				BindingContext = this,
-				IsCounterClockWise = true,
-				Angle = random.Next(0, 360),
+				Angle = 0.0, //random.Next(0, 360),
 				DurationMilliseconds = 1500
 			}
 				.BindTo(SpinningCircleControl.ColorProperty, nameof(Color))
-				.BindTo(SpinningCircleControl.IsRunningProperty, nameof(IsRunning)),
-				 () => new Rectangle(Width / 2 - ((Width * 0.80) / 2), Height / 2 - ((Height * 0.80) / 2),
-					   Width * 0.80, Height * 0.80));
+                .BindTo(SpinningCircleControl.IsRunningProperty, nameof(IsRunning)),
+				() => new Rectangle(0, 0, Width, Height));
 
-			_layout.Children.Add(new SpinningCircleControl
-			{
-				BindingContext = this,
-				Angle = random.Next(0, 360),
-				DurationMilliseconds = 1000
-			}
-				 .BindTo(SpinningCircleControl.ColorProperty, nameof(Color))
-				 .BindTo(SpinningCircleControl.IsRunningProperty, nameof(IsRunning)),
-				 () => new Rectangle(Width / 2 - ((Width * 0.60) / 2), Height / 2 - ((Height * 0.6) / 2),
-					   Width * 0.6, Height * 0.60));
+			//_layout.Children.Add(new SpinningCircleControl
+			//{
+			//	BindingContext = this,
+			//	IsRunning = true,
+			//	IsCounterClockWise = true,
+			//	Angle = random.Next(0, 360),
+			//	DurationMilliseconds = 1500
+			//}
+			//	.BindTo(SpinningCircleControl.ColorProperty, nameof(Color)),			
+			//	 () => new Rectangle(Width / 2 - ((Width * 0.80) / 2), Height / 2 - ((Height * 0.80) / 2),
+			//		   Width * 0.80, Height * 0.80));
+
+			//_layout.Children.Add(new SpinningCircleControl
+			//{
+			//	BindingContext = this,
+			//	IsRunning = true,
+			//	Angle = random.Next(0, 360),
+			//	DurationMilliseconds = 1000
+			//}
+			//	 .BindTo(SpinningCircleControl.ColorProperty, nameof(Color)),
+			//	 () => new Rectangle(Width / 2 - ((Width * 0.60) / 2), Height / 2 - ((Height * 0.6) / 2),
+			//		   Width * 0.6, Height * 0.60));
 		}
 
 		/// <summary>
@@ -76,8 +73,6 @@ namespace NControl.Mvvm
 				{
 					ctrl.IsVisible = true;
 
-					ctrl.AddSpinners();
-
 					new XAnimationPackage(ctrl)
 						.Opacity(1.0)
 						.Animate()
@@ -88,11 +83,7 @@ namespace NControl.Mvvm
 					new XAnimationPackage(ctrl)
 						.Opacity(0.0)
 						.Animate()
-					.Run(() =>
-					{
-						ctrl.IsVisible = false;
-						ctrl._layout.Children.Clear();
-					});
+						.Run(() => ctrl.IsVisible = false);
 				}
 			});
 
@@ -124,70 +115,35 @@ namespace NControl.Mvvm
 
 	class SpinningCircleControl : NControlView, IDisposable
 	{
-		enum SpinnerState
-		{
-			NotRunning,
-			Starting,
-			Running,
-			Stopping,
-		};
-
 		bool _isDisposed;
-		SpinnerState _state;
 
 		public SpinningCircleControl()
-		{
-			StartAnimation();
+		{			
 		}
 
 		void StartAnimation()
 		{
 			Invalidate();
 			Action animationAction = null;
+
 			animationAction = () =>
 			{
-				if (_isDisposed)
+				if (_isDisposed || !IsRunning)
 					return;
+								
+				var firstAngle = IsCounterClockWise ? -1 * (Angle + 360) : Angle + 360;
+				var resetAngle = IsCounterClockWise ? -1 * Angle : Angle;
+				System.Diagnostics.Debug.WriteLine(firstAngle + " - " + resetAngle);
 
-				switch (_state)
-				{
-					case SpinnerState.Starting:
-
-						// Animate in
-						_state = SpinnerState.Running;
-						animationAction();
-						
-						break;
-
-					case SpinnerState.Running:
-
-						var firstAngle = IsCounterClockWise ? -1 * (Angle + 360) : Angle + 360;
-						var resetAngle = IsCounterClockWise ? -1 * Angle : Angle;
-
-						// Animate running
-						new XAnimationPackage(this)
-							.Duration(DurationMilliseconds)
-							.Easing(EasingFunction.Linear)
-							.Rotate(firstAngle)
-							.Animate()
-							.Rotate(resetAngle)
-							.Set()
-							.Animate()
-							.Run(animationAction);
-
-						break;
-
-					case SpinnerState.Stopping:
-
-						// Animate stopping
-						_state = SpinnerState.NotRunning;
-
-						break;
-
-					case SpinnerState.NotRunning:
-						// No animation
-						break;
-				}
+				// Animate running
+				new XAnimationPackage(this)
+					.Rotate(firstAngle)
+					.Set()
+					.Duration(DurationMilliseconds)
+					.Easing(EasingFunction.Linear)
+					.Rotate(resetAngle)
+					.Animate()
+					.Run(animationAction);				
 			};
 
 			animationAction();
@@ -201,29 +157,22 @@ namespace NControl.Mvvm
 			BindingMode.OneWay, null, propertyChanged: (bindable, oldValue, newValue) =>
 			{
 				var ctrl = (SpinningCircleControl)bindable;
+
 				if (oldValue == newValue)
 					return;
 
-				if ((bool)newValue == true)
-				{
-					ctrl._state = SpinnerState.Starting;
+				if ((bool)newValue)
 					ctrl.StartAnimation();
-				}
-				else
-				{
-					ctrl._state = SpinnerState.Stopping;
-				}
 			});
 
 		/// <summary>
-		/// Gets or sets the IsRunning of the CustomActivitySpinner instance.
+		/// Gets or sets the IsRunning of the SpinningCircleControl instance.
 		/// </summary>
 		public bool IsRunning
 		{
 			get { return (bool)GetValue(IsRunningProperty); }
 			set { SetValue(IsRunningProperty, value); }
 		}
-
 		/// <summary>
 		/// The IsCounterClockWise property.
 		/// </summary>
@@ -310,9 +259,6 @@ namespace NControl.Mvvm
 		public override void Draw(NGraphics.ICanvas canvas, NGraphics.Rect rect)
 		{
 			base.Draw(canvas, rect);
-
-			if (!IsRunning)
-				return;
 
 			if (rect.Width > rect.Height)
 				rect = new NGraphics.Rect((rect.Width - rect.Height) / 2, rect.Y, rect.Height, rect.Height);
