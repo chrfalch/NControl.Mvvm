@@ -43,47 +43,59 @@ namespace NControl.XAnimation.iOS
 				return;
 			}
 
-			CATransaction.Begin();
-			CATransaction.CompletionBlock = () => completed?.Invoke();
-
 			foreach (var element in _animation.Elements)
 			{
 				var animations = new List<CAAnimation>();
 				var view = GetView(element);
 
 				// Set up opacity
-				var opacityAnimation = new CABasicAnimation();
-				opacityAnimation.KeyPath = "opacity";
-				opacityAnimation.From = new NSNumber(element.Opacity);
-				opacityAnimation.To = new NSNumber(animationInfo.Opacity);
-				animations.Add(opacityAnimation);
+				if (!element.Opacity.Equals(animationInfo.Opacity))
+				{
+					var opacityAnimation = new CABasicAnimation();
+					opacityAnimation.KeyPath = "opacity";
+					opacityAnimation.From = new NSNumber(element.Opacity);
+					opacityAnimation.To = new NSNumber(animationInfo.Opacity);
+					animations.Add(opacityAnimation);
+				}
 
 				// Set up translation
-				var translationAnimationX = new CABasicAnimation();
-				translationAnimationX.KeyPath = "transform.translation.x";
-				translationAnimationX.From = new NSNumber(element.TranslationX);
-				translationAnimationX.To = new NSNumber(animationInfo.TranslationX);
-				animations.Add(translationAnimationX);
+				if (!element.TranslationX.Equals(animationInfo.TranslationX))
+				{
+					var translationAnimationX = new CABasicAnimation();
+					translationAnimationX.KeyPath = "transform.translation.x";
+					translationAnimationX.From = new NSNumber(element.TranslationX);
+					translationAnimationX.To = new NSNumber(animationInfo.TranslationX);
+					animations.Add(translationAnimationX);
+				}
 
-				var translationAnimationY = new CABasicAnimation();
-				translationAnimationY.KeyPath = "transform.translation.y";
-				translationAnimationY.From = new NSNumber(element.TranslationY);
-				translationAnimationY.To = new NSNumber(animationInfo.TranslationY);
-				animations.Add(translationAnimationY);
+				if (!element.TranslationY.Equals(animationInfo.TranslationY))
+				{
+					var translationAnimationY = new CABasicAnimation();
+					translationAnimationY.KeyPath = "transform.translation.y";
+					translationAnimationY.From = new NSNumber(element.TranslationY);
+					translationAnimationY.To = new NSNumber(animationInfo.TranslationY);
+					animations.Add(translationAnimationY);
+				}
 
 				// Set up scale
-				var scaleAnimation = new CABasicAnimation();
-				scaleAnimation.KeyPath = "transform.scale";
-				scaleAnimation.From = new NSNumber(element.Scale);
-				scaleAnimation.To = new NSNumber(animationInfo.Scale);
-				animations.Add(scaleAnimation);
+				if (!element.Scale.Equals(animationInfo.Scale))
+				{
+					var scaleAnimation = new CABasicAnimation();
+					scaleAnimation.KeyPath = "transform.scale";
+					scaleAnimation.From = new NSNumber(element.Scale);
+					scaleAnimation.To = new NSNumber(animationInfo.Scale);
+					animations.Add(scaleAnimation);
+				}
 
 				// Set up rotation
-				var rotateAnimation = new CABasicAnimation();
-				rotateAnimation.KeyPath = "transform.rotation";
-				rotateAnimation.From = new NSNumber((element.Rotation * Math.PI) / 180.0);
-				rotateAnimation.To = new NSNumber((animationInfo.Rotate * Math.PI) / 180.0);
-				animations.Add(rotateAnimation);
+				if (!element.Rotation.Equals(animationInfo.Rotate))
+				{
+					var rotateAnimation = new CABasicAnimation();
+					rotateAnimation.KeyPath = "transform.rotation";
+					rotateAnimation.From = new NSNumber((element.Rotation * Math.PI) / 180.0);
+					rotateAnimation.To = new NSNumber((animationInfo.Rotate * Math.PI) / 180.0);
+					animations.Add(rotateAnimation);
+				}
 
 				// Color
 				var fromColor = view.BackgroundColor;
@@ -97,42 +109,53 @@ namespace NControl.XAnimation.iOS
 					colorAnimation.To = toColor;
 					animations.Add(colorAnimation);
 				}
-			
+
 				// Create group of animations
 				var group = new CAAnimationGroup();
 				group.Duration = animationInfo.Duration / 1000.0;
 				group.BeginTime = CAAnimation.CurrentMediaTime() + (animationInfo.Delay / 1000.0);
 				group.Animations = animations.ToArray();
 
-				switch (animationInfo.Easing)
+				if (group.Animations.Count() != 0)
 				{
-					case EasingFunction.EaseIn:
-						group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseIn);
-						break;
-					case EasingFunction.EaseOut:
-						group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseOut);
-						break;
-					case EasingFunction.EaseInOut:
-						group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseInEaseOut);
-						break;
-					case EasingFunction.Custom:
-						group.TimingFunction = CAMediaTimingFunction.FromControlPoints(
-							(float)animationInfo.EasingBezier.Start.X, (float)animationInfo.EasingBezier.Start.Y, 
-							(float)animationInfo.EasingBezier.End.X, (float)animationInfo.EasingBezier.End.Y);
-						
-						break;
-					default:
-						group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.Linear);
-						break;
+					CATransaction.Begin();
+					CATransaction.CompletionBlock = () => completed?.Invoke();
+
+					switch (animationInfo.Easing)
+					{
+						case EasingFunction.EaseIn:
+							group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseIn);
+							break;
+						case EasingFunction.EaseOut:
+							group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseOut);
+							break;
+						case EasingFunction.EaseInOut:
+							group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseInEaseOut);
+							break;
+						case EasingFunction.Custom:
+							group.TimingFunction = CAMediaTimingFunction.FromControlPoints(
+								(float)animationInfo.EasingBezier.Start.X, (float)animationInfo.EasingBezier.Start.Y,
+								(float)animationInfo.EasingBezier.End.X, (float)animationInfo.EasingBezier.End.Y);
+
+							break;
+						default:
+							group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.Linear);
+							break;
+					}
+
+					view.Layer.AddAnimation(group, "animinfo-anims");
+					animations.Clear();
+
+					Set(animationInfo);
+
+					CATransaction.Commit();
 				}
-
-				view.Layer.AddAnimation(group, "animinfo-anims");
-				animations.Clear();			
+				else
+				{
+					System.Diagnostics.Debug.WriteLine("No animations to run");
+					completed?.Invoke();
+				}
 			}
-
-			Set(animationInfo);
-
-			CATransaction.Commit();
 		}
 
 		public void Set(XAnimationInfo animationInfo)

@@ -234,18 +234,15 @@ namespace NControl.Mvvm
 
 			switch (newValue)
 			{
-				case CollectionState.NotLoaded:
-					ShowLoadingView(true);
-					ShowEmptyListView(false);
+				case CollectionState.NotLoaded:					
+					ShowEmptyListView(false, ()=> ShowLoadingView(true));
 					break;
 
 				case CollectionState.Loaded:
 
-					ShowEmptyListView(
+					ShowLoadingView(false, ()=> ShowEmptyListView(
 						ItemsSource == null ||
-						(ItemsSource is ICollection && (ItemsSource as ICollection).Count == 0));
-
-					ShowLoadingView(false);
+						(ItemsSource is ICollection && (ItemsSource as ICollection).Count == 0)));
 
 					IsRefreshing = false;
 					_refreshCommand.ChangeCanExecute();
@@ -253,8 +250,7 @@ namespace NControl.Mvvm
 					break;
 
 				case CollectionState.Loading:
-					ShowEmptyListView(false);
-					ShowLoadingView(!IsRefreshing);
+					ShowEmptyListView(false, ()=> ShowLoadingView(!IsRefreshing));
 
 					break;
 
@@ -299,15 +295,15 @@ namespace NControl.Mvvm
 
 		#region Private Members
 
-		void ShowLoadingView(bool show)
+		void ShowLoadingView(bool show, Action callback = null)
 		{
 			_activityIndicator.IsRunning = show;
-			AnimateVisibility(show, _loadingView);
+			AnimateVisibility(show, _loadingView, callback);
 		}
 
-		void ShowEmptyListView(bool show) 
+		void ShowEmptyListView(bool show, Action callback = null) 
 		{
-			AnimateVisibility(show, _emptyMessageView);
+			AnimateVisibility(show, _emptyMessageView, callback);
 		}
 		#endregion
 	}
