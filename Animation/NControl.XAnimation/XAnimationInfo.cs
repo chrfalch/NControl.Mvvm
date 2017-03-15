@@ -29,6 +29,7 @@ namespace NControl.XAnimation
 		public double TranslationY { get; set; }
 		public double Opacity { get; set; }
 
+		public bool AnimateColor { get; set; }
 		public Color Color { get; set; }
 
 		public EasingFunction Easing { get; set; }
@@ -81,6 +82,7 @@ namespace NControl.XAnimation
 			TranslationX = 0;
 			TranslationY = 0;
 			Opacity = 1;
+			AnimateColor = false;
 			Easing = EasingFunction.Linear;
 			EasingBezier = new EasingFunctionBezier(new Point(0, 0), new Point(1.0, 1.0));
 		}

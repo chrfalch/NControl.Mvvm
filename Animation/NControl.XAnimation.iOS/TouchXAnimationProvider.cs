@@ -98,11 +98,11 @@ namespace NControl.XAnimation.iOS
 				}
 
 				// Color
-				var fromColor = view.BackgroundColor;
-				var toColor = animationInfo.Color.ToUIColor();
-
-				if (fromColor != toColor)
+				if (animationInfo.AnimateColor)
 				{
+					var fromColor = view.BackgroundColor;
+					var toColor = animationInfo.Color.ToUIColor();
+
 					var colorAnimation = new CABasicAnimation();
 					colorAnimation.KeyPath = "backgroundColor";
 					colorAnimation.From = fromColor;
@@ -167,7 +167,9 @@ namespace NControl.XAnimation.iOS
 				element.TranslationY = animationInfo.TranslationY;
 				element.Scale = animationInfo.Scale;
 				element.Opacity = (float)animationInfo.Opacity;
-				element.BackgroundColor = animationInfo.Color;
+
+				if(animationInfo.AnimateColor)
+					element.BackgroundColor = animationInfo.Color;
 			}
 		}
 

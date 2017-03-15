@@ -191,17 +191,6 @@ namespace NControl.Mvvm
 		}
 
 		/// <summary>
-		/// Helper
-		/// </summary>
-		public override string ToString()
-		{
-			if (_container == null)
-				return "Empty";
-
-			return "FluidNavigationContainer: " + string.Join(", ", _container.Children.Select(v => v.GetType().Name));
-		}
-
-		/// <summary>
 		/// Remove a view from the container
 		/// </summary>
 		public void RemoveChild(View view, PresentationMode presentationMode)
@@ -271,16 +260,15 @@ namespace NControl.Mvvm
 				var fromView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
 
 				// Animate the new contents in
-				var animateContentsIn = new XAnimationPackage(new[] { view });
+				var animateContentsIn = new XAnimationPackage(view);
 				animateContentsIn
 					.Translate(Width, 0)
 					.Set()
 					.Translate(0, 0);
 
 				// Move previous a litle bit out
-				var animatePreviousOut = new XAnimationPackage(new[] { fromView });
-				animatePreviousOut
-					.Translate(-(Width / 4), 0);
+				var animatePreviousOut = new XAnimationPackage(fromView);
+				animatePreviousOut.Translate(-(Width / 4), 0);
 
 				var retVal = new[] { animateContentsIn, animatePreviousOut };
 
@@ -293,7 +281,7 @@ namespace NControl.Mvvm
 			else if (presentationMode == PresentationMode.Modal)
 			{
 				// Animate the new contents in
-				var animateContentsIn = new XAnimationPackage(new[] { view });
+				var animateContentsIn = new XAnimationPackage(view);
 				animateContentsIn
 					.Translate(0, Height)
 					.Set()
@@ -310,7 +298,7 @@ namespace NControl.Mvvm
 			else if (presentationMode == PresentationMode.Popup)
 			{
 				// Animate the new contents in
-				var animateContentsIn = new XAnimationPackage(new[] { view });
+				var animateContentsIn = new XAnimationPackage(view);
 				animateContentsIn
 					.Translate(0, Height)
 					.Set()
@@ -340,8 +328,8 @@ namespace NControl.Mvvm
 				// Animate
 				var retVal = new[]
 				{
-					new XAnimationPackage(new[] { view }).Translate(Width, 0),
-					new XAnimationPackage(new[] { toView }).Translate(0, 0)
+					new XAnimationPackage(view).Translate(Width, 0),
+					new XAnimationPackage(toView).Translate(0, 0)
 				};
 
 				var child = GetChild(0);
@@ -356,7 +344,7 @@ namespace NControl.Mvvm
 				// Animate
 				var retVal = new[]
 				{
-					new XAnimationPackage(new[] { view }).Translate(0, Height),
+					new XAnimationPackage(view).Translate(0, Height),
 				};
 
 				var child = GetChild(0);
@@ -429,5 +417,16 @@ namespace NControl.Mvvm
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Helper
+		/// </summary>
+		public override string ToString()
+		{
+			if (_container == null)
+				return "Empty";
+
+			return "FluidNavigationContainer: " + string.Join(", ", _container.Children.Select(v => v.GetType().Name));
+		}
 	}
 }

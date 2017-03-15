@@ -144,6 +144,7 @@ namespace NControl.XAnimation
 
 		public XAnimationPackage Color(Color color)
 		{
+			GetCurrentAnimation().AnimateColor = true;
 			GetCurrentAnimation().Color = color;
 			return this;
 		}

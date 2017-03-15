@@ -59,7 +59,7 @@ namespace NControl.XAnimation.Droid
 				nativeAnimation.TranslationX((float)animationInfo.TranslationX * _displayDensity);
 				nativeAnimation.TranslationY((float)animationInfo.TranslationY * _displayDensity);
 
-				if (element.BackgroundColor != animationInfo.Color)
+				if (animationInfo.AnimateColor)
 				{
 					var fromColor = (viewGroup.Background as ColorDrawable)?.Color;
 					var toColor = animationInfo.Color.ToAndroid();
@@ -106,7 +106,9 @@ namespace NControl.XAnimation.Droid
 				viewGroup.ScaleY = (float)animationInfo.Scale;
 				viewGroup.TranslationX = (float)animationInfo.TranslationX * _displayDensity;
 				viewGroup.TranslationY = (float)animationInfo.TranslationY * _displayDensity;
-				viewGroup.SetBackgroundColor( animationInfo.Color.ToAndroid());
+
+				if(animationInfo.AnimateColor)
+					viewGroup.SetBackgroundColor( animationInfo.Color.ToAndroid());
 			}
 		}
 
