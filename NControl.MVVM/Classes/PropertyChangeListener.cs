@@ -36,15 +36,21 @@ namespace NControl.Mvvm
         /// </summary>
         private string _propertyName;
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CF.Xamarin.Forms.Classes.PropertyChangeListener"/> class.
-        /// </summary>
-        /// <param name="owner">Owner.</param>
-        /// <param name="callback">Callback.</param>
-        public void Listen<TModel>(Expression<Func<TModel, object>> property, object owner, Action callback)
-        {
+		/// <summary>
+		/// Listen for property changes
+		/// </summary>
+		public void Listen<TModel>(Expression<Func<TModel, object>> property, object owner, Action callback)
+		{
+			Listen<TModel>(PropertyNameHelper.GetPropertyName<TModel>(property), owner, callback);
+		}
+
+		/// <summary>
+		/// Listen for the specified propertyName, owner and callback.
+		/// </summary>
+		public void Listen<TModel>(string propertyName, object owner, Action callback)
+		{
             if (callback == null)
                 throw new ArgumentNullException("callback");
 
@@ -52,10 +58,11 @@ namespace NControl.Mvvm
                 throw new ArgumentNullException("owner");
 
             _notifyChangedObject = owner as INotifyPropertyChanged;
+
             if (_notifyChangedObject == null)
                 throw new ArgumentNullException("owner as IPropertyNotifyChanged");
 
-            _propertyName = PropertyNameHelper.GetPropertyName<TModel>(property);
+			_propertyName = propertyName;
             if (string.IsNullOrEmpty(_propertyName))
                 throw new ArgumentException("property");
 

@@ -9,7 +9,7 @@ namespace NControl.Mvvm
 		/// The HasShadow property.
 		/// </summary>
 		public static BindableProperty HasShadowProperty = BindableProperty.Create(
-			nameof(HasShadow), typeof(bool), typeof(FluidShadowView), false,
+			nameof(HasShadow), typeof(bool), typeof(FluidShadowView), true,
 			BindingMode.OneWay);
 
 		/// <summary>

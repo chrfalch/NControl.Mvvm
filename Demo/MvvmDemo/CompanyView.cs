@@ -68,17 +68,18 @@ namespace MvvmDemo
 							new ExpandingButtonPanel{
 								VerticalOptions = LayoutOptions.End,
 								Buttons = {
-									new RoundButton{
-										Text = FontMaterialDesignLabel.MDInformationVariant,
+									new ButtonBarItem{
+										Icon = FontMaterialDesignLabel.MDInformationVariant,
 										Command = ViewModel.ShowAboutCommand,
 									},
 
-									new RoundButton{
-										Text = FontMaterialDesignLabel.MDCar,
+									new ButtonBarItem{
+										Command = ViewModel.ShowFeedCommand,
+										Icon = FontMaterialDesignLabel.MDPot,
 									},
 
-									new RoundButton{
-										Text = FontMaterialDesignLabel.MDKey,
+									new ButtonBarItem{
+										Icon = FontMaterialDesignLabel.MDKey,
 									}
 								}
 							}

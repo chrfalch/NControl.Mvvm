@@ -32,6 +32,7 @@ namespace MvvmDemo
 			ViewContainer.RegisterView<AboutViewModel, AboutView> ();
 			ViewContainer.RegisterView<EmployeeDetailsViewModel, EmployeeDetailsView> ();
 			ViewContainer.RegisterView<SearchViewModel, SearchView> ();
+			ViewContainer.RegisterView<FeedViewModel, FeedView>();
 		}
 	}
 }

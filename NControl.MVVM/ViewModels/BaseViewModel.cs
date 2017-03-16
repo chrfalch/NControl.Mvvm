@@ -189,6 +189,20 @@ namespace NControl.Mvvm
 		}
 
 		/// <summary>
+		/// Listens for property change.
+		/// </summary>
+		/// <param name="propertyName">Property name.</param>
+		/// <param name="obj">Object.</param>
+		/// <param name="callback">Callback.</param>
+		/// <typeparam name="TModel">The 1st type parameter.</typeparam>
+		protected void ListenForPropertyChange<TObject>(string propertyName, TObject obj, Action callback)
+		{
+			var changeListener = new PropertyChangeListener();
+			changeListener.Listen<TObject>(propertyName, obj, callback);
+			_propertyChangeListeners.Add(changeListener);
+		}
+
+		/// <summary>
 		/// Checks the dependant properties and commands.
 		/// </summary>
 		protected override void CheckDependantProperties(string propertyName)

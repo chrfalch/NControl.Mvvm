@@ -53,6 +53,7 @@ namespace NControl.Mvvm
 
 			Current.Sizes.Set(FluidConfig.DefaultPopupTitleHeight, 34);
 			Current.Sizes.Set(FluidConfig.DefaultPopupCornerRadius, 8);
+			Current.Sizes.Set(FluidConfig.DefaultBorderRadius, 8);
 		}
 
 		/// <summary>

@@ -108,6 +108,17 @@ namespace MvvmDemo
 				});
 			}
 		}
+
+		public ICommand ShowFeedCommand
+		{
+			get
+			{
+				return GetOrCreateCommandAsync(async _ =>
+				{
+					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<FeedViewModel>();
+				});
+			}
+		}
 	}
 }
 

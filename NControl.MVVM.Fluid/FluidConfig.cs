@@ -13,5 +13,6 @@ namespace NControl.Mvvm
 		public static string DefaultPopupCornerRadius = "DefaultPopupCornerRadius";
 
 		public static string DefaultShadowColor = "DefaultShadowColor";
+		public static string DefaultBorderRadius = "DefaultBorderRadius";
 	}
 }

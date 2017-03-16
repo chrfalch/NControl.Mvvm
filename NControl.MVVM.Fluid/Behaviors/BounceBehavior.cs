@@ -10,6 +10,17 @@ namespace NControl.Mvvm
 		readonly GestureRecognizerBehavior _behavior = new GestureRecognizerBehavior();
 		public event EventHandler Tapped;
 
+		readonly double _scaleTo;
+
+		public BounceBehavior(): this(0.75)
+		{			
+		}
+
+		public BounceBehavior(double scaleTo)
+		{
+			_scaleTo = scaleTo;
+		}
+
 		protected override void OnAttachedTo(View bindable)
 		{
 			base.OnAttachedTo(bindable);
@@ -24,7 +35,7 @@ namespace NControl.Mvvm
 						// Animate press
 						animation
 							.Duration(70)
-							.Scale(0.75)
+							.Scale(_scaleTo)
 							.Animate()
 							.Run();
 						break;

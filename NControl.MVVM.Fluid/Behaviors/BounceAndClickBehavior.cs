@@ -8,12 +8,29 @@ namespace NControl.Mvvm
 {
 	public class BounceAndClickBehavior: ClickBehavior
 	{
-		BounceBehavior _bouncer = new BounceBehavior(); 
+		readonly BounceBehavior _bouncer; 
 
-		public BounceAndClickBehavior(Func<ICommand> commandFunc) : base(commandFunc) {}
-		public BounceAndClickBehavior(Func<ICommand> commandFunc, Func<object> commandParameterFunc): base(commandFunc, commandParameterFunc) {}
-		public BounceAndClickBehavior(ICommand clickCommand) : base(clickCommand) {}
-		public BounceAndClickBehavior(ICommand clickCommand, object clickCommandParameter) : base(clickCommand, clickCommandParameter) { }
+		public BounceAndClickBehavior(Func<ICommand> commandFunc, double scaleTo = 0.75) : base(commandFunc) 
+		{
+			_bouncer = new BounceBehavior(scaleTo);
+		}
+
+		public BounceAndClickBehavior(Func<ICommand> commandFunc, Func<object> commandParameterFunc, 
+		                              double scaleTo = 0.75): base(commandFunc, commandParameterFunc) 
+		{
+			_bouncer = new BounceBehavior(scaleTo);
+		}
+
+		public BounceAndClickBehavior(ICommand clickCommand, double scaleTo = 0.75) : base(clickCommand)
+		{
+			_bouncer = new BounceBehavior(scaleTo);
+		}
+
+		public BounceAndClickBehavior(ICommand clickCommand, object clickCommandParameter, 
+		                              double scaleTo = 0.75) : base(clickCommand, clickCommandParameter) 
+		{
+			_bouncer = new BounceBehavior(scaleTo);
+		}
 
 		protected override void OnAttachedTo(View bindable)
 		{						

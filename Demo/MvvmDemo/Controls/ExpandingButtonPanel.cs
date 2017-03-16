@@ -10,17 +10,17 @@ namespace MvvmDemo
 {
 	public class ExpandingButtonPanel: RelativeLayout
 	{
+		const int circleSize = 44;
 		readonly RoundCornerView _circleControl;
 		readonly ExtendedButton _button;
 		readonly HorizontalStackLayout _container;
-		readonly List<View> _children = new List<View>();
+		readonly List<ButtonBarItem> _children = new List<ButtonBarItem>();
 
 		public ExpandingButtonPanel()
 		{
 			IsClippedToBounds = true;
 
 			// Add circle control
-			var circleSize = 44;
 			HeightRequest = circleSize * 2;
 			HorizontalOptions = LayoutOptions.FillAndExpand;
 
@@ -48,43 +48,7 @@ namespace MvvmDemo
 				Text = FontMaterialDesignLabel.MDChevronUp,
 				FontSize = 36,
 				TextColor = Color.White,
-				Command = new Command(() =>
-				{
-					bool animateOut = _button.Rotation.Equals(0.0);
-
-					if (animateOut)
-					{
-						_container.Children.Clear();
-						foreach (var child in _children)
-							_container.Children.Add(child);
-						
-						_container.IsVisible = true;
-					}
-
-					var easing = animateOut ? EasingFunction.EaseIn : EasingFunction.EaseOut;
-
-					new XAnimationPackage(_container)
-						.Translate(0, animateOut ? Height - (circleSize * 0.8) : 0)
-						.Set()
-						.Easing(easing)
-						.Translate(0, animateOut ? 0 : Height - (circleSize * 0.8))
-						.Run(() => {
-							if (!animateOut) 
-								_container.IsVisible = false;
-						});
-
-					new XAnimationPackage(_button)
-						.Easing(easing)
-						.Rotate(animateOut ? 180 : 0.0)
-						.Translate(0, animateOut ? - (circleSize - 8) : 0)
-						.Animate()
-						.Run();
-
-					new XAnimationPackage(_circleControl)
-						.Easing(easing)
-						.Scale(animateOut ? 20 : 1.0)
-						.Run();				
-				}),
+				Command = new Command(() => Toggle()),
 			};
 
 			Children.Add(_circleControl, () => new Rectangle(
@@ -100,13 +64,80 @@ namespace MvvmDemo
 			
 		}
 
+		void Toggle()
+		{
+			bool animateOut = _button.Rotation.Equals(0.0);
+
+			if (animateOut)
+			{
+				_container.Children.Clear();
+				foreach (var child in _children)
+					_container.Children.Add(new RoundButton
+					{
+						Text = child.Icon,
+						Command = new Command(() =>
+						{
+							if (child.Command != null && child.Command.CanExecute(null))
+							{
+								// Hide
+								Toggle();
+								child.Command.Execute(null);
+							}
+						})
+					});
+
+				_container.IsVisible = true;
+			}
+
+			var easing = animateOut ? EasingFunction.EaseIn : EasingFunction.EaseOut;
+
+			new XAnimationPackage(_container)
+				.Translate(0, animateOut ? Height - (circleSize * 0.8) : 0)
+				.Set()
+				.Easing(easing)
+				.Translate(0, animateOut ? 0 : Height - (circleSize * 0.8))
+				.Run(() =>
+				{
+					if (!animateOut)
+						_container.IsVisible = false;
+				});
+
+			new XAnimationPackage(_button)
+				.Easing(easing)
+				.Rotate(animateOut ? 180 : 0.0)
+				.Translate(0, animateOut ? -(circleSize - 8) : 0)
+				.Animate()
+				.Run();
+
+			new XAnimationPackage(_circleControl)
+				.Easing(easing)
+				.Scale(animateOut ? 20 : 1.0)
+				.Run();
+		}
+
 		/// <summary>
 		/// Children
 		/// </summary>
 		/// <value>The buttons.</value>
-		public IList<View> Buttons
+		public IList<ButtonBarItem> Buttons
 		{
 			get { return _children; }
+		}
+	}
+
+	public class ButtonBarItem
+	{
+		public string Icon { get; set; }
+		public ICommand Command { get; set; }
+		public ButtonBarItem()
+		{
+
+		}
+
+		public ButtonBarItem(string icon, ICommand command = null)
+		{
+			Icon = icon;
+			Command = command;
 		}
 	}
 }

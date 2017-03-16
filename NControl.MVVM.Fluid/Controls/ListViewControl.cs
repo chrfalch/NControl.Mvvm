@@ -45,15 +45,18 @@ namespace NControl.Mvvm
 
 			// Setup listview
 			_listView = new ListViewEx
-			{				
+			{
 				BindingContext = this,
 				RefreshCommand = _refreshCommand,
-				SeparatorVisibility = SeparatorVisibility.None,
 			}
 				.BindTo(ItemsView<Cell>.ItemsSourceProperty, nameof(ItemsSource))
+				.BindTo(ListView.ItemTemplateProperty, nameof(ItemTemplate))
 				.BindTo(ListView.IsRefreshingProperty, nameof(IsRefreshing))
 				.BindTo(ListViewEx.ItemSelectedCommandProperty, nameof(ItemSelectedCommand))
-				.BindTo(ListView.IsPullToRefreshEnabledProperty, nameof(IsPullToRefreshEnabled));
+				.BindTo(ListView.IsPullToRefreshEnabledProperty, nameof(IsPullToRefreshEnabled))
+				.BindTo(ListView.RowHeightProperty, nameof(RowHeight))
+				.BindTo(ListView.HasUnevenRowsProperty, nameof(HasUnevenRows))
+				.BindTo(ListView.SeparatorVisibilityProperty, nameof(SeparatorVisibility));
 
 			// Setup default empty message view
 			_emptyMessageView = new ContentView { 
@@ -83,6 +86,7 @@ namespace NControl.Mvvm
 						BindingContext = this,
 						HorizontalTextAlignment = TextAlignment.Center,
 						VerticalTextAlignment = TextAlignment.Center,
+
 					}.BindTo(Label.TextProperty, nameof(EmptyMessageText)),
 
 					new ExtendedButton{
@@ -108,6 +112,35 @@ namespace NControl.Mvvm
 
 		#region Properties
 
+		public static BindableProperty SeparatorVisibilityProperty = BindableProperty.Create(
+			nameof(SeparatorVisibility), typeof(SeparatorVisibility), typeof(ListViewControl), SeparatorVisibility.None,
+			BindingMode.OneWay);
+
+		public SeparatorVisibility SeparatorVisibility
+		{
+			get { return (SeparatorVisibility)GetValue(SeparatorVisibilityProperty); }
+			set { SetValue(SeparatorVisibilityProperty, value); }
+		}
+
+		public static BindableProperty RowHeightProperty = BindableProperty.Create(
+			nameof(RowHeight), typeof(int), typeof(ListViewControl), ListView.RowHeightProperty.DefaultValue,
+			BindingMode.OneWay);
+
+		public int RowHeight
+		{
+			get { return (int)GetValue(RowHeightProperty); }
+			set { SetValue(RowHeightProperty, value); }
+		}
+
+		public static BindableProperty HasUnevenRowsProperty = BindableProperty.Create(
+			nameof(HasUnevenRows), typeof(bool), typeof(ListViewControl), false,
+			BindingMode.OneWay);
+
+		public bool HasUnevenRows
+		{
+			get { return (bool)GetValue(HasUnevenRowsProperty); }
+			set { SetValue(HasUnevenRowsProperty, value); }
+		}
 		public View EmptyListView
 		{
 			get { return _emptyMessageView.Content; }
@@ -205,16 +238,20 @@ namespace NControl.Mvvm
 			set { SetValue(ReloadButtonTextProperty, value); }
 		}
 
-		public static BindableProperty StateProperty =
-			BindableProperty.Create(nameof(State), typeof(CollectionState), typeof(ListViewControl), CollectionState.Loading,
-			BindingMode.OneWay, propertyChanged: (bindable, oldValue, newValue) =>
+		/// <summary>
+		/// The CollectionState property.
+		/// </summary>
+		public static BindableProperty StateProperty = BindableProperty.Create(
+			nameof(State), typeof(CollectionState), typeof(ListViewControl), CollectionState.Loading,
+			BindingMode.OneWay, null, propertyChanged: (bindable, oldValue, newValue) =>
 			{
-
 				var ctrl = (ListViewControl)bindable;
 				ctrl.UpdateState((CollectionState)oldValue, (CollectionState)newValue);
-
 			});
 
+		/// <summary>
+		/// Gets or sets the CollectionState of the ListViewControl instance.
+		/// </summary>
 		public CollectionState State
 		{
 			get { return (CollectionState)GetValue(StateProperty); }

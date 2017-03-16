@@ -223,11 +223,17 @@ namespace NControl.Mvvm
 					var animations = (currentContext.Container as IXAnimatable).TransitionIn(
 						contents, presentationMode);
 
-					XAnimationPackage.RunAll(animations, () => tcs.TrySetResult(true));
+					XAnimationPackage.RunAll(animations, () =>
+					{
+						// Notify
+						view.OnAppearing();
+						tcs.TrySetResult(true);
+					});
 				}
 				else
 				{
 					// No animation, just return straight await
+					view.OnAppearing();
 					tcs.TrySetResult(true);
 				}
 
@@ -266,11 +272,17 @@ namespace NControl.Mvvm
 					var animations = (container as IXAnimatable).TransitionIn(
 						container.GetRootView(), presentationMode);
 
-					XAnimationPackage.RunAll(animations, () => tcs.TrySetResult(true));
+					XAnimationPackage.RunAll(animations, () =>
+					{
+						// Notify
+						view.OnAppearing();
+						tcs.TrySetResult(true);
+					});
 				}
 				else
 				{
 					// No animation, just return straight await
+					view.OnAppearing();
 					tcs.TrySetResult(true);
 				}
 			}
@@ -297,10 +309,17 @@ namespace NControl.Mvvm
 				{
 					var viewModelProvider = view as IView;
 					if (viewModelProvider != null)
+					{
+						viewModelProvider.OnDisappearing();
 						viewModelProvider.GetViewModel().ViewModelDismissed();
+					}
 					
 					currentContext.Container.RemoveChild(view, presentationMode);
 					currentContext.NavigationStack.Pop();
+
+					if(view is IView)
+						(view as IView).OnDisappearing();
+
 					tcs.TrySetResult(true);
 				};
 
@@ -325,7 +344,10 @@ namespace NControl.Mvvm
 					{
 						var viewModelProvider = view as IView;
 						if (viewModelProvider != null)
+						{
+							viewModelProvider.OnDisappearing();
 							viewModelProvider.GetViewModel().ViewModelDismissed();
+						}
 					}
 
 					// Clear navigation stack
