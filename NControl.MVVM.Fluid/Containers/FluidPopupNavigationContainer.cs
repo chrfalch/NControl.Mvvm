@@ -12,7 +12,8 @@ namespace NControl.Mvvm
 		readonly RelativeLayout _layout;
 		readonly FluidBlurOverlay _overlay;
 		readonly Grid _container;
-		readonly RoundCornerView _containerBorders;
+		readonly ContentView _containerBorders;
+		readonly ContentView _containerContents;
 
 		public FluidPopupNavigationContainer()
 		{
@@ -24,11 +25,18 @@ namespace NControl.Mvvm
 
 			// Create container
 			_container = new Grid();
-			_containerBorders = new RoundCornerView{ 
-				CornerRadius = 8,
+			_containerContents = new FluidRoundCornerView
+			{
+				BorderRadius = (int)MvvmApp.Current.Sizes.Get(FluidConfig.DefaultPopupCornerRadius),
 				BorderColor = MvvmApp.Current.Colors.Get(Config.BorderColor),
 				BorderWidth = MvvmApp.Current.Sizes.Get(Config.DefaultBorderSize),
-				Content = _container,				
+				Content = _container,
+			};
+
+			_containerBorders = new FluidShadowView{
+				HasShadow = true,
+				BorderRadius = (int)MvvmApp.Current.Sizes.Get(FluidConfig.DefaultPopupCornerRadius),
+				Content = _containerContents
 			};
 
 			_layout.Children.Add(_containerBorders, () => GetContentSize());

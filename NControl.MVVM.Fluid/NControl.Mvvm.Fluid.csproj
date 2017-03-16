@@ -54,6 +54,9 @@
     <Compile Include="Containers\FluidNavigationContainer.cs" />
     <Compile Include="Containers\FluidPopupNavigationContainer.cs" />
     <Compile Include="Containers\BaseFluidContentsView.cs" />
+    <Compile Include="Containers\BasePopupFluidContentsView.cs" />
+    <Compile Include="Containers\FluidRoundCornerView.cs" />
+    <Compile Include="Containers\FluidShadowView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">

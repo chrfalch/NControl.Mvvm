@@ -90,6 +90,8 @@
     <Compile Include="Renderers\FluidNavigationContainerRenderer.cs" />
     <Compile Include="Renderers\FluidContainerPageRenderer.cs" />
     <Compile Include="Renderers\FluidBlurOverlayRenderer.cs" />
+    <Compile Include="Renderers\FluidRoundedCornerViewRenderer.cs" />
+    <Compile Include="Renderers\FluidShadowViewRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

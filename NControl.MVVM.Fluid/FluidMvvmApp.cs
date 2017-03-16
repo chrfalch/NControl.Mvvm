@@ -50,6 +50,9 @@ namespace NControl.Mvvm
 			Current.Sizes.Set(FluidConfig.DefaultNavigationBarHeight, Device.OnPlatform(46, 56, 46));
 			Current.Sizes.Set(FluidConfig.DefaultStatusbarHeight, Device.OnPlatform(22, 0, 22));
 			Current.Sizes.Set(FluidConfig.DefaultToolbarItemWidth, 30);
+
+			Current.Sizes.Set(FluidConfig.DefaultPopupTitleHeight, 34);
+			Current.Sizes.Set(FluidConfig.DefaultPopupCornerRadius, 8);
 		}
 
 		/// <summary>
@@ -58,6 +61,10 @@ namespace NControl.Mvvm
 		protected override void SetupColors()
 		{
 			base.SetupColors();
+
+			Current.Colors.Set(FluidConfig.DefaultPopupTitleBackgroundColor, Colors.Get(Config.PrimaryColor));
+			Current.Colors.Set(FluidConfig.DefaultPopupTitleColor, Colors.Get(Config.NegativeTextColor));
+			Current.Colors.Set(FluidConfig.DefaultShadowColor, Color.Black);
 		}
 
 		/// <summary>

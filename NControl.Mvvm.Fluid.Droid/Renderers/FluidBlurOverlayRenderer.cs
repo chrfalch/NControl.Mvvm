@@ -32,7 +32,7 @@ namespace NControl.Mvvm.Droid
 			{
 				var screenBmp = TakeScreenShot(Context as Activity);
 
-				var resizedBmp = GetResizedBitmap(screenBmp, (int)(screenBmp.Width * 0.25), (int)(screenBmp.Height * 0.25));
+				var resizedBmp = GetResizedBitmap(screenBmp, (int)(screenBmp.Width * 0.125), (int)(screenBmp.Height * 0.125));
 
 				Background = new BitmapDrawable(CreateBlurredImage(25, resizedBmp));
 

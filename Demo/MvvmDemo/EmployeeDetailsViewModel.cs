@@ -8,6 +8,7 @@ namespace MvvmDemo
 	{
 		public EmployeeDetailsViewModel ()
 		{
+			Title = "Employee";
 		}
 
 		public override async Task InitializeAsync (Employee parameter)

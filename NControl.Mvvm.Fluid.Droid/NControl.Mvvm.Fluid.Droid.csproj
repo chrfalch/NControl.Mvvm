@@ -88,6 +88,8 @@
     <Compile Include="FluidDroidPlatform.cs" />
     <Compile Include="Renderers\FluidNavigationContainerRenderer.cs" />
     <Compile Include="Renderers\FluidBlurOverlayRenderer.cs" />
+    <Compile Include="Renderers\FluidShadowViewRenderer.cs" />
+    <Compile Include="Renderers\FluidRoundedCornerViewRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

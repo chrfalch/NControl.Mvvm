@@ -34,28 +34,6 @@ namespace NControl.Mvvm
                 .BindTo(SpinningCircleControl.IsRunningProperty, nameof(IsRunning)),
 				() => new Rectangle(0, 0, Width, Height));
 
-			//_layout.Children.Add(new SpinningCircleControl
-			//{
-			//	BindingContext = this,
-			//	IsRunning = true,
-			//	IsCounterClockWise = true,
-			//	Angle = random.Next(0, 360),
-			//	DurationMilliseconds = 1500
-			//}
-			//	.BindTo(SpinningCircleControl.ColorProperty, nameof(Color)),			
-			//	 () => new Rectangle(Width / 2 - ((Width * 0.80) / 2), Height / 2 - ((Height * 0.80) / 2),
-			//		   Width * 0.80, Height * 0.80));
-
-			//_layout.Children.Add(new SpinningCircleControl
-			//{
-			//	BindingContext = this,
-			//	IsRunning = true,
-			//	Angle = random.Next(0, 360),
-			//	DurationMilliseconds = 1000
-			//}
-			//	 .BindTo(SpinningCircleControl.ColorProperty, nameof(Color)),
-			//	 () => new Rectangle(Width / 2 - ((Width * 0.60) / 2), Height / 2 - ((Height * 0.6) / 2),
-			//		   Width * 0.6, Height * 0.60));
 		}
 
 		/// <summary>
@@ -119,6 +97,7 @@ namespace NControl.Mvvm
 
 		public SpinningCircleControl()
 		{			
+			SizeChanged += (sender, e) => Invalidate();
 		}
 
 		void StartAnimation()

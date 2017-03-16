@@ -4,9 +4,9 @@ using Xamarin.Forms;
 
 namespace MvvmDemo
 {
-	public class EmployeeDetailsView : BaseFluidContentsView<EmployeeDetailsViewModel>
+	public class EmployeeDetailsView : BasePopupFluidContentsView<EmployeeDetailsViewModel>
 	{
-		protected override View CreateContents()
+		protected override View CreatePopupContents()
 		{
 			return new StackLayout
 			{

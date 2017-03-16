@@ -90,8 +90,8 @@ namespace NControl.XAnimation
 		public override string ToString()
 		{
 			return string.Format(OnlyTransform ? "Set" : "Animate" + ": [#{3}: Delay={0}, Duration={1}, Repeat={2}, Scale={4}," + 
-			                     " Rotate={5}, TranslationX={6}, TranslationY={7}, Opacity={8}]", Delay, Duration, false, AnimationId, 
-			                     Scale, Rotate, TranslationX, TranslationY, Opacity);
+			                     " Rotate={5}, TranslationX={6}, TranslationY={7}, Opacity={8}, Color={9}, Easing={10}]", Delay, Duration, false, AnimationId, 
+			                     Scale, Rotate, TranslationX, TranslationY, Opacity, AnimateColor ? Color.ToString() : "NO", Easing);
 		}
 	}
 
