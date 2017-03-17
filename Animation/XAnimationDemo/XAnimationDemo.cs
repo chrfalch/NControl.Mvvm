@@ -28,15 +28,20 @@ namespace XAnimationDemo
 			};
 			slidervalue.SetBinding(Label.TextProperty, nameof(Slider.Value));
 
+			var checkbox = new Switch { HorizontalOptions = LayoutOptions.Center };
+
 			var button = new Button
 			{
 				Text = "Animate!",
-				Command = new Command(() => {
+				Command = new Command(() =>
+				{
 
 					Action action = null;
 					action = () =>
 					{
 						new XAnimationPackage(label)
+							.Rotate(0)
+							.Set()
 							.Duration(1000)
 							.Color(Color.Red)
 							.Rotate(slider.Value)
@@ -44,7 +49,10 @@ namespace XAnimationDemo
 							.Animate()
 							.Color(Color.Transparent)
 							.Animate()
-							.Run();
+							.Run(() =>
+							{
+								if (checkbox.IsToggled) action();
+							});
 					};
 
 					action();
@@ -69,12 +77,22 @@ namespace XAnimationDemo
 							Command = new Command(()=> {
 								contentPage.Navigation.PushAsync(new XAnimationDemoPage());
 							})
-						}
+						},
+						checkbox,
 					}
 				}
 			};
 
-			MainPage = new NavigationPage(contentPage);
+			MainPage = new NavigationPage(new ContentPage
+			{
+				Content = new Button
+				{
+					Text = "First",
+					Command = new Command((obj) => {
+						(MainPage as NavigationPage).Navigation.PushAsync(contentPage);
+					})
+				},
+			});
 		}
 
 		protected override void OnStart()
