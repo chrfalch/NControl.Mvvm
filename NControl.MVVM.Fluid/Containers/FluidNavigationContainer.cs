@@ -28,6 +28,9 @@ namespace NControl.Mvvm
 		readonly StackLayout _navigationContainer;
 		readonly FluidNavigationBar _navigationBar;
 
+		double _statusbarHeight;
+		double _navigationBarHeight;
+
 		#endregion
 
 		/// <summary>
@@ -37,8 +40,8 @@ namespace NControl.Mvvm
 		{
 			Content = _layout = new RelativeLayout();
 
-			var statusbarHeight = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultStatusbarHeight);
-			var navigationBarHeight = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultNavigationBarHeight);
+			_statusbarHeight = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultStatusbarHeight);
+			_navigationBarHeight = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultNavigationBarHeight);
 
 			_navigationBar = new FluidNavigationBar { 
 				BindingContext = this, 
@@ -64,7 +67,7 @@ namespace NControl.Mvvm
 				Children = {
 					new BoxView {
 						BackgroundColor = MvvmApp.Current.Colors.Get(Config.PrimaryColor),
-						HeightRequest = statusbarHeight,
+						HeightRequest = _statusbarHeight,
 					},
 
 					_navigationBar,
@@ -73,14 +76,12 @@ namespace NControl.Mvvm
 
 			_AddViewsToBottomOfStack(_layout);
 
+			// Add contents container
+			_layout.Children.Add(_container, () => GetContainerRectangle());
+
 			// Add navigation container
 			_layout.Children.Add(
-				_navigationContainer,() => new Rectangle(0, 0, _layout.Width, statusbarHeight + navigationBarHeight));
-
-			// Add contents container
-			_layout.Children.Add(_container, () => new Rectangle(
-				0, statusbarHeight + navigationBarHeight, _layout.Width,
-				_layout.Height - (statusbarHeight + navigationBarHeight)));
+				_navigationContainer, () => GetNavigationBarRectangle());
 
 			_AddViewsToTopOfStack(_layout);
 
@@ -141,6 +142,8 @@ namespace NControl.Mvvm
 			var index = _container.Children.IndexOf(view);
 			var fromView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
 
+			var animateNavigation = GetViewHasNavigationBar(view) != GetViewHasNavigationBar(fromView);
+
 			switch (state)
 			{
 				case PanState.Started:					
@@ -148,11 +151,26 @@ namespace NControl.Mvvm
 					break;
 
 				case PanState.Moving:
+
 					view.TranslationX = Math.Max(0, x - _xstart);
 
 					if (fromView != null)
 						fromView.TranslationX = Math.Max(-(Width / 4), -(Width / 4) +
 							(x - _xstart)/4);
+
+					if (animateNavigation)
+					{
+						if (GetViewHasNavigationBar(view))
+						{
+							_navigationContainer.TranslationY = (x - _xstart) / (_navigationBarHeight + _statusbarHeight);						
+						}
+						//else
+						//{
+						//	new XAnimationPackage(_navigationContainer)
+						//		.Translate(0, -(_statusbarHeight + _navigationBarHeight))
+						//		.Animate().Run();
+						//}
+					}
 					
 					break;
 
@@ -256,26 +274,41 @@ namespace NControl.Mvvm
 		{
 			if (presentationMode == PresentationMode.Default)
 			{
+				var animations = new List<XAnimationPackage>();
+
 				var index = _container.Children.IndexOf(view);
 				var fromView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
 
+				// Navigation bar?
+				if (GetViewHasNavigationBar(fromView) != GetViewHasNavigationBar(view))
+				{
+					if (GetViewHasNavigationBar(view))
+					{						
+						animations.Add(new XAnimationPackage(_navigationContainer)						               
+						               .Translate(0, 0)
+									   .Animate());
+					}
+					else
+					{						
+						animations.Add(new XAnimationPackage(_navigationContainer)
+						               .Translate(0, -(_statusbarHeight + _navigationBarHeight))
+						               .Animate());
+					}
+				}
+
 				// Animate the new contents in
-				var animateContentsIn = new XAnimationPackage(view);
-				animateContentsIn
+				animations.Add(new XAnimationPackage(view)
 					.Translate(Width, 0)
 					.Set()
-					.Translate(0, 0);
+	               	.Translate(0, 0));
 
 				// Move previous a litle bit out
-				var animatePreviousOut = new XAnimationPackage(fromView);
-				animatePreviousOut.Translate(-(Width / 4), 0);
-
-				var retVal = new[] { animateContentsIn, animatePreviousOut };
+				animations.Add(new XAnimationPackage(fromView).Translate(-(Width / 4), 0));
 
 				if (view is IXViewAnimatable)
-					return (view as IXViewAnimatable).TransitionIn(view, this, retVal, presentationMode);
+					return (view as IXViewAnimatable).TransitionIn(view, this, animations, presentationMode);
 
-				return retVal;
+				return animations;
 
 			}
 			else if (presentationMode == PresentationMode.Modal)
@@ -324,21 +357,37 @@ namespace NControl.Mvvm
 		{
 			if (presentationMode == PresentationMode.Default)
 			{
+				var animations = new List<XAnimationPackage>();
+
 				var index = _container.Children.IndexOf(view);
 				var toView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
 
-				// Animate
-				var retVal = new[]
+				// Navigation bar?
+				if (GetViewHasNavigationBar(toView) != GetViewHasNavigationBar(view))
 				{
-					new XAnimationPackage(view).Translate(Width, 0),
-					new XAnimationPackage(toView).Translate(0, 0)
-				};
+					if (GetViewHasNavigationBar(toView))
+					{
+						animations.Add(new XAnimationPackage(_navigationContainer)
+									   .Translate(0, 0)
+									   .Animate());
+					}
+					else
+					{
+						animations.Add(new XAnimationPackage(_navigationContainer)
+									   .Translate(0, -(_statusbarHeight + _navigationBarHeight))
+									   .Animate());
+					}
+				}
+
+				// Animate
+				animations.Add(new XAnimationPackage(view).Translate(Width, 0));
+				animations.Add(new XAnimationPackage(toView).Translate(0, 0));
 
 				var child = GetChild(0);
 				if (child is IXViewAnimatable)
-					return (child as IXViewAnimatable).TransitionOut(child, this, retVal, presentationMode);
+					return (child as IXViewAnimatable).TransitionOut(child, this, animations, presentationMode);
 
-				return retVal;
+				return animations;
 			}
 
 			if (presentationMode == PresentationMode.Modal)
@@ -378,10 +427,10 @@ namespace NControl.Mvvm
 		{
 			var view = _container.Children.Last();
 			var index = _container.Children.IndexOf(view);
-			var fromView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
+			var toView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
 
 			double toViewTranslationX = 0.0;
-			double fromViewTranslationX = fromView != null ? fromView.TranslationX : 0;
+			double fromViewTranslationX = toView != null ? toView.TranslationX : 0;
 
 			var offset = view.TranslationX % (-1 * Width);
 
@@ -404,12 +453,28 @@ namespace NControl.Mvvm
 						GetViewModel().PresentationMode, false, false);
 			});
 
-			if(fromView != null)
-				new XAnimationPackage(fromView)
+			if(toView != null)
+				new XAnimationPackage(toView)
 					.Duration((long)(duration * 1000))
 					.Translate(fromViewTranslationX, 0)
 					.Animate()
 					.Run();
+
+			if (GetViewHasNavigationBar(toView) != GetViewHasNavigationBar(view))
+			{
+				if (GetViewHasNavigationBar(toView))
+				{
+					new XAnimationPackage(_navigationContainer)
+					   	.Translate(0, 0)
+						.Animate().Run();
+				}
+				else
+				{
+					new XAnimationPackage(_navigationContainer)
+						.Translate(0, -(_statusbarHeight + _navigationBarHeight))
+						.Animate().Run();
+				}
+			}
 		}
 
 		void UpdateToolbarItems(View view)
@@ -418,6 +483,26 @@ namespace NControl.Mvvm
 			var toolbarItemsProvider = view as IToolbarItemsContainer;
 			if (toolbarItemsProvider != null)
 				_navigationBar.ToolbarItems.AddRange(toolbarItemsProvider.ToolbarItems);
+		}
+
+		bool GetViewHasNavigationBar(View view)
+		{
+			return view == null || (bool)view.GetValue(NavigationPage.HasNavigationBarProperty);
+		}
+
+		Rectangle GetNavigationBarRectangle()
+		{
+			return new Rectangle(0, 0, _layout.Width, _statusbarHeight + _navigationBarHeight);
+		}
+
+		Rectangle GetContainerRectangle()
+		{
+			var topView = _container.Children.LastOrDefault();
+			var hasNavigationBar = GetViewHasNavigationBar(topView);
+
+			return new Rectangle(
+				0, _statusbarHeight + (hasNavigationBar ? _navigationBarHeight : 0), _layout.Width,
+				_layout.Height - (_statusbarHeight + (hasNavigationBar ? _navigationBarHeight : 0)));
 		}
 
 		#endregion

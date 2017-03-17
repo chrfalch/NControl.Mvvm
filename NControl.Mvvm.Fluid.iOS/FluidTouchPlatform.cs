@@ -11,7 +11,7 @@ namespace NControl.Mvvm.iOS
 		{
 			XAnimation.iOS.XAnimation.Init();
 		}
-
+	
 		public override void RegisterActivityIndicator()
 		{
 			Container.RegisterSingleton<IActivityIndicator, FluidActivityIndicatorView>();

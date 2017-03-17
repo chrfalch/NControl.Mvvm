@@ -75,7 +75,7 @@ namespace MvvmDemo
 			get
 			{
 				return GetOrCreateCommandAsync(async _=> 
-					await MvvmApp.Current.Presenter.ShowViewModelAsync<AboutViewModel>());
+				                               await MvvmApp.Current.Presenter.ShowViewModelAsync<FeedViewModel>());
 			}
 		}
 		public override ICommand CloseCommand

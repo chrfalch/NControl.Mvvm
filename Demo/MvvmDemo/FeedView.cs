@@ -14,6 +14,8 @@ namespace MvvmDemo
 				MaterialDesignIcon = FontMaterialDesignLabel.MDClose,
 				Command = ViewModel.CloseCommand,
 			});
+
+			NavigationPage.SetHasNavigationBar(this, false);
 		}
 
 		protected override View CreateContents()

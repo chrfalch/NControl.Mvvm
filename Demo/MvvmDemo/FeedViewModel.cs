@@ -30,7 +30,7 @@ namespace MvvmDemo
 			get
 			{
 				return GetOrCreateCommandAsync<FeedItem>(async (arg) => {
-					await Task.Delay(100);
+					await MvvmApp.Current.Presenter.DismissViewModelAsync(PresentationMode);
 				});
 			}
 		}
