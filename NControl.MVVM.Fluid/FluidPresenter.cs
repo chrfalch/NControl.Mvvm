@@ -56,7 +56,9 @@ namespace NControl.Mvvm
 			var mainView = Container.Resolve(mainViewType) as ContentView;
 
 			// Create container
-			var container = _navigationContainerProvider.CreateNavigationContainer();
+			var container = _navigationContainerProvider.CreateNavigationContainer(
+				PresentationMode.Default, Size.Zero);
+			
 			container.AddChild(mainView, PresentationMode.Default);
 
 			// Add to container
@@ -242,17 +244,8 @@ namespace NControl.Mvvm
 			         presentationMode == PresentationMode.Popup)
 			{
 				// Container and navigation context
-				INavigationContainer container = null;
-
-				if (presentationMode == PresentationMode.Modal)
-				{
-					container = _navigationContainerProvider.CreateModalNavigationContainer();
-				}
-				else
-				{
-					container = _navigationContainerProvider.CreatePopupNavigationContainer(
-						new Size(_contentPage.Container.Width * 0.8, _contentPage.Container.Height * 0.7));					
-				}
+				INavigationContainer container = _navigationContainerProvider.CreateNavigationContainer(
+					presentationMode, new Size(_contentPage.Container.Width, _contentPage.Container.Height));
 
 				var navigationContainer = container as INavigationContainer;
 				if (navigationContainer == null)

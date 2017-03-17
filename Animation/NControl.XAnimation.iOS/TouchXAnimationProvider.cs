@@ -110,16 +110,13 @@ namespace NControl.XAnimation.iOS
 					animations.Add(colorAnimation);
 				}
 
-				// Create group of animations
-				var group = new CAAnimationGroup();
-				group.Duration = animationInfo.Duration / 1000.0;
-				group.BeginTime = CAAnimation.CurrentMediaTime() + (animationInfo.Delay / 1000.0);
-				group.Animations = animations.ToArray();
-
-				if (group.Animations.Count() != 0)
+				if(animations.Any())
 				{
-					CATransaction.Begin();
-					CATransaction.CompletionBlock = () => completed?.Invoke();
+					// Create group of animations
+					var group = new CAAnimationGroup();
+					group.Duration = animationInfo.Duration / 1000.0;
+					group.BeginTime = CAAnimation.CurrentMediaTime() + (animationInfo.Delay / 1000.0);
+					group.Animations = animations.ToArray();
 
 					switch (animationInfo.Easing)
 					{
@@ -143,12 +140,19 @@ namespace NControl.XAnimation.iOS
 							break;
 					}
 
+					CATransaction.Begin();
+					CATransaction.CompletionBlock = () => 
+						completed?.Invoke();
+
+					// Add animation
 					view.Layer.AddAnimation(group, "animinfo-anims");
 					animations.Clear();
 
-					Set(animationInfo);
-
+					// Commit transaction
 					CATransaction.Commit();
+
+					// Set final values (animation above only changes presentation values)
+					Set(animationInfo);
 				}
 				else
 				{
@@ -169,7 +173,7 @@ namespace NControl.XAnimation.iOS
 				element.Opacity = (float)animationInfo.Opacity;
 
 				if(animationInfo.AnimateColor)
-					element.BackgroundColor = animationInfo.Color;
+					element.BackgroundColor = animationInfo.Color;				
 			}
 		}
 

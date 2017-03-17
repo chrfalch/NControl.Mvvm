@@ -5,8 +5,19 @@ namespace XAnimationDemo
 {
 	public class XAnimationDemoPage2: ContentPage
 	{
+		static int pageNumber = 1;
+		readonly int myPageNumber;
+
+		~XAnimationDemoPage2()
+		{
+			System.Diagnostics.Debug.WriteLine("Demo2 " + myPageNumber + " finalizing");
+		}
+
 		public XAnimationDemoPage2()
 		{
+			myPageNumber = pageNumber++;
+			System.Diagnostics.Debug.WriteLine("Demo2 " + myPageNumber + " starting");
+
 			var label = new Label
 			{
 				HorizontalTextAlignment = TextAlignment.Center,
@@ -47,6 +58,7 @@ namespace XAnimationDemo
 							.Easing(.07, .62, .58, 1.51)
 							.Animate()
 							.Color(Color.Transparent)
+							.Translate(50, 50)
 							.Animate()
 							.Run(() =>
 							{

@@ -5,22 +5,21 @@ namespace NControl.Mvvm
 {
 	public class NavigationContainerProvider: INavigationContainerProvider
 	{
-		public INavigationContainer CreateModalNavigationContainer()
+		public INavigationContainer CreateNavigationContainer(PresentationMode mode, Size pageSize)
 		{
-			return new FluidModalNavigationContainer();
-		}
-
-		public INavigationContainer CreateNavigationContainer()
-		{
-			return new FluidNavigationContainer();	
-		}
-
-		public INavigationContainer CreatePopupNavigationContainer(Size containerSize)
-		{
-			return new FluidPopupNavigationContainer
+			switch (mode)
 			{
-				ContentSize = containerSize
-			};
+				default:
+				case PresentationMode.Default:
+					return new FluidNavigationContainer();
+				case PresentationMode.Modal:
+					return new FluidModalNavigationContainer();
+				case PresentationMode.Popup:
+					return new FluidPopupNavigationContainer
+					{
+						ContentSize = new Size(pageSize.Width * 0.8, pageSize.Height * 0.7)
+					};
+			}
 		}
 	}
 }

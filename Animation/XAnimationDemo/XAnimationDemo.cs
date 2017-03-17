@@ -14,6 +14,7 @@ namespace XAnimationDemo
 				{
 					Text = "First",
 					Command = new Command((obj) => {
+						GC.Collect();
 						(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage2());
 					})
 				},

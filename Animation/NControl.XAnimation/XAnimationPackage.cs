@@ -282,19 +282,21 @@ namespace NControl.XAnimation
 
 			if (_animationProvider == null)
 			{
-				_animationProvider = DependencyService.Get<IXAnimationProvider>(DependencyFetchTarget.NewInstance);
+				_animationProvider = DependencyService.Get<IXAnimationProvider>(
+					DependencyFetchTarget.NewInstance);
+				
 				_animationProvider.Initialize(this);
 			}
 
 			if (animationInfo.OnlyTransform)
 			{
-				DoLog("SetTransformation({0})", animationInfo);
+				DoLog("{0}", animationInfo);
 				_animationProvider.Set(animationInfo);
 				HandleCompletedAction();
 			}
 			else
 			{
-				DoLog("RunAnimation({0})", animationInfo);
+				DoLog("Run({0})", animationInfo);
 
 				// Tell the animation provider to animate
 				_animationProvider.Animate(animationInfo, () =>
