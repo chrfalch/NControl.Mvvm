@@ -195,16 +195,17 @@ namespace NControl.Mvvm
 				}
 			}
 
-			return ShowViewModelAsync(view, dismissedCallback, presentationMode, animate);
+			return PresentViewAsync(view, dismissedCallback, presentationMode, animate);
 		}
 
 		/// <summary>
 		/// Internal show viewmodel method
 		/// </summary>
-		Task ShowViewModelAsync(IView view, Action<bool> dismissedCallback, 
+		Task PresentViewAsync(IView view, Action<bool> dismissedCallback, 
 		                        PresentationMode presentationMode, bool animate)
 		{
 			var tcs = new TaskCompletionSource<bool>();
+			NavigationContext currentContext = null;
 
 			// Start the actual presentation of the view
 			var contents = view as View;
@@ -213,35 +214,16 @@ namespace NControl.Mvvm
 
 			if (presentationMode == PresentationMode.Default)
 			{
-				// Get previous/current view
-				var currentContext = _contentPage.Stack.Peek();
+				// Get current context
+				currentContext = _contentPage.Stack.Peek();
 
 				// Add view 
 				currentContext.Container.AddChild(contents, presentationMode);
 				currentContext.NavigationStack.Push(contents);
 
-				if (animate && currentContext.Container is IXAnimatable)
-				{
-					var animations = (currentContext.Container as IXAnimatable).TransitionIn(
-						contents, presentationMode);
-
-					XAnimationPackage.RunAll(animations, () =>
-					{
-						// Notify
-						view.OnAppearing();
-						tcs.TrySetResult(true);
-					});
-				}
-				else
-				{
-					// No animation, just return straight await
-					view.OnAppearing();
-					tcs.TrySetResult(true);
-				}
-
 			}
-			else if (presentationMode == PresentationMode.Modal || 
-			         presentationMode == PresentationMode.Popup)
+			else if (presentationMode == PresentationMode.Modal ||
+					 presentationMode == PresentationMode.Popup)
 			{
 				// Container and navigation context
 				INavigationContainer container = _navigationContainerProvider.CreateNavigationContainer(
@@ -255,30 +237,35 @@ namespace NControl.Mvvm
 				// Add contents
 				navigationContainer.AddChild(contents, presentationMode);
 
+				// Create new navigation context
+				currentContext = new NavigationContext(navigationContainer, dismissedCallback);
+
 				// Add navigation container to the container
 				_contentPage.Container.Children.Add(container.GetRootView(), 0, 0);
-				_contentPage.Stack.Push(new NavigationContext(navigationContainer, dismissedCallback));
+				_contentPage.Stack.Push(currentContext);
 				_contentPage.Stack.Peek().NavigationStack.Push(contents);
 
-				if (animate && container is IXAnimatable)
-				{
-					var animations = (container as IXAnimatable).TransitionIn(
-						container.GetRootView(), presentationMode);
+			}
 
-					XAnimationPackage.RunAll(animations, () =>
-					{
-						// Notify
-						view.OnAppearing();
-						tcs.TrySetResult(true);
-					});
-				}
-				else
+			if (animate && currentContext.Container is IXAnimatable)
+			{
+				var animations = (currentContext.Container as IXAnimatable).TransitionIn(
+					contents, presentationMode);
+
+				XAnimationPackage.RunAll(animations, () =>
 				{
-					// No animation, just return straight await
+					// Notify
 					view.OnAppearing();
 					tcs.TrySetResult(true);
-				}
+				});
 			}
+			else
+			{
+				// No animation, just return straight await
+				view.OnAppearing();
+				tcs.TrySetResult(true);
+			}
+
 
 			return tcs.Task;
 		}
