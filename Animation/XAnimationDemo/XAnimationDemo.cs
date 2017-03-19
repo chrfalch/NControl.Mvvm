@@ -10,14 +10,33 @@ namespace XAnimationDemo
 		{
 			MainPage = new NavigationPage(new ContentPage
 			{
-				Content = new Button
+				Content = new StackLayout
 				{
-					Text = "First",
-					Command = new Command((obj) => {
-						GC.Collect();
-						(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage2());
-					})
-				},
+					Children = {
+						new Button
+						{
+							Text = "First",
+							Command = new Command((obj) => {
+								GC.Collect();
+								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage2());
+							})
+						},
+						new Button
+						{
+							Text = "Second",
+							Command = new Command((obj) => {
+								GC.Collect();
+								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage3());
+							})
+						},
+						new Button{
+							Text = "Performance...",
+							Command = new Command(()=> {
+								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage());
+							})
+						},
+					},
+				}
 			});
 		}
 

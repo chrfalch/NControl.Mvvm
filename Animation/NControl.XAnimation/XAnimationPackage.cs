@@ -149,6 +149,13 @@ namespace NControl.XAnimation
 			return this;
 		}
 
+		public XAnimationPackage Frame(Rectangle rect)
+		{
+			GetCurrentAnimation().AnimateRectangle = true;
+			GetCurrentAnimation().Rectangle = rect;
+			return this;
+		}
+
 		/// <summary>
 		/// Creates a custom easing curve. See more here: http://cubic-bezier.com
 		/// </summary>

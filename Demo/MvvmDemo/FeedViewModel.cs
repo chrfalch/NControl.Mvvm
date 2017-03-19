@@ -30,7 +30,7 @@ namespace MvvmDemo
 			get
 			{
 				return GetOrCreateCommandAsync<FeedItem>(async (arg) => {
-					await MvvmApp.Current.Presenter.DismissViewModelAsync(PresentationMode);
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<AboutViewModel>();
 				});
 			}
 		}
@@ -57,9 +57,8 @@ namespace MvvmDemo
 
 			try
 			{
-				await Task.Delay(10);
-				foreach (var item in FeedItem.FeedRepository)
-					FeedItems.Add(item);
+				await Task.Delay(150);
+				FeedItems.AddRange(FeedItem.FeedRepository);
 			}
 			finally
 			{

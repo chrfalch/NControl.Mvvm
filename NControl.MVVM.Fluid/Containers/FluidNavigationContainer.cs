@@ -160,16 +160,18 @@ namespace NControl.Mvvm
 
 					if (animateNavigation)
 					{
-						if (GetViewHasNavigationBar(view))
+						var distanceToAnimate = (_statusbarHeight + _navigationBarHeight);
+						var distanceAnimated = x - _xstart;
+						var factor = distanceAnimated / Width;
+
+						if (GetViewHasNavigationBar(fromView))
 						{
-							_navigationContainer.TranslationY = (x - _xstart) / (_navigationBarHeight + _statusbarHeight);						
+							_navigationContainer.TranslationY = -distanceToAnimate + (distanceToAnimate * factor);
 						}
-						//else
-						//{
-						//	new XAnimationPackage(_navigationContainer)
-						//		.Translate(0, -(_statusbarHeight + _navigationBarHeight))
-						//		.Animate().Run();
-						//}
+						else
+						{
+							_navigationContainer.TranslationY = -(distanceToAnimate * factor);
+						}
 					}
 					
 					break;
@@ -285,14 +287,14 @@ namespace NControl.Mvvm
 					if (GetViewHasNavigationBar(view))
 					{						
 						animations.Add(new XAnimationPackage(_navigationContainer)						               
-						               .Translate(0, 0)
-									   .Animate());
+			               .Translate(0, 0)
+						   .Animate());
 					}
 					else
 					{						
 						animations.Add(new XAnimationPackage(_navigationContainer)
-						               .Translate(0, -(_statusbarHeight + _navigationBarHeight))
-						               .Animate());
+			               .Translate(0, -(_statusbarHeight + _navigationBarHeight))
+			               .Animate());
 					}
 				}
 
@@ -433,11 +435,13 @@ namespace NControl.Mvvm
 			double fromViewTranslationX = toView != null ? toView.TranslationX : 0;
 
 			var offset = view.TranslationX % (-1 * Width);
+			bool resetTransformations = true;
 
 			if (offset > Width * 0.33)
 			{
 				toViewTranslationX = Width;
 				fromViewTranslationX = 0;
+				resetTransformations = true;
 			}
 			
 			var distance = toViewTranslationX - view.TranslationX;
@@ -465,13 +469,13 @@ namespace NControl.Mvvm
 				if (GetViewHasNavigationBar(toView))
 				{
 					new XAnimationPackage(_navigationContainer)
-					   	.Translate(0, 0)
+					   	.Translate(0, resetTransformations ? -(_statusbarHeight + _navigationBarHeight):0)
 						.Animate().Run();
 				}
 				else
 				{
 					new XAnimationPackage(_navigationContainer)
-						.Translate(0, -(_statusbarHeight + _navigationBarHeight))
+						.Translate(0, resetTransformations ?  0: -(_statusbarHeight + _navigationBarHeight))
 						.Animate().Run();
 				}
 			}

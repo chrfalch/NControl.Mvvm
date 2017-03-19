@@ -80,12 +80,7 @@ namespace XAnimationDemo
 					button,
 					slider,
 					slidervalue,
-					new Button{
-						Text = "More...",
-						Command = new Command(()=> {
-							this.Navigation.PushAsync(new XAnimationDemoPage());
-						})
-					},
+
 					checkbox,
 				}
 			};

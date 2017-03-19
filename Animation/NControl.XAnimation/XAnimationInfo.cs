@@ -32,6 +32,9 @@ namespace NControl.XAnimation
 		public bool AnimateColor { get; set; }
 		public Color Color { get; set; }
 
+		public bool AnimateRectangle { get; set; }
+		public Rectangle Rectangle {get;set;}
+
 		public EasingFunction Easing { get; set; }
 		public EasingFunctionBezier EasingBezier { get; set; }
 
@@ -85,6 +88,8 @@ namespace NControl.XAnimation
 			AnimateColor = false;
 			Easing = EasingFunction.Linear;
 			EasingBezier = new EasingFunctionBezier(new Point(0, 0), new Point(1.0, 1.0));
+			Rectangle = Rectangle.Zero;
+			AnimateRectangle = false;
 		}
 
 		public override string ToString()

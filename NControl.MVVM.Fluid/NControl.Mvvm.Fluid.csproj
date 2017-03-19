@@ -49,14 +49,14 @@
     <Compile Include="Controls\FluidActivityIndicator.cs" />
     <Compile Include="Controls\FluidBlurOverlay.cs" />
     <Compile Include="Contracts\IContentSizeProvider.cs" />
-    <Compile Include="Containers\FluidContainerPage.cs" />
     <Compile Include="Containers\FluidModalNavigationContainer.cs" />
     <Compile Include="Containers\FluidNavigationContainer.cs" />
     <Compile Include="Containers\FluidPopupNavigationContainer.cs" />
-    <Compile Include="Containers\BaseFluidContentsView.cs" />
-    <Compile Include="Containers\BasePopupFluidContentsView.cs" />
-    <Compile Include="Containers\FluidRoundCornerView.cs" />
-    <Compile Include="Containers\FluidShadowView.cs" />
+    <Compile Include="Views\BaseFluidContentsView.cs" />
+    <Compile Include="Views\BasePopupFluidContentsView.cs" />
+    <Compile Include="Controls\FluidRoundCornerView.cs" />
+    <Compile Include="Controls\FluidShadowView.cs" />
+    <Compile Include="Pages\FluidContainerPage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">
@@ -97,6 +97,8 @@
     <Folder Include="Contracts\" />
     <Folder Include="Providers\" />
     <Folder Include="Containers\" />
+    <Folder Include="Views\" />
+    <Folder Include="Pages\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.3.3.180\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.3.3.180\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets')" />

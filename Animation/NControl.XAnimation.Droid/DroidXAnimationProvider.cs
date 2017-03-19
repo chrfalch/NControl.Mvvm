@@ -36,7 +36,7 @@ namespace NControl.XAnimation.Droid
 			var animations = new List<object>();
 			var animationCount = 0;
 
-			Action<Animator> animationFinishedAction = (animator) =>
+			Action<Animator> animationFinishedAction = _=>
 			{
 				animationCount--;
 				if (animationCount == 0)
@@ -54,7 +54,7 @@ namespace NControl.XAnimation.Droid
 					.SetDuration(animationInfo.Duration)
 					.SetStartDelay(animationInfo.Delay)
 					.SetInterpolator(GetInterpolator(animationInfo))
-					.SetListener(new AnimationListener(null, animationFinishedAction, null, null));
+					.SetListener(new AnimatorListener(null, animationFinishedAction, null, null));
 
 				nativeAnimation.Alpha((float)animationInfo.Opacity);
 				nativeAnimation.Rotation((float)animationInfo.Rotate);
@@ -63,32 +63,69 @@ namespace NControl.XAnimation.Droid
 				nativeAnimation.TranslationX((float)animationInfo.TranslationX * _displayDensity);
 				nativeAnimation.TranslationY((float)animationInfo.TranslationY * _displayDensity);
 
+				animations.Add(nativeAnimation);
+
 				if (animationInfo.AnimateColor)
 				{
-					var fromColor = (viewGroup.Background as ColorDrawable)?.Color;
+					var fromColor = element.BackgroundColor.ToAndroid();
 					var toColor = animationInfo.Color.ToAndroid();
 
-					var colorAnimator = ObjectAnimator.OfInt(viewGroup, "backgroundColor", (int)fromColor, (int)toColor);
-					colorAnimator.SetDuration(animationInfo.Duration);
+					var colorAnimator = ObjectAnimator.OfInt(viewGroup, "backgroundColor", fromColor, toColor);
 					colorAnimator.SetTarget(viewGroup);
 					colorAnimator.SetEvaluator(new ArgbEvaluator());
+					colorAnimator.SetDuration(animationInfo.Duration);
 					colorAnimator.SetInterpolator(GetInterpolator(animationInfo));
 					colorAnimator.StartDelay = animationInfo.Delay;
-					colorAnimator.AddListener(new AnimationListener(null, animationFinishedAction, null, null));
+					colorAnimator.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
 
 					animations.Add(colorAnimator);
 				}
 
-				animations.Add(nativeAnimation);
+				if (animationInfo.AnimateRectangle)
+				{
+					var originalSize = new Rectangle(viewGroup.Left, viewGroup.Top, viewGroup.Width, viewGroup.Height);
+					var newSize = new Rectangle(animationInfo.Rectangle.Left * _displayDensity,
+												animationInfo.Rectangle.Top * _displayDensity,
+												animationInfo.Rectangle.Width * _displayDensity,
+												animationInfo.Rectangle.Height * _displayDensity);
+					
+					var resizeAnimation = ValueAnimator.OfFloat(0.0f, 1.0f);
+
+					resizeAnimation.SetDuration(animationInfo.Duration);
+					resizeAnimation.SetInterpolator(GetInterpolator(animationInfo));
+					resizeAnimation.StartDelay = animationInfo.Delay;
+					resizeAnimation.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
+					resizeAnimation.AddUpdateListener(new UpdateListener((obj) => {
+
+						var animValue = (float)obj.AnimatedValue;
+
+						var newHeight = (int)(originalSize.Height + ((newSize.Height - originalSize.Height) * animValue));
+						var newWidth = (int)(originalSize.Width + ((newSize.Width - originalSize.Width) * animValue));
+						var newLeft = (int)(originalSize.Left + ((newSize.Left - originalSize.Left) * animValue));
+						var newTop = (int)(originalSize.Top + ((newSize.Top - originalSize.Top) * animValue));
+
+						// resize using formsviewgroup
+						if (!((viewGroup is FormsViewGroup)))
+							throw new ArgumentException("Needs a formsviewgroup. Wrong version?");
+						   
+						(viewGroup as FormsViewGroup).MeasureAndLayout(
+							newWidth, newHeight, newLeft, newTop, newLeft + newWidth, newTop + newHeight);
+						
+					}));
+
+					animations.Add(resizeAnimation);
+				}
+
 			}
 
+			// Run all animations
 			animationCount = animations.Count;
 			foreach (var anim in animations)
 			{
 				if (anim is ViewPropertyAnimator)
 					(anim as ViewPropertyAnimator).Start();
-				else if (anim is ObjectAnimator)
-					(anim as ObjectAnimator).Start();
+				else if (anim is Animator)
+					(anim as Animator).Start();
 			}
 		}
 
@@ -102,6 +139,9 @@ namespace NControl.XAnimation.Droid
 				element.TranslationX = (float)animationInfo.TranslationX;
 				element.TranslationY = (float)animationInfo.TranslationY;
 
+				if (animationInfo.AnimateRectangle)
+					element.Layout(animationInfo.Rectangle);
+				
 				if(animationInfo.AnimateColor)
 					element.BackgroundColor = animationInfo.Color;
 			}
@@ -127,7 +167,7 @@ namespace NControl.XAnimation.Droid
 		}
 		#endregion
 
-		ITimeInterpolator GetInterpolator(XAnimationInfo animationInfo)
+		IInterpolator GetInterpolator(XAnimationInfo animationInfo)
 		{
 			switch (animationInfo.Easing)
 			{
@@ -151,14 +191,27 @@ namespace NControl.XAnimation.Droid
 		}
 	}
 
-	class AnimationListener : Java.Lang.Object, Animator.IAnimatorListener
+	class UpdateListener : Java.Lang.Object, ValueAnimator.IAnimatorUpdateListener
+	{
+		readonly Action<ValueAnimator> _updateCallback;
+		public UpdateListener(Action<ValueAnimator> updateCallback)
+		{
+			_updateCallback = updateCallback;
+		}
+
+		public void OnAnimationUpdate(ValueAnimator animation)
+		{
+			_updateCallback?.Invoke(animation);
+		}
+	}
+	class AnimatorListener : Java.Lang.Object, Animator.IAnimatorListener
 	{
 		Action<Animator> _cancelAction;
 		Action<Animator> _endAction;
 		Action<Animator> _repeatAction;
 		Action<Animator> _startAction;
 
-		public AnimationListener(Action<Animator>  start = null, Action<Animator> end = null, 
+		public AnimatorListener(Action<Animator>  start = null, Action<Animator> end = null, 
 		                         Action<Animator> cancel = null, Action<Animator> repeat = null)
 		{
 			_startAction = start;
@@ -175,20 +228,17 @@ namespace NControl.XAnimation.Droid
 
 		public void OnAnimationEnd(Animator animation)
 		{
-			if (_endAction != null)
-				_endAction(animation);
+			_endAction?.Invoke(animation);
 		}
 
 		public void OnAnimationRepeat(Animator animation)
 		{
-			if (_repeatAction != null)
-				_repeatAction(animation);
+			_repeatAction?.Invoke(animation);
 		}
 
 		public void OnAnimationStart(Animator animation)
 		{
-			if (_startAction != null)
-				_startAction(animation);
+			_startAction?.Invoke(animation);
 		}
 	}
 }
