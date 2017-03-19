@@ -71,11 +71,11 @@ namespace NControl.XAnimation.iOS
 						{
 							// Get child details
 							var childView = GetView(childElement);
-							var childAnimations = GetAnimationsForElement(childElement, childView, childHierarchyInfo[childElement]);
+							var childAnimations = GetRectangleAnimations(childElement, childView, childHierarchyInfo[childElement]);
 							var childGroup = GetAnimationGroup(childAnimations, childHierarchyInfo[childElement]);
 
 							// Update model
-							// SetPlatformElementFromAnimationInfo(childElement, childHierarchyInfo[childElement]);
+							SetElementFromAnimationInfo(childElement, childHierarchyInfo[childElement]);
 
 							// Add animations
 							childView.Layer.AddAnimation(childGroup, "animinfo-anims-child-" + (counter++).ToString());
@@ -102,8 +102,6 @@ namespace NControl.XAnimation.iOS
 					// Commit transaction
 					CATransaction.Commit();
 
-					foreach (var childElement in childHierarchyInfo.Keys)
-						SetElementFromAnimationInfo(childElement, childHierarchyInfo[childElement]);
 				}
 				else
 				{
@@ -165,7 +163,7 @@ namespace NControl.XAnimation.iOS
 			return toValues;
 		}
 
-		CAAnimationGroup GetAnimationGroup(List<CAAnimation> animations, XAnimationInfo animationInfo)
+		CAAnimationGroup GetAnimationGroup(IEnumerable<CAAnimation> animations, XAnimationInfo animationInfo)
 		{
 			// Create group of animations
 			var group = new CAAnimationGroup();
@@ -267,29 +265,38 @@ namespace NControl.XAnimation.iOS
 			// Frame
 			if (animationInfo.AnimateRectangle)
 			{
-				var fromBounds = view.Layer.Bounds;
-				var toBounds = view.Layer.Bounds;
-				toBounds.Size = new CGSize(animationInfo.Rectangle.Width, animationInfo.Rectangle.Height);
-
-				var boundsAnimation = new CABasicAnimation();
-				boundsAnimation.KeyPath = "bounds";
-				boundsAnimation.From = NSValue.FromCGRect(fromBounds);
-				boundsAnimation.To = NSValue.FromCGRect(toBounds);
-
-				animations.Add(boundsAnimation);
-
-				var fromPos = view.Layer.ValueForKey(new NSString("position"));
-				var toPos = new CGPoint(
-					(nfloat)animationInfo.Rectangle.X + (view.Layer.AnchorPoint.X * toBounds.Width),
-					(nfloat)animationInfo.Rectangle.Y + (view.Layer.AnchorPoint.Y * toBounds.Height));
-
-				var posAnimation = new CABasicAnimation();
-				posAnimation.KeyPath = "position";
-				posAnimation.From = fromPos;
-				posAnimation.To = NSValue.FromCGPoint(toPos);
-
-				animations.Add(posAnimation);
+				animations.AddRange(GetRectangleAnimations(element, view, animationInfo));
 			}
+
+			return animations;
+		}
+
+		IEnumerable<CAAnimation> GetRectangleAnimations(VisualElement element, UIView view, XAnimationInfo animationInfo)
+		{
+			var animations = new List<CAAnimation>();
+
+			var fromBounds = view.Layer.Bounds;
+			var toBounds = view.Layer.Bounds;
+			toBounds.Size = new CGSize(animationInfo.Rectangle.Width, animationInfo.Rectangle.Height);
+
+			var boundsAnimation = new CABasicAnimation();
+			boundsAnimation.KeyPath = "bounds";
+			boundsAnimation.From = NSValue.FromCGRect(fromBounds);
+			boundsAnimation.To = NSValue.FromCGRect(toBounds);
+
+			animations.Add(boundsAnimation);
+
+			var fromPos = view.Layer.ValueForKey(new NSString("position"));
+			var toPos = new CGPoint(
+				(nfloat)animationInfo.Rectangle.X + (view.Layer.AnchorPoint.X * toBounds.Width),
+				(nfloat)animationInfo.Rectangle.Y + (view.Layer.AnchorPoint.Y * toBounds.Height));
+
+			var posAnimation = new CABasicAnimation();
+			posAnimation.KeyPath = "position";
+			posAnimation.From = fromPos;
+			posAnimation.To = NSValue.FromCGPoint(toPos);
+
+			animations.Add(posAnimation);
 
 			return animations;
 		}
