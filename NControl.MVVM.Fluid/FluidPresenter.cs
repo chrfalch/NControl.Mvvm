@@ -107,7 +107,7 @@ namespace NControl.Mvvm
 		/// <param name="success">If set to <c>true</c> success.</param>
 		public Task DismissViewModelAsync(PresentationMode presentationMode, bool success)
 		{
-			return PopViewModelAsync(presentationMode, success, true);
+			return DismissViewModelAsync(presentationMode, success, true);
 		}
 
 		/// <summary>
