@@ -119,6 +119,17 @@ namespace MvvmDemo
 				});
 			}
 		}
+
+		public ICommand ShowMenuCommand
+		{
+			get
+			{
+				return GetOrCreateCommandAsync(async _ =>
+				{
+					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<MenuViewModel>();
+				});
+			}
+		}
 	}
 }
 

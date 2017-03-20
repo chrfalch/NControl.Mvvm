@@ -79,7 +79,8 @@ namespace MvvmDemo
 									},
 
 									new ButtonBarItem{
-										Icon = FontMaterialDesignLabel.MDKey,
+										Icon = FontMaterialDesignLabel.MDMenu,
+										Command = ViewModel.ShowMenuCommand
 									}
 								}
 							}

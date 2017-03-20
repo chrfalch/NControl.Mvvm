@@ -57,6 +57,7 @@
     <Compile Include="Controls\FluidRoundCornerView.cs" />
     <Compile Include="Controls\FluidShadowView.cs" />
     <Compile Include="Pages\FluidContainerPage.cs" />
+    <Compile Include="Views\BaseFluidMenuView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">

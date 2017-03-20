@@ -23,10 +23,10 @@ namespace NControl.Mvvm
 
 		double _xstart;
 
-		readonly RelativeLayout _layout;
-		readonly Grid _container;
-		readonly StackLayout _navigationContainer;
-		readonly FluidNavigationBar _navigationBar;
+		protected readonly RelativeLayout _layout;
+		protected readonly Grid _container;
+		protected readonly StackLayout _navigationContainer;
+		protected readonly FluidNavigationBar _navigationBar;
 
 		double _statusbarHeight;
 		double _navigationBarHeight;
@@ -285,17 +285,9 @@ namespace NControl.Mvvm
 				if (GetViewHasNavigationBar(fromView) != GetViewHasNavigationBar(view))
 				{
 					if (GetViewHasNavigationBar(view))
-					{						
-						animations.Add(new XAnimationPackage(_navigationContainer)						               
-			               .Translate(0, 0)
-						   .Animate());
-					}
+						animations.AddRange(ShowNavigationBar(true));					
 					else
-					{						
-						animations.Add(new XAnimationPackage(_navigationContainer)
-			               .Translate(0, -(_statusbarHeight + _navigationBarHeight))
-			               .Animate());
-					}
+						animations.AddRange(HideNavigationbar(true));					
 				}
 
 				// Animate the new contents in
@@ -368,17 +360,9 @@ namespace NControl.Mvvm
 				if (GetViewHasNavigationBar(toView) != GetViewHasNavigationBar(view))
 				{
 					if (GetViewHasNavigationBar(toView))
-					{
-						animations.Add(new XAnimationPackage(_navigationContainer)
-									   .Translate(0, 0)
-									   .Animate());
-					}
+						animations.AddRange(ShowNavigationBar(true));					
 					else
-					{
-						animations.Add(new XAnimationPackage(_navigationContainer)
-									   .Translate(0, -(_statusbarHeight + _navigationBarHeight))
-									   .Animate());
-					}
+						animations.AddRange(HideNavigationbar(true));					
 				}
 
 				// Animate
@@ -489,9 +473,36 @@ namespace NControl.Mvvm
 				_navigationBar.ToolbarItems.AddRange(toolbarItemsProvider.ToolbarItems);
 		}
 
-		bool GetViewHasNavigationBar(View view)
+		protected bool GetViewHasNavigationBar(View view)
 		{
 			return view == null || (bool)view.GetValue(NavigationPage.HasNavigationBarProperty);
+		}
+
+		protected IEnumerable<XAnimationPackage> HideNavigationbar(bool animated)
+		{
+			if (animated)
+				return new[]{new XAnimationPackage(_navigationContainer)
+				   		.Translate(0, -(_statusbarHeight + _navigationBarHeight))
+						.Animate()
+						.Opacity(0.0)
+						.Set()};
+			
+
+			_navigationContainer.TranslationY = -(_statusbarHeight + _navigationBarHeight);
+			return new XAnimationPackage[0];
+		}
+
+		protected IEnumerable<XAnimationPackage> ShowNavigationBar(bool animated)
+		{
+			if (animated)
+				return new[]{new XAnimationPackage(_navigationContainer)
+						.Opacity(1.0)
+						.Set()
+				   		.Translate(0, 0)
+						.Animate()};
+
+			_navigationContainer.TranslationY = -(_statusbarHeight + _navigationBarHeight);
+			return new XAnimationPackage[0];
 		}
 
 		Rectangle GetNavigationBarRectangle()

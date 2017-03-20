@@ -46,12 +46,11 @@ namespace NControl.XAnimation.iOS
 			CATransaction.CompletionBlock = () =>
 			{
 				// Set final values (animation above only changes presentation values)
-				Set(animationInfo);
+				if (animationInfo.AnimateRectangle)
+					Set(animationInfo);
+				
 				completed?.Invoke();
 			};
-
-			// Start animation with transaction
-			CATransaction.Begin();
 
 			foreach (var element in _animation.Elements)
 			{
@@ -69,7 +68,7 @@ namespace NControl.XAnimation.iOS
 						var childHierarchyInfo = GetChildHierarchyInfo(element, animationInfo);
 
 						// Update platform values for presentation model
-						SetPlatform(animationInfo);
+						SetPlatformElementFromAnimationInfo(element, animationInfo);
 
 						// Add animations for all
 						var counter = 0;
@@ -90,19 +89,16 @@ namespace NControl.XAnimation.iOS
 					else
 					{
 						// Update platform values for presentation model
-						SetPlatform(animationInfo);
+						SetElementFromAnimationInfo(element, animationInfo);
 					}
 
 					// Add animation
 					view.Layer.AddAnimation(group, "animinfo-anims");
-
-				}
-				else
-				{
-					System.Diagnostics.Debug.WriteLine("No animations to run");
-					completed?.Invoke();
 				}
 			}
+
+			// Start animation with transaction
+			CATransaction.Begin();
 
 			// Commit transaction
 			CATransaction.Commit();
@@ -298,19 +294,14 @@ namespace NControl.XAnimation.iOS
 			return animations;
 		}
 
-		void SetPlatform(XAnimationInfo animationInfo)
-		{
-			foreach (var element in _animation.Elements)
-				SetPlatformElementFromAnimationInfo(element, animationInfo);
-		}
-
 		void SetPlatformElementFromAnimationInfo(VisualElement element, XAnimationInfo animationInfo)
 		{
 			var view = GetView(element);
 
-			view.Layer.Transform = CATransform3D.MakeRotation((nfloat)((animationInfo.Rotate * Math.PI) / 180.0), 0, 0, 1.0f);
-			view.Layer.Transform = view.Layer.Transform.Translate((nfloat)animationInfo.TranslationX, (nfloat)animationInfo.TranslationY, 0);
+			view.Layer.Transform = CATransform3D.MakeTranslation((nfloat)animationInfo.TranslationX, (nfloat)animationInfo.TranslationY, 0);
 			view.Layer.Transform = view.Layer.Transform.Scale((nfloat)animationInfo.Scale, (nfloat)animationInfo.Scale, 0);
+			view.Layer.Transform = view.Layer.Transform.Rotate((nfloat)animationInfo.Rotate * (float)Math.PI / 180.0f, 0.0f, 0.0f, 1.0f);
+
 			view.Layer.Opacity = (float)animationInfo.Opacity;
 
 			if (animationInfo.AnimateRectangle)
@@ -359,7 +350,7 @@ namespace NControl.XAnimation.iOS
 			element.TranslationX = animationInfo.TranslationX;
 			element.TranslationY = animationInfo.TranslationY;
 			element.Scale = animationInfo.Scale;
-			element.Opacity = (float)animationInfo.Opacity;
+			element.Opacity = animationInfo.Opacity;
 
 			if (animationInfo.AnimateRectangle)
 				element.Layout(animationInfo.Rectangle);
