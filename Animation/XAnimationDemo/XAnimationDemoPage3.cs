@@ -30,12 +30,12 @@ namespace XAnimationDemo
 			{
 				Source = "https://upload.wikimedia.org/wikipedia/commons/2/21/EverestfromKalarPatarcrop.JPG",
 				Aspect = Aspect.AspectFill,
-				Opacity = 0.4,
 			};
 
 			var label = new Label
 			{
 				Text = "Hello World",
+				TextColor = Color.White,
 				HorizontalTextAlignment = TextAlignment.Center,
 				VerticalTextAlignment = TextAlignment.Center
 			};
@@ -44,7 +44,7 @@ namespace XAnimationDemo
 			{
 				BackgroundColor = Color.Aqua,
 				Children = {
-					// image,
+					image,
 					new ContentView{
 						Content = label,
 						BackgroundColor = Color.Lime,
@@ -71,13 +71,6 @@ namespace XAnimationDemo
 						.Frame(GetLabelRectangle())
 						.Animate()
 						.Run();
-
-					//new XAnimationPackage(image)
-					//	.Duration(1250)
-					//	.Easing(.68, .19, .77, 1.32)
-					//	.Frame(GetImageRectangle())
-					//	.Animate()
-					//	.Run();
 				}),
 			};
 
