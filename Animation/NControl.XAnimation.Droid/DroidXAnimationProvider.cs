@@ -96,7 +96,8 @@ namespace NControl.XAnimation.Droid
 					{
 						// Get child details
 						var childView = GetViewGroup(childElement);
-						var childAnimation = GetRectangleAnimation(childElement, childView, childHierarchyInfo[childElement], animationFinishedAction);
+						var childAnimation = GetRectangleAnimation(
+							childElement, childView, childHierarchyInfo[childElement], animationFinishedAction);
 
 						// Add animations
 						animations.Add(childAnimation);
