@@ -43,6 +43,16 @@ namespace NControl.XAnimation.iOS
 				return;
 			}
 
+			CATransaction.CompletionBlock = () =>
+			{
+				// Set final values (animation above only changes presentation values)
+				Set(animationInfo);
+				completed?.Invoke();
+			};
+
+			// Start animation with transaction
+			CATransaction.Begin();
+
 			foreach (var element in _animation.Elements)
 			{
 				var view = GetView(element);
@@ -51,16 +61,12 @@ namespace NControl.XAnimation.iOS
 				if(animations.Any())
 				{
 					var group = GetAnimationGroup(animations, animationInfo);
-					Dictionary<VisualElement, XAnimationInfo> childHierarchyInfo = new Dictionary<VisualElement, XAnimationInfo>();
-
-					// Start animation with transaction
-					CATransaction.Begin();
 
 					// Perform a trick to ask layouts to get layout changes to be correct
 					if (animationInfo.AnimateRectangle)
 					{
 						// Get animation info for target after layout has been updated
-						childHierarchyInfo = GetChildHierarchyInfo(element, animationInfo);
+						var childHierarchyInfo = GetChildHierarchyInfo(element, animationInfo);
 
 						// Update platform values for presentation model
 						SetPlatform(animationInfo);
@@ -87,20 +93,8 @@ namespace NControl.XAnimation.iOS
 						SetPlatform(animationInfo);
 					}
 
-					CATransaction.CompletionBlock = () =>
-					{
-						// Set final values (animation above only changes presentation values)
-						Set(animationInfo);
-
-							
-						completed?.Invoke();
-					};
-
 					// Add animation
 					view.Layer.AddAnimation(group, "animinfo-anims");
-
-					// Commit transaction
-					CATransaction.Commit();
 
 				}
 				else
@@ -109,6 +103,9 @@ namespace NControl.XAnimation.iOS
 					completed?.Invoke();
 				}
 			}
+
+			// Commit transaction
+			CATransaction.Commit();
 		}
 
 		public void Set(XAnimationInfo animationInfo)
@@ -311,7 +308,7 @@ namespace NControl.XAnimation.iOS
 		{
 			var view = GetView(element);
 
-			view.Layer.Transform = CATransform3D.MakeRotation((nfloat)((animationInfo.Rotate * Math.PI) / 180.0), 0, 0, 1);
+			view.Layer.Transform = CATransform3D.MakeRotation((nfloat)((animationInfo.Rotate * Math.PI) / 180.0), 0, 0, 1.0f);
 			view.Layer.Transform = view.Layer.Transform.Translate((nfloat)animationInfo.TranslationX, (nfloat)animationInfo.TranslationY, 0);
 			view.Layer.Transform = view.Layer.Transform.Scale((nfloat)animationInfo.Scale, (nfloat)animationInfo.Scale, 0);
 			view.Layer.Opacity = (float)animationInfo.Opacity;

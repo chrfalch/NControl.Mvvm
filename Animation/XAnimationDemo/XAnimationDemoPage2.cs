@@ -58,7 +58,6 @@ namespace XAnimationDemo
 							.Easing(.07, .62, .58, 1.51)
 							.Animate()
 							.Color(Color.Transparent)
-							.Translate(50, 50)
 							.Animate()
 							.Run(() =>
 							{
