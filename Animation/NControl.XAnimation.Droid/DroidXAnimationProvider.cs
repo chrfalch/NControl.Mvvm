@@ -83,39 +83,25 @@ namespace NControl.XAnimation.Droid
 
 				if (animationInfo.AnimateRectangle)
 				{
-					var originalSize = new Rectangle(viewGroup.Left, viewGroup.Top, viewGroup.Width, viewGroup.Height);
-					var newSize = new Rectangle(animationInfo.Rectangle.Left * _displayDensity,
-												animationInfo.Rectangle.Top * _displayDensity,
-												animationInfo.Rectangle.Width * _displayDensity,
-												animationInfo.Rectangle.Height * _displayDensity);
-					
-					var resizeAnimation = ValueAnimator.OfFloat(0.0f, 1.0f);
-
-					resizeAnimation.SetDuration(animationInfo.Duration);
-					resizeAnimation.SetInterpolator(GetInterpolator(animationInfo));
-					resizeAnimation.StartDelay = animationInfo.Delay;
-					resizeAnimation.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
-					resizeAnimation.AddUpdateListener(new UpdateListener((obj) => {
-
-						var animValue = (float)obj.AnimatedValue;
-
-						var newHeight = (int)(originalSize.Height + ((newSize.Height - originalSize.Height) * animValue));
-						var newWidth = (int)(originalSize.Width + ((newSize.Width - originalSize.Width) * animValue));
-						var newLeft = (int)(originalSize.Left + ((newSize.Left - originalSize.Left) * animValue));
-						var newTop = (int)(originalSize.Top + ((newSize.Top - originalSize.Top) * animValue));
-
-						// resize using formsviewgroup
-						if (!((viewGroup is FormsViewGroup)))
-							throw new ArgumentException("Needs a formsviewgroup. Wrong version?");
-						   
-						(viewGroup as FormsViewGroup).MeasureAndLayout(
-							newWidth, newHeight, newLeft, newTop, newLeft + newWidth, newTop + newHeight);
-						
-					}));
-
-					animations.Add(resizeAnimation);
+					animations.Add(GetRectangleAnimation(element, viewGroup, animationInfo, animationFinishedAction));
 				}
 
+				// Get children
+				if (animationInfo.AnimateRectangle)
+				{
+					// Get animation info for target after layout has been updated
+					var childHierarchyInfo = GetChildHierarchyInfo(element, animationInfo);
+
+					foreach (var childElement in childHierarchyInfo.Keys)
+					{
+						// Get child details
+						var childView = GetViewGroup(childElement);
+						var childAnimation = GetRectangleAnimation(childElement, childView, childHierarchyInfo[childElement], animationFinishedAction);
+
+						// Add animations
+						animations.Add(childAnimation);
+					}
+				}
 			}
 
 			// Run all animations
@@ -148,6 +134,107 @@ namespace NControl.XAnimation.Droid
 		}
 
 		#region Private Members
+
+		Animator GetRectangleAnimation(VisualElement element, ViewGroup viewGroup, XAnimationInfo animationInfo, Action<Animator> animationFinishedAction)
+		{
+			var originalSize = new Rectangle(viewGroup.Left, viewGroup.Top, viewGroup.Width, viewGroup.Height);
+			var newSize = new Rectangle(animationInfo.Rectangle.Left * _displayDensity,
+										animationInfo.Rectangle.Top * _displayDensity,
+										animationInfo.Rectangle.Width * _displayDensity,
+										animationInfo.Rectangle.Height * _displayDensity);
+
+			var resizeAnimation = ValueAnimator.OfFloat(0.0f, 1.0f);
+
+			resizeAnimation.SetDuration(animationInfo.Duration);
+			resizeAnimation.SetInterpolator(GetInterpolator(animationInfo));
+			resizeAnimation.StartDelay = animationInfo.Delay;
+			resizeAnimation.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
+			resizeAnimation.AddUpdateListener(new UpdateListener((obj) =>
+			{
+
+				var animValue = (float)obj.AnimatedValue;
+
+				var newHeight = (int)(originalSize.Height + ((newSize.Height - originalSize.Height) * animValue));
+				var newWidth = (int)(originalSize.Width + ((newSize.Width - originalSize.Width) * animValue));
+				var newLeft = (int)(originalSize.Left + ((newSize.Left - originalSize.Left) * animValue));
+				var newTop = (int)(originalSize.Top + ((newSize.Top - originalSize.Top) * animValue));
+
+				// resize using formsviewgroup
+				if (!((viewGroup is FormsViewGroup)))
+					throw new ArgumentException("Needs a formsviewgroup. Wrong version?");
+
+				(viewGroup as FormsViewGroup).MeasureAndLayout(
+					newWidth, newHeight, newLeft, newTop, newLeft + newWidth, newTop + newHeight);
+
+			}));
+
+			return resizeAnimation;
+		}
+
+		Dictionary<VisualElement, XAnimationInfo> GetChildHierarchyInfoInt(VisualElement element, XAnimationInfo animationInfo)
+		{
+			var retVal = new Dictionary<VisualElement, XAnimationInfo>();
+
+			if (element is ContentView)
+			{
+				var child = (element as ContentView).Content;
+				var transformsTo = GetAnimationInfoFromElement(child, animationInfo);
+				retVal.Add(child, transformsTo);
+
+				var childValues = GetChildHierarchyInfoInt(child as VisualElement, animationInfo);
+				foreach (var key in childValues.Keys)
+					retVal.Add(key, childValues[key]);
+			}
+			else if (element is ILayoutController)
+			{
+				foreach (var child in (element as ILayoutController).Children)
+				{
+					if (child is VisualElement)
+					{
+						var transformsTo = GetAnimationInfoFromElement(child as VisualElement, animationInfo);
+						retVal.Add(child as VisualElement, transformsTo);
+
+						var childValues = GetChildHierarchyInfoInt(child as VisualElement, animationInfo);
+						foreach (var key in childValues.Keys)
+							retVal.Add(key, childValues[key]);
+					}
+				}
+			}
+
+			return retVal;
+		}
+
+		Dictionary<VisualElement, XAnimationInfo> GetChildHierarchyInfo(VisualElement element, XAnimationInfo animationInfo)
+		{
+			var originalState = GetAnimationInfoFromElement(element, animationInfo);
+
+			Set(animationInfo);
+			var toValues = GetChildHierarchyInfoInt(element, animationInfo);
+			Set(originalState);
+
+			return toValues;
+		}
+
+		XAnimationInfo GetAnimationInfoFromElement(VisualElement element, XAnimationInfo animationInfo)
+		{
+			return new XAnimationInfo
+			{
+				Duration = animationInfo.Duration,
+				Delay = animationInfo.Delay,
+				Easing = animationInfo.Easing,
+				EasingBezier = animationInfo.EasingBezier,
+				OnlyTransform = animationInfo.OnlyTransform,
+				Rotate = element.Rotation,
+				TranslationX = element.TranslationX,
+				TranslationY = element.TranslationY,
+				Scale = element.Scale,
+				Opacity = element.Opacity,
+				AnimateColor = animationInfo.AnimateColor,
+				Color = element.BackgroundColor,
+				AnimateRectangle = animationInfo.AnimateRectangle,
+				Rectangle = new Xamarin.Forms.Rectangle(element.X, element.Y, element.Width, element.Height),
+			};
+		}
 
 		/// <summary>
 		/// Gets the view.
