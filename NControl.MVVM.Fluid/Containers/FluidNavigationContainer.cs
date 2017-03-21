@@ -78,7 +78,7 @@ namespace NControl.Mvvm
 						ShadowOpacity = 0.9,
 						ShadowOffset = new Size(0, 1.0),
 						HeightRequest = 0.5,
-						BackgroundColor = MvvmApp.Current.Colors.Get(Config.PrimaryColor),
+						BackgroundColor = Color.Transparent,
 					}
 				},
 			};
