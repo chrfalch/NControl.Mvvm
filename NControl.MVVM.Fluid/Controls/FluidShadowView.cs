@@ -52,5 +52,53 @@ namespace NControl.Mvvm
 			get { return (int)GetValue(BorderRadiusProperty); }
 			set { SetValue(BorderRadiusProperty, value); }
 		}
+
+		/// <summary>
+		/// The ShadowOffset property.
+		/// </summary>
+		public static BindableProperty ShadowOffsetProperty = BindableProperty.Create(
+			nameof(ShadowOffset), typeof(Size), typeof(FluidShadowView), new Size(0, 2),
+			BindingMode.OneWay);
+
+		/// <summary>
+		/// Gets or sets the ShadowOffset of the FluidShadowView instance.
+		/// </summary>
+		public Size ShadowOffset
+		{
+			get { return (Size)GetValue(ShadowOffsetProperty); }
+			set { SetValue(ShadowOffsetProperty, value); }
+		}
+
+		/// <summary>
+		/// The ShadowOpacity property.
+		/// </summary>
+		public static BindableProperty ShadowOpacityProperty = BindableProperty.Create(
+			nameof(ShadowOpacity), typeof(double), typeof(FluidShadowView), 0.3,
+			BindingMode.OneWay);
+
+		/// <summary>
+		/// Gets or sets the ShadowOpacity of the FluidShadowView instance.
+		/// </summary>
+		public double ShadowOpacity
+		{
+			get { return (double)GetValue(ShadowOpacityProperty); }
+			set { SetValue(ShadowOpacityProperty, value); }
+		}
+
+		/// <summary>
+		/// The ShadowRadius property.
+		/// </summary>
+		public static BindableProperty ShadowRadiusProperty = BindableProperty.Create(
+			nameof(ShadowRadius), typeof(double), typeof(FluidShadowView), 6.0,
+			BindingMode.OneWay);
+
+		/// <summary>
+		/// Gets or sets the ShadowRadius of the FluidShadowView instance.
+		/// </summary>
+		public double ShadowRadius
+		{
+			get { return (double)GetValue(ShadowRadiusProperty); }
+			set { SetValue(ShadowRadiusProperty, value); }
+		}
 	}
 }

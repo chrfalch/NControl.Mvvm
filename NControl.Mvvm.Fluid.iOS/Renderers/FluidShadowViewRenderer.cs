@@ -28,6 +28,9 @@ namespace NControl.Mvvm.iOS
 
 			if (e.PropertyName == nameof(Element.ShadowColor) ||
 				e.PropertyName == nameof(Element.HasShadow) ||
+			    e.PropertyName == nameof(Element.ShadowRadius) ||
+			    e.PropertyName == nameof(Element.ShadowOffset) ||
+			    e.PropertyName == nameof(Element.ShadowOpacity) ||
 			    e.PropertyName == nameof(Element.BorderRadius))
 			{
 				UpdateShadow();
@@ -46,11 +49,11 @@ namespace NControl.Mvvm.iOS
 			if (Element.HasShadow)
 			{
 				NativeView.Layer.ShadowColor = Element.ShadowColor.ToCGColor();
-				NativeView.Layer.ShadowOpacity = 0.3f;
-				NativeView.Layer.ShadowRadius = 6.0f;
+				NativeView.Layer.ShadowOpacity = (float)Element.ShadowOpacity;
+				NativeView.Layer.ShadowRadius = (float)Element.ShadowRadius;
 				NativeView.Layer.ShadowPath = UIBezierPath.FromRoundedRect(NativeView.Bounds, (nfloat)Element.BorderRadius).CGPath;
-				NativeView.Layer.ShadowOffset = new CoreGraphics.CGSize(0.5, 2.0);
-				NativeView.Layer.ShouldRasterize = true;
+				NativeView.Layer.ShadowOffset = new CoreGraphics.CGSize(Element.ShadowOffset.Width, Element.ShadowOffset.Height);
+				//NativeView.Layer.ShouldRasterize = true;
 				NativeView.Layer.RasterizationScale = UIScreen.MainScreen.Scale;
 			}
 			else

@@ -71,6 +71,15 @@ namespace NControl.Mvvm
 					},
 
 					_navigationBar,
+
+					new FluidShadowView{
+						HasShadow = true,
+						ShadowRadius = 1,
+						ShadowOpacity = 0.9,
+						ShadowOffset = new Size(0, 1.0),
+						HeightRequest = 0.5,
+						BackgroundColor = MvvmApp.Current.Colors.Get(Config.PrimaryColor),
+					}
 				},
 			};
 
@@ -80,8 +89,7 @@ namespace NControl.Mvvm
 			_layout.Children.Add(_container, () => GetContainerRectangle());
 
 			// Add navigation container
-			_layout.Children.Add(
-				_navigationContainer, () => GetNavigationBarRectangle());
+			_layout.Children.Add(_navigationContainer, () => GetNavigationBarRectangle());
 
 			_AddViewsToTopOfStack(_layout);
 
