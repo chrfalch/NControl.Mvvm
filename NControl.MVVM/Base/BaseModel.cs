@@ -184,7 +184,7 @@ namespace NControl.Mvvm
         /// <typeparam name="TValueType">The 1st type parameter.</typeparam>
         protected TValueType GetValue<TValueType>([CallerMemberName] string property = null) 
         {
-            return GetValue<TValueType> (() => default(TValueType), propertyName:property);
+            return GetValue(() => default(TValueType), property);
         }
 
 		/// <summary>
@@ -196,7 +196,7 @@ namespace NControl.Mvvm
             if (string.IsNullOrEmpty(propertyName))
                 throw new ArgumentException("propertyName");
 
-            return GetObjectForKey<TValueType> (propertyName, defaultValueFunc());
+            return GetObjectForKey(propertyName, defaultValueFunc());
         }
 
         /// <summary>

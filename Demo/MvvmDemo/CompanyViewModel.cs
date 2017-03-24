@@ -42,8 +42,7 @@ namespace MvvmDemo
 		public ObservableCollectionWithAddRange<Company> Companies
 		{
 			get {
-				return GetValue <ObservableCollectionWithAddRange<Company>> (() =>
-				new ObservableCollectionWithAddRange<Company> ());
+				return GetValue(() => new ObservableCollectionWithAddRange<Company> ());
 			}
 		}
 
