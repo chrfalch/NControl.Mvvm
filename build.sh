@@ -30,3 +30,4 @@ xbuild /p:Configuration=Release /p:Platform=Release /target:build /p:OutputPath=
 mkdir -p ../build
 nuget pack -OutputDirectory ../build NControl.MVVM.Fluid.nuspec 
 nuget pack -OutputDirectory ../build NControl.MVVM.nuspec 
+nuget pack -OutputDirectory ../build Animation/NControl.XAnimation.nuspec 
