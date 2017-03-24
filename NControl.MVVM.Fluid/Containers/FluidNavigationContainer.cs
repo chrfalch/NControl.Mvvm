@@ -25,7 +25,7 @@ namespace NControl.Mvvm
 
 		protected readonly RelativeLayout _layout;
 		protected readonly Grid _container;
-		protected readonly StackLayout _navigationContainer;
+		protected readonly Grid _navigationContainer;
 		protected readonly FluidNavigationBar _navigationBar;
 
 		double _statusbarHeight;
@@ -59,27 +59,28 @@ namespace NControl.Mvvm
 
 			_container = new Grid();
 
-			_navigationContainer = new StackLayout
+			_navigationContainer = new Grid
 			{
 				Padding = 0,
-				Spacing = 0,
-				Orientation = StackOrientation.Vertical,
+				RowSpacing = 0,
+				ColumnSpacing = 0,
 				Children = {
+					
+					new FluidShadowView{
+						VerticalOptions = LayoutOptions.End,
+						HasShadow = true,
+						ShadowRadius = 3,
+						ShadowOpacity = 0.4,
+						ShadowOffset = new Size(0, 1.0),
+						BackgroundColor = Color.Transparent,
+						Content = _navigationBar,
+					},
+
 					new BoxView {
 						BackgroundColor = MvvmApp.Current.Colors.Get(Config.PrimaryColor),
 						HeightRequest = _statusbarHeight,
+						VerticalOptions = LayoutOptions.Start,
 					},
-
-					_navigationBar,
-
-					new FluidShadowView{
-						HasShadow = true,
-						ShadowRadius = 1,
-						ShadowOpacity = 0.9,
-						ShadowOffset = new Size(0, 1.0),
-						HeightRequest = 0.5,
-						BackgroundColor = Color.Transparent,
-					}
 				},
 			};
 
