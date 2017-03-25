@@ -18,13 +18,17 @@ namespace MvvmDemo
 				FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
 			};
 
-			View = new FluidRoundCornerView
-			{
-				BorderRadius = 4,
+			View = new FluidShadowView{
 				Margin = new Thickness(8, 6, 12, 6),
-				Content = _contents = new VerticalStackLayout {  
-					BackgroundColor = Color.FromHex("ECECEC"),
-				},
+				BorderRadius = 4,
+				Content = new FluidRoundCornerView
+				{
+					BorderRadius = 4,
+					Content = _contents = new VerticalStackLayout
+					{
+						BackgroundColor = Color.FromHex("ECECEC"),
+					},
+				}
 			};
 
 			_image = new Image { 
