@@ -15,6 +15,8 @@ namespace NControl.Mvvm
 		readonly ContentView _containerBorders;
 		readonly ContentView _containerContents;
 
+		const int Duration = 150;
+
 		public FluidPopupNavigationContainer()
 		{
 			Content = _layout = new RelativeLayout();
@@ -95,7 +97,7 @@ namespace NControl.Mvvm
 					.Scale(1.3)
 					.Opacity(0.0)
 					.Set()
-					.Duration(150)
+					.Duration(Duration)
 					.Easing(EasingFunction.EaseIn)
 					.Opacity(1.0)
 					.Scale(1.0)
@@ -115,13 +117,14 @@ namespace NControl.Mvvm
 			var retVal = new[] {
 				new XAnimationPackage(_overlay)					
 					.Opacity(0.0)
+					.Duration(Duration)
 					.Easing(EasingFunction.EaseOut)
 				    .Animate(),
 
 				new XAnimationPackage(_containerBorders)
 					.Scale(1.3)
 					.Opacity(0.0)
-					.Duration(150)
+					.Duration(Duration)
 					.Easing(EasingFunction.EaseOut)
 					.Animate()
 			};

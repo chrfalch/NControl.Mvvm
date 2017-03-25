@@ -43,25 +43,18 @@ namespace NControl.XAnimation.iOS
 				return;
 			}
 
-			CATransaction.CompletionBlock = () =>
-			{
-				// Set final values (animation above only changes presentation values)
-				if (animationInfo.AnimateRectangle)
-					Set(animationInfo);
-				
-				completed?.Invoke();
-			};
+			var viewAnimations = new Dictionary<UIView, IEnumerable<CAAnimation>>();
 
 			foreach (var element in _animation.Elements)
 			{
 				var view = GetView(element);
 				var animations = GetAnimationsForElement(element, view, animationInfo);
 
-				if(animations.Any())
+				if (animations.Any())
 				{
-					var group = GetAnimationGroup(animations, animationInfo);
+					// Update platform values for presentation model
+					viewAnimations.Add(view, animations);
 
-					// Perform a trick to ask layouts to get layout changes to be correct
 					if (animationInfo.AnimateRectangle)
 					{
 						// Get animation info for target after layout has been updated
@@ -71,34 +64,32 @@ namespace NControl.XAnimation.iOS
 						SetPlatformElementFromAnimationInfo(element, animationInfo);
 
 						// Add animations for all
-						var counter = 0;
 						foreach (var childElement in childHierarchyInfo.Keys)
 						{
 							// Get child details
 							var childView = GetView(childElement);
 							var childAnimations = GetRectangleAnimations(childElement, childView, childHierarchyInfo[childElement]);
-							var childGroup = GetAnimationGroup(childAnimations, childHierarchyInfo[childElement]);
 
-							// Update model
-							SetElementFromAnimationInfo(childElement, childHierarchyInfo[childElement]);
-
-							// Add animations
-							childView.Layer.AddAnimation(childGroup, "animinfo-anims-child-" + (counter++).ToString());
+							viewAnimations.Add(childView, childAnimations);
 						}
 					}
-					else
-					{
-						// Update platform values for presentation model
-						SetElementFromAnimationInfo(element, animationInfo);
-					}
-
-					// Add animation
-					view.Layer.AddAnimation(group, "animinfo-anims");
 				}
 			}
 
 			// Start animation with transaction
 			CATransaction.Begin();
+			CATransaction.DisableActions = true;
+			CATransaction.AnimationTimingFunction = GetTimingFunctionFromAnimationInfo(animationInfo);
+			CATransaction.AnimationDuration = animationInfo.Duration / 1000.0;
+			CATransaction.CompletionBlock = completed;
+
+			// Add animations
+			foreach (var view in viewAnimations.Keys)
+				for (var i = 0; i < viewAnimations[view].Count(); i++)
+					view.Layer.AddAnimation(viewAnimations[view].ElementAt(i), "animinfo-anims-" + i.ToString());
+
+			// Set end values
+			Set(animationInfo);
 
 			// Commit transaction
 			CATransaction.Commit();
@@ -163,30 +154,27 @@ namespace NControl.XAnimation.iOS
 			group.Duration = animationInfo.Duration / 1000.0;
 			group.BeginTime = CAAnimation.CurrentMediaTime() + (animationInfo.Delay / 1000.0);
 			group.Animations = animations.ToArray();
+			group.TimingFunction = GetTimingFunctionFromAnimationInfo(animationInfo);
+			return group;
+		}
 
+		CAMediaTimingFunction GetTimingFunctionFromAnimationInfo(XAnimationInfo animationInfo)
+		{
 			switch (animationInfo.Easing)
 			{
 				case EasingFunction.EaseIn:
-					group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseIn);
-					break;
+					return CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseIn);					
 				case EasingFunction.EaseOut:
-					group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseOut);
-					break;
+					return CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseOut);					
 				case EasingFunction.EaseInOut:
-					group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseInEaseOut);
-					break;
+					return CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseInEaseOut);					
 				case EasingFunction.Custom:
-					group.TimingFunction = CAMediaTimingFunction.FromControlPoints(
+					return CAMediaTimingFunction.FromControlPoints(
 						(float)animationInfo.EasingBezier.Start.X, (float)animationInfo.EasingBezier.Start.Y,
 						(float)animationInfo.EasingBezier.End.X, (float)animationInfo.EasingBezier.End.Y);
-
-					break;
 				default:
-					group.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.Linear);
-					break;
+					return CAMediaTimingFunction.FromName(CAMediaTimingFunction.Linear);					
 			}
-
-			return group;
 		}
 
 		List<CAAnimation> GetAnimationsForElement(VisualElement element, UIView view, XAnimationInfo animationInfo)
@@ -297,10 +285,16 @@ namespace NControl.XAnimation.iOS
 		void SetPlatformElementFromAnimationInfo(VisualElement element, XAnimationInfo animationInfo)
 		{
 			var view = GetView(element);
+			SetPlatformElementFromAnimationInfo(view, animationInfo);
+		}
 
-			view.Layer.Transform = CATransform3D.MakeTranslation((nfloat)animationInfo.TranslationX, (nfloat)animationInfo.TranslationY, 0);
-			view.Layer.Transform = view.Layer.Transform.Scale((nfloat)animationInfo.Scale, (nfloat)animationInfo.Scale, 0);
-			view.Layer.Transform = view.Layer.Transform.Rotate((nfloat)animationInfo.Rotate * (float)Math.PI / 180.0f, 0.0f, 0.0f, 1.0f);
+		void SetPlatformElementFromAnimationInfo(UIView view, XAnimationInfo animationInfo)
+		{
+			view.Layer.Transform = CATransform3D.Identity; 
+			view.Layer.SetValueForKey(new NSNumber((float)animationInfo.Scale), new NSString("transform.scale"));
+			view.Layer.SetValueForKey(new NSNumber((float)animationInfo.TranslationX), new NSString("transform.translation.x"));
+			view.Layer.SetValueForKey(new NSNumber((float)animationInfo.TranslationY), new NSString("transform.translation.y"));
+			view.Layer.SetValueForKey(new NSNumber((animationInfo.Rotate * Math.PI) / 180.0), new NSString("transform.rotate"));
 
 			view.Layer.Opacity = (float)animationInfo.Opacity;
 

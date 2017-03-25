@@ -24,17 +24,24 @@ namespace XAnimationDemo
 						new Button
 						{
 							Text = "Second",
-							Command = new Command((obj) => {
-								GC.Collect();
+							Command = new Command((obj) => {								
 								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage3());
 							})
 						},
+						new Button
+						{
+							Text = "Third",
+							Command = new Command((obj) => {								
+								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage4());
+							})
+						},
 						new Button{
-							Text = "Performance...",
+							Text = "Comparsion...",
 							Command = new Command(()=> {
 								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage());
 							})
 						},
+
 					},
 				}
 			});

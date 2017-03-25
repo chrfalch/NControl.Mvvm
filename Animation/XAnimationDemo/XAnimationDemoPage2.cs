@@ -59,7 +59,7 @@ namespace XAnimationDemo
 							//.Easing(.07, .62, .58, 1.51)
 							//.Animate()
 							//.Color(Color.Transparent)
-							.Rotate(180)
+							.Rotate(slider.Value)
 							.Translate(0, -60)
 							.Animate()
 							.Run(() =>

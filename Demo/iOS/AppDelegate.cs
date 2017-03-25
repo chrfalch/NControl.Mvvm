@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Foundation;
 using UIKit;
 using NControl.Mvvm.iOS;
 using NControl.Controls.iOS;
-using NControl.Mvvm.iOS;
 using Xamarin.Forms.Platform.iOS;
 using Xamarin.Forms;
 
