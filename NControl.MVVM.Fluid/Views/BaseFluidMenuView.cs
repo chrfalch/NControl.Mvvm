@@ -21,19 +21,27 @@ namespace NControl.Mvvm
 		{
 			BackgroundColor = Color.Transparent;
 
-
-			_headerView = new ContentView { BackgroundColor = Color.Aqua };
-			_contentView = new ContentView
-			{
-				VerticalOptions = LayoutOptions.FillAndExpand,
+			_headerView = new ContentView { 
+				BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewBackgroundColor) 
 			};
 
-			_footerView = new ContentView { BackgroundColor = Color.Lime };
+			_contentView = new ContentView
+			{
+				WidthRequest = Width*0.8,
+				VerticalOptions = LayoutOptions.FillAndExpand,
+				BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewBackgroundColor),
+			};
+
+			_footerView = new ContentView { 
+				BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewBackgroundColor) 
+			};
 
 			SetupMenuView();
 
 			return new VerticalStackLayout
 			{
+				Spacing = 0,
+				Padding = 0,
 				Children = {
 					_headerView,
 					_contentView,
@@ -82,18 +90,29 @@ namespace NControl.Mvvm
 					.Rotate(0)
 					.Animate(),
 
-					// Set background color
-
+				new XAnimationPackage(_headerView, _footerView)
+					.Translate(-Width, 0)
+					.Opacity(0.0)
+					.Set()
+					.Translate(0, 0)
+					.Opacity(1.0)
+					.Animate(),
 			};
 		}
 
 		protected override IEnumerable<XAnimationPackage> ModalTransitionOut(
 			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
 		{
-			return new[] {
+			return new[] 
+			{
 				new XAnimationPackage(_contentView)
 					.Translate(-Width, 0)
 					.Rotate(-15)
+					.Animate(),
+
+				new XAnimationPackage(_headerView, _footerView)
+					.Translate(-Width, 0)
+					.Opacity(0.0)
 					.Animate(),
 			};
 		}

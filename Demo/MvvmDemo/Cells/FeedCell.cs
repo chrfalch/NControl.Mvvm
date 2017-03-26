@@ -20,10 +20,10 @@ namespace MvvmDemo
 
 			View = new FluidShadowView{
 				Margin = new Thickness(8, 6, 12, 6),
-				BorderRadius = 4,
+				BorderRadius = 2,
 				Content = new FluidRoundCornerView
 				{
-					BorderRadius = 4,
+					BorderRadius = 2,
 					Content = _contents = new VerticalStackLayout
 					{
 						BackgroundColor = Color.FromHex("ECECEC"),
