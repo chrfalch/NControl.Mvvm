@@ -15,10 +15,7 @@ namespace NControl.Mvvm
 				case PresentationMode.Modal:
 					return new FluidModalNavigationContainer();
 				case PresentationMode.Popup:
-					return new FluidPopupNavigationContainer
-					{
-						ContentSize = new Size(pageSize.Width * 0.8, pageSize.Height * 0.7)
-					};
+					return new FluidPopupNavigationContainer();
 			}
 		}
 	}

@@ -48,7 +48,6 @@
     <Compile Include="Controls\ListViewControl.cs" />
     <Compile Include="Controls\FluidActivityIndicator.cs" />
     <Compile Include="Controls\FluidBlurOverlay.cs" />
-    <Compile Include="Contracts\IContentSizeProvider.cs" />
     <Compile Include="Containers\FluidModalNavigationContainer.cs" />
     <Compile Include="Containers\FluidNavigationContainer.cs" />
     <Compile Include="Containers\FluidPopupNavigationContainer.cs" />

@@ -11,8 +11,9 @@ namespace MvvmDemo
 			return new StackLayout
 			{
 				Orientation = StackOrientation.Vertical,
+				VerticalOptions = LayoutOptions.Center,
 				Children = {
-					new StackLayout {
+					new StackLayout {						
 						Orientation = StackOrientation.Vertical,
 						Padding = 15,
 						Spacing = 8,

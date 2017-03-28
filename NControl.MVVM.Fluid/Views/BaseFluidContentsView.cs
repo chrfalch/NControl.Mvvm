@@ -15,13 +15,12 @@ namespace NControl.Mvvm
 	}
 
 	public abstract class BaseFluidContentsView<TViewModel> : ContentView, IView<TViewModel>,
-		IToolbarItemsContainer, ILeftBorderProvider, IXViewAnimatable, IContentSizeProvider
+		IToolbarItemsContainer, ILeftBorderProvider, IXViewAnimatable
 		where TViewModel : BaseViewModel
 	{
 
 		#region Private Members
 
-		Size _contentSize;
 		readonly RelativeLayout _layout;
 		readonly BoxView _leftBorder;
 		readonly ObservableCollectionWithAddRange<ToolbarItem> _toolbarItems = new ObservableCollectionWithAddRange<ToolbarItem>();
@@ -183,15 +182,6 @@ namespace NControl.Mvvm
 		protected IImageProvider ImageProvider { get; private set; }
 
 		/// <summary>
-		/// Contents size
-		/// </summary>
-		public virtual Size ContentSize
-		{
-			get { return _contentSize; }
-			set { _contentSize = value; }
-		}
-
-		/// <summary>
 		/// Implement to create the layout on the page
 		/// </summary>
 		/// <returns>The layout.</returns>
@@ -348,5 +338,22 @@ namespace NControl.Mvvm
 		}
 
 		#endregion
+
+		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
+		{
+			var retVal = base.OnMeasure(widthConstraint, heightConstraint);
+			var height = 0.0;
+			foreach (var child in _layout.Children)
+			{
+				var sz = child.Measure(double.PositiveInfinity, double.PositiveInfinity);
+				height += sz.Request.Height;
+			}
+
+			return new SizeRequest
+			{
+				Minimum = retVal.Minimum,
+				Request = new Size(retVal.Request.Width, height),
+			};
+		}
 	}
 }

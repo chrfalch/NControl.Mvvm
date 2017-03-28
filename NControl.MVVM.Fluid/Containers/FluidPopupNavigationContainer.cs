@@ -60,23 +60,6 @@ namespace NControl.Mvvm
 			set { SetValue(OverlayBackgroundColorProperty, value); }
 		}
 
-		public static BindableProperty ContentSizeProperty = BindableProperty.Create(
-			nameof(ContentSize), typeof(Size), typeof(FluidPopupNavigationContainer), Size.Zero,
-			BindingMode.OneWay, propertyChanged: (bindable, oldValue, newValue) =>
-			 {
-				 var ctrl = (FluidPopupNavigationContainer)bindable;
-				 ctrl._layout.ForceLayout();
-			 });
-
-		/// <summary>
-		/// Contents size
-		/// </summary>
-		public Size ContentSize
-		{
-			get { return (Size)GetValue(ContentSizeProperty); }
-			set { SetValue(ContentSizeProperty, value); }
-		}
-
 		#endregion
 
 		#region Transitions
@@ -184,16 +167,19 @@ namespace NControl.Mvvm
 
 		Rectangle GetContentSize()
 		{
-			var lastView = _container.Children.LastOrDefault() as IContentSizeProvider;
-			var contentSize = ContentSize;
-			if (lastView != null)
-			{
-				if (lastView.ContentSize.Width != 0)
-					contentSize.Width = lastView.ContentSize.Width;
+			var s = (_container.Children.LastOrDefault() as ContentView).Measure(double.PositiveInfinity, double.PositiveInfinity);
+			var contentSize = new Size(Width * 0.7, s.Request.Height);
 
-				if (lastView.ContentSize.Height != 0)
-					contentSize.Height = lastView.ContentSize.Height;
-			}
+			//var lastView = _container.Children.LastOrDefault(); // as IContentSizeProvider;
+			//var contentSize = ContentSize;
+			//if (lastView != null)
+			//{
+			//	if (!lastView.ContentSize.Width.Equals(0.0))
+			//		contentSize.Width = lastView.ContentSize.Width;
+
+			//	if (!lastView.ContentSize.Height.Equals(0.0))
+			//		contentSize.Height = lastView.ContentSize.Height;
+			//}
 
 			return new Rectangle(
 				(_layout.Width / 2) - (contentSize.Width / 2),
