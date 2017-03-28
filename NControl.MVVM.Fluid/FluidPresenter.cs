@@ -63,8 +63,8 @@ namespace NControl.Mvvm
 
 			// Add to container
 			_contentPage.Container.Children.Add(container.GetRootView(), 0, 0);
-			_contentPage.Stack.Push(new NavigationContext(container, null));
-			_contentPage.Stack.Peek().NavigationStack.Push(mainView);
+			_contentPage.Stack.Push( new NavigationContext(container));
+			_contentPage.Stack.Peek().NavigationStack.Push(new NavigationElement(mainView, null));
 
 			// Notify
 			(mainView as IView).OnAppearing();
@@ -179,7 +179,7 @@ namespace NControl.Mvvm
 		/// Internal show viewmodel method
 		/// </summary>
 		Task PresentViewAsync(IView view, Action<bool> dismissedCallback, 
-		                        PresentationMode presentationMode, bool animate)
+		                      PresentationMode presentationMode, bool animate)
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			NavigationContext currentContext = null;
@@ -196,7 +196,7 @@ namespace NControl.Mvvm
 
 				// Add view 
 				currentContext.Container.AddChild(contents, presentationMode);
-				currentContext.NavigationStack.Push(contents);
+				currentContext.NavigationStack.Push(new NavigationElement(contents, dismissedCallback));
 
 			}
 			else if (presentationMode == PresentationMode.Modal ||
@@ -215,12 +215,12 @@ namespace NControl.Mvvm
 				navigationContainer.AddChild(contents, presentationMode);
 
 				// Create new navigation context
-				currentContext = new NavigationContext(navigationContainer, dismissedCallback);
+				currentContext = new NavigationContext(navigationContainer);
 
 				// Add navigation container to the container
 				_contentPage.Container.Children.Add(container.GetRootView(), 0, 0);
 				_contentPage.Stack.Push(currentContext);
-				_contentPage.Stack.Peek().NavigationStack.Push(contents);
+				_contentPage.Stack.Peek().NavigationStack.Push(new NavigationElement(contents, dismissedCallback));
 
 			}
 
@@ -258,7 +258,8 @@ namespace NControl.Mvvm
 			if (presentationMode == PresentationMode.Default)
 			{
 				var currentContext = _contentPage.Stack.Peek();
-				var view = currentContext.NavigationStack.FirstOrDefault();
+				var navigationElement = currentContext.NavigationStack.FirstOrDefault();
+				var view = navigationElement?.View;
 
 				// Set up action to run when all transitions and animations
 				// are done
@@ -277,6 +278,8 @@ namespace NControl.Mvvm
 					if(view is IView)
 						(view as IView).OnDisappearing();
 
+					navigationElement?.DismissedAction?.Invoke(success);
+
 					tcs.TrySetResult(true);
 				};
 
@@ -286,13 +289,14 @@ namespace NControl.Mvvm
 						(currentContext.Container as IXAnimatable).TransitionOut(
 						view, presentationMode), removeAction);				
 				else
-					removeAction();				
+					removeAction();
 			}
 			else if (presentationMode == PresentationMode.Modal ||
 			         presentationMode == PresentationMode.Popup)
 			{
 				// Get current context (modal)
 				var currentContext = _contentPage.Stack.Pop();
+				var navigationElement = currentContext.NavigationStack.FirstOrDefault();
 
 				Action removeAction = () =>
 				{
@@ -314,9 +318,8 @@ namespace NControl.Mvvm
 					_contentPage.Container.Children.Remove(currentContext.Container as View);
 
 					// Call dismissed action
-					if (currentContext.DismissedAction != null)
-						currentContext.DismissedAction(success);
-					
+					navigationElement?.DismissedAction?.Invoke(success);
+
 					tcs.TrySetResult(true);
 				};
 
@@ -349,15 +352,24 @@ namespace NControl.Mvvm
 
 	public class NavigationContext
 	{
-		public Stack<View> NavigationStack { get; private set; }
-		public Action<bool> DismissedAction { get; private set; }
+		public Stack<NavigationElement> NavigationStack { get; private set; }
 		public INavigationContainer Container { get; private set; }
 
-		public NavigationContext (INavigationContainer container, 
-		                         Action<bool> dismissedAction)
+		public NavigationContext (INavigationContainer container)
 		{
 			Container = container;
-			NavigationStack = new Stack<View>();
+			NavigationStack = new Stack<NavigationElement>();
+		}
+	}
+
+	public class NavigationElement
+	{
+		public View View { get; private set; }
+		public Action<bool> DismissedAction { get; private set; }
+
+		public NavigationElement(View view, Action<bool> dismissedAction)
+		{
+			View = view;
 			DismissedAction = dismissedAction;
 		}
 	}
