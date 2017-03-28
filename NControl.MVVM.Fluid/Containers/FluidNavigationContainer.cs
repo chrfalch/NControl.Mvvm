@@ -75,12 +75,6 @@ namespace NControl.Mvvm
 						BackgroundColor = Color.Transparent,
 						Content = _navigationBar,
 					},
-
-					new BoxView {
-						BackgroundColor = MvvmApp.Current.Colors.Get(Config.PrimaryColor),
-						HeightRequest = _statusbarHeight,
-						VerticalOptions = LayoutOptions.Start,
-					},
 				},
 			};
 
@@ -91,6 +85,11 @@ namespace NControl.Mvvm
 
 			// Add navigation container
 			_layout.Children.Add(_navigationContainer, () => GetNavigationBarRectangle());
+			_layout.Children.Add(new BoxView
+			{
+				BackgroundColor = MvvmApp.Current.Colors.Get(Config.PrimaryColor),
+				VerticalOptions = LayoutOptions.Start,
+			}, () => new Rectangle(0, 0, _layout.Width, _statusbarHeight));
 
 			_AddViewsToTopOfStack(_layout);
 
@@ -169,7 +168,7 @@ namespace NControl.Mvvm
 
 					if (animateNavigation)
 					{
-						var distanceToAnimate = (_statusbarHeight + _navigationBarHeight);
+						var distanceToAnimate = (_navigationBarHeight);
 						var distanceAnimated = x - _xstart;
 						var factor = distanceAnimated / Width;
 
@@ -462,13 +461,13 @@ namespace NControl.Mvvm
 				if (GetViewHasNavigationBar(toView))
 				{
 					new XAnimationPackage(_navigationContainer)
-					   	.Translate(0, resetTransformations ? -(_statusbarHeight + _navigationBarHeight):0)
+					   	.Translate(0, resetTransformations ? -(_navigationBarHeight):0)
 						.Animate().Run();
 				}
 				else
 				{
 					new XAnimationPackage(_navigationContainer)
-						.Translate(0, resetTransformations ?  0: -(_statusbarHeight + _navigationBarHeight))
+						.Translate(0, resetTransformations ?  0: -(_navigationBarHeight))
 						.Animate().Run();
 				}
 			}
@@ -491,13 +490,13 @@ namespace NControl.Mvvm
 		{
 			if (animated)
 				return new[]{new XAnimationPackage(_navigationContainer)
-				   		.Translate(0, -(_statusbarHeight + _navigationBarHeight))
+				   		.Translate(0, -(_navigationBarHeight))
 						.Animate()
 						.Opacity(0.0)
 						.Set()};
 			
 
-			_navigationContainer.TranslationY = -(_statusbarHeight + _navigationBarHeight);
+			_navigationContainer.TranslationY = -(_navigationBarHeight);
 			return new XAnimationPackage[0];
 		}
 
@@ -510,13 +509,13 @@ namespace NControl.Mvvm
 				   		.Translate(0, 0)
 						.Animate()};
 
-			_navigationContainer.TranslationY = -(_statusbarHeight + _navigationBarHeight);
+			_navigationContainer.TranslationY = -(_navigationBarHeight);
 			return new XAnimationPackage[0];
 		}
 
 		Rectangle GetNavigationBarRectangle()
 		{
-			return new Rectangle(0, 0, _layout.Width, _statusbarHeight + _navigationBarHeight);
+			return new Rectangle(0, _statusbarHeight, _layout.Width, _navigationBarHeight);
 		}
 
 		Rectangle GetContainerRectangle()

@@ -16,8 +16,6 @@ namespace MvvmDemo
 		{			
 			await base.InitializeAsync();
 			await ReloadItemsAsync();
-
-
 		}
 
 		public ObservableCollectionWithAddRange<FeedItem> FeedItems
