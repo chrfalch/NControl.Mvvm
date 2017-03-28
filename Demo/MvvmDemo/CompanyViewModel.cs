@@ -56,7 +56,9 @@ namespace MvvmDemo
 		{
 			get {
 				return GetOrCreateCommandAsync<Company> (async(company) => {
-					await MvvmApp.Current.Presenter.ShowViewModelAsync<EmployeeViewModel>(company);
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<EmployeeViewModel>(company, dismissedCallback:(b) => {
+						System.Diagnostics.Debug.WriteLine("Yup", "Employee Details Closed.");
+					});
 				});
 			}
 		}
@@ -66,7 +68,10 @@ namespace MvvmDemo
 			get{
 				return GetOrCreateCommandAsync (async _=> {
 
-					await MvvmApp.Current.Presenter.ShowViewModelAsync<AboutViewModel>(PresentationMode.Modal);
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<AboutViewModel>(PresentationMode.Modal, dismissedCallback: (b) =>
+					{
+						MvvmApp.Current.Presenter.ShowMessageAsync("Yup", "AboutViewModel Closed.");
+					});
 
 				});
 			}
