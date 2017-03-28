@@ -47,24 +47,20 @@ namespace NControl.Mvvm
 		void ToggleDrawer();
 
 		// Regular navigation
-		Task ShowViewModelAsync<TViewModel> (object parameter = null, bool animate = true) where TViewModel : BaseViewModel;
-		Task ShowViewModelAsync(Type viewModelType, object parameter = null, bool animate = true);
+		Task ShowViewModelAsync<TViewModel> (
+			object parameter = null, PresentationMode presentationMode = PresentationMode.Default,  
+			bool animate = true, Action<bool> dismissedCallback = null) where TViewModel : BaseViewModel;
 
-		// Card navigation
-		Task ShowViewModelAsPopupAsync<TViewModel>(object parameter = null) where TViewModel : BaseViewModel;
-		Task ShowViewModelAsPopupAsync(Type viewModelType, object parameter = null);
-
-		// Modal navigation
-		Task ShowViewModelModalAsync<TViewModel> (Action<bool> dismissedCallback = null, object parameter = null, bool animate = true) where TViewModel : BaseViewModel;
-		Task ShowViewModelModalAsync(Type viewModelType, Action<bool> dismissedCallback = null, object parameter = null, bool animate = true);
+		Task ShowViewModelAsync(
+			Type viewModelType, object parameter = null, 
+			PresentationMode presentationMode = PresentationMode.Default,
+			bool animate = true, Action<bool> dismissedCallback = null);
 
 		/// <summary>
 		/// Dismisses the view model async.
 		/// </summary>
 		/// <returns>The view model async.</returns>
-		Task DismissViewModelAsync(PresentationMode presentationMode);
-		Task DismissViewModelAsync(PresentationMode presentationMode, bool success);
-		Task DismissViewModelAsync(PresentationMode presentationMode, bool success, bool animate);
+		Task DismissViewModelAsync(PresentationMode presentationMode, bool success = true, bool animate = true);
 
 		// Dialog
 		Task<bool> ShowMessageAsync(string title, string message, string accept = null, string cancel = null);

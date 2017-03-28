@@ -66,7 +66,7 @@ namespace MvvmDemo
 			get{
 				return GetOrCreateCommandAsync (async _=> {
 
-					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<AboutViewModel>();
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<AboutViewModel>(PresentationMode.Modal);
 
 				});
 			}
@@ -103,7 +103,7 @@ namespace MvvmDemo
 		public ICommand SearchCommand {
 			get {
 				return GetOrCreateCommandAsync (async _=> {
-					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<SearchViewModel>();           
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<SearchViewModel>(PresentationMode.Modal);           
 				});
 			}
 		}
@@ -114,7 +114,7 @@ namespace MvvmDemo
 			{
 				return GetOrCreateCommandAsync(async _ =>
 				{
-					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<FeedViewModel>();
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<FeedViewModel>(PresentationMode.Modal);
 				});
 			}
 		}
@@ -125,7 +125,7 @@ namespace MvvmDemo
 			{
 				return GetOrCreateCommandAsync(async _ =>
 				{
-					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<MenuViewModel>();
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<MenuViewModel>(PresentationMode.Modal);
 				});
 			}
 		}

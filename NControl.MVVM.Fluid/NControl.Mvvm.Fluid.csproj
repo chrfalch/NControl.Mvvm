@@ -53,7 +53,6 @@
     <Compile Include="Containers\FluidNavigationContainer.cs" />
     <Compile Include="Containers\FluidPopupNavigationContainer.cs" />
     <Compile Include="Views\BaseFluidContentsView.cs" />
-    <Compile Include="Views\BasePopupFluidContentsView.cs" />
     <Compile Include="Controls\FluidRoundCornerView.cs" />
     <Compile Include="Controls\FluidShadowView.cs" />
     <Compile Include="Pages\FluidContainerPage.cs" />

@@ -67,7 +67,7 @@ namespace MvvmDemo
 			get {
 				return GetOrCreateCommand<Employee> (async(emp) => {
 		            
-					await MvvmApp.Current.Presenter.ShowViewModelAsPopupAsync<EmployeeDetailsViewModel>(emp);
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<EmployeeDetailsViewModel>(emp, PresentationMode.Popup);
 
 				}, (emp) => emp != null);
 			}

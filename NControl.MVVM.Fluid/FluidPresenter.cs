@@ -90,27 +90,6 @@ namespace NControl.Mvvm
 		#region Dismissing ViewModels
 
 		/// <summary>
-		/// Dismisses the view model async.
-		/// </summary>
-		/// <returns>The view model async.</returns>
-		/// <param name="presentationMode">Presentation model.</param>
-		public Task DismissViewModelAsync(PresentationMode presentationMode)
-		{
-			return DismissViewModelAsync (presentationMode, true);
-		}
-
-		/// <summary>
-		/// Dismisses the view model async.
-		/// </summary>
-		/// <returns>The view model async.</returns>
-		/// <param name="presentationMode">Presentation mode</param>
-		/// <param name="success">If set to <c>true</c> success.</param>
-		public Task DismissViewModelAsync(PresentationMode presentationMode, bool success)
-		{
-			return DismissViewModelAsync(presentationMode, success, true);
-		}
-
-		/// <summary>
 		/// Dismiss the view model async.
 		/// </summary>
 		public Task DismissViewModelAsync(PresentationMode presentationMode, bool success, bool animate)
@@ -159,29 +138,27 @@ namespace NControl.Mvvm
 		/// Navigates to the provided view model of type
 		/// </summary>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Task ShowViewModelAsync<TViewModel>(object parameter = null, bool animate = true)
-			where TViewModel : BaseViewModel
+		public Task ShowViewModelAsync<TViewModel>(
+			object parameter = null, PresentationMode presentationMode = PresentationMode.Default, 
+			bool animate = true, Action<bool> dismissedCallback = null) where TViewModel : BaseViewModel
 		{
-			return ShowViewModelAsync(typeof(TViewModel), parameter, animate);
-		}
-
-		/// <summary>
-		/// Navigates to the provided view model of type
-		/// </summary>
-		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Task ShowViewModelAsync(Type viewModelType, object parameter = null, bool animate = true)
-		{
-			return ShowViewModelAsync(viewModelType, null, parameter, animate, PresentationMode.Default);
+			return ShowViewModelAsync(typeof(TViewModel), parameter, presentationMode, animate, dismissedCallback);
 		}
 
 		/// <summary>
 		/// Shows the view model async.
 		/// </summary>
-		public Task ShowViewModelAsync(Type viewModelType, Action<bool> dismissedCallback = null, object parameter = null, bool animate = true,
-			PresentationMode presentationMode = PresentationMode.Default)
+		/// <returns>The view model async.</returns>
+		/// <param name="viewModelType">View model type.</param>
+		/// <param name="presentationMode">Presentation mode.</param>
+		/// <param name="parameter">Parameter.</param>
+		/// <param name="animate">If set to <c>true</c> animate.</param>
+		/// <param name="dismissedCallback">Dismissed callback.</param>
+		public Task ShowViewModelAsync(
+			Type viewModelType, object parameter = null, PresentationMode presentationMode = 
+			PresentationMode.Default, bool animate = true, Action<bool> dismissedCallback = null)
 		{
 			var view = MvvmApp.Current.ViewContainer.GetViewFromViewModel(viewModelType);
-
 			view.GetViewModel().PresentationMode = presentationMode;
 
 			if (parameter != null)
@@ -356,54 +333,6 @@ namespace NControl.Mvvm
 
 		#endregion
 
-		#region Modal Navigation
-
-		/// <summary>
-		/// Navigates to the provided view model of type
-		/// </summary>
-		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Task ShowViewModelModalAsync<TViewModel>(
-			Action<bool> dismissedCallback = null, object parameter = null, bool animate = false)
-			where TViewModel : BaseViewModel
-		{
-			return ShowViewModelModalAsync(typeof(TViewModel), dismissedCallback, parameter, animate);
-		}
-
-		/// <summary>
-		/// Shows the view model modal async.
-		/// </summary>
-		/// <returns>The view model modal async.</returns>
-		public Task ShowViewModelModalAsync(Type viewModelType,
-			Action<bool> dismissedCallback = null, object parameter = null, bool animate = false)
-		{
-			return ShowViewModelAsync(viewModelType, dismissedCallback, parameter, animate, PresentationMode.Modal);
-		}
-
-		#endregion
-
-		#region Card Navigation
-
-		/// <summary>
-		/// Shows the view model as popup async.
-		/// </summary>
-		/// <returns>The view model as popup async.</returns>
-		/// <param name="parameter">Parameter.</param>
-		public Task ShowViewModelAsPopupAsync<TViewModel>(object parameter)
-			where TViewModel : BaseViewModel
-		{
-			return ShowViewModelAsPopupAsync(typeof(TViewModel), parameter);
-		}
-
-		/// <summary>
-		/// Navigates to card view model async.
-		/// </summary>
-		/// <returns>The to card view model async.</returns>
-		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public Task ShowViewModelAsPopupAsync(Type viewModelType, object parameter)			
-		{
-			return ShowViewModelAsync(viewModelType, null, parameter, true, PresentationMode.Popup);
-		}
-
 		public void RemoveFromParent(View view)
 		{
 			(_contentPage as IActivityIndicatorViewProvider).RemoveFromParent(view);
@@ -416,7 +345,6 @@ namespace NControl.Mvvm
 
 		#endregion
 
-		#endregion
 	}
 
 	public class NavigationContext

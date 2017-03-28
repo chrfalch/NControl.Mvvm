@@ -33,8 +33,8 @@ namespace MvvmDemo
 		{
 			get {
 				return GetOrCreateCommandAsync<Employee> (async (employee) => {
-					await MvvmApp.Current.Presenter.ShowViewModelAsPopupAsync<EmployeeDetailsViewModel>(
-						employee);
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<EmployeeDetailsViewModel>(
+						employee, PresentationMode.Popup);
 				});
 			}
 		}
@@ -46,9 +46,7 @@ namespace MvvmDemo
 				return GetOrCreateCommandAsync(async _ =>
 				{
 
-					//await MvvmApp.Current.Presenter.ShowMessageAsync("Title", "Message");
-					//await MvvmApp.Current.Presenter.ShowActionSheet("Title", "Cancel", "Delete", "item 1", "item 2");
-					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<AboutViewModel>();
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<AboutViewModel>(PresentationMode.Modal);
 
 				});
 			}
@@ -58,7 +56,7 @@ namespace MvvmDemo
 		{
 			get {
 				return GetOrCreateCommandAsync (async _=> {
-					await MvvmApp.Current.Presenter.ShowViewModelModalAsync<AboutViewModel>();
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<AboutViewModel>(PresentationMode.Modal);
 				});
 			}
 		}
