@@ -265,7 +265,7 @@ namespace NControl.Mvvm
 	               	.Translate(0, 0));
 
 				// Move previous a litle bit out
-				animations.Add(new XAnimationPackage(fromContainer.GetBaseView()).Translate(-(Width / 4), 0));
+				animations.Add(new XAnimationPackage(fromContainer.GetBaseView()).Translate(-(Width * 0.25), 0));
 
 				if (_container.Content is IXViewAnimatable)
 					return (_container.Content as IXViewAnimatable).TransitionIn(fromContainer, this, animations, presentationMode);
