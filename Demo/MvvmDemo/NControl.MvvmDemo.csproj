@@ -107,6 +107,10 @@
       <Project>{5417603E-26FE-4000-AEDC-7B13AF7D2909}</Project>
       <Name>NControl.XAnimation</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\NControl.Mvvm.RX\NControl.Mvvm.RX.csproj">
+      <Project>{FF1500C5-85DE-49EA-9541-848DD767EF44}</Project>
+      <Name>NControl.Mvvm.RX</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />

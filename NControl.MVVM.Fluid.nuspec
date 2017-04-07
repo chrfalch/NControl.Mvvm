@@ -17,36 +17,15 @@
     <tags>xamarin, pcl, xam.pcl, android, xamarin.forms, ios</tags>
        <dependencies>
          <group>
-	         <dependency id="Xamarin.Forms" version="2.3.0.49" />
-	         <dependency id="NGraphics" version="0.4.0" />
-	         <dependency id="NControl" version="0.9.1.0" />
-	         <dependency id="NControl.Controls" version="0.9.4.1" />
 	         <dependency id="NControl.Mvvm" version="0.6.7.79" />
-	         <dependency id="SimpleInjector" version="3.1.5" />
-             <dependency id="BTProgressHUD" version="1.2.0.3"/>
-             <dependency id="Rx-Main" version="2.2.5" />
              <dependency id="NControl.XAnimation" version="0.1.0.0" />
          </group>
          <group targetFramework="Xamarin.iOS10">
-         	 <dependency id="Xamarin.Forms" version="2.3.0.49" />
-	         <dependency id="NGraphics" version="0.4.0" />
-	         <dependency id="NControl" version="0.9.1.0" />
-	         <dependency id="NControl.Controls" version="0.9.4.1" />
-	         <dependency id="NControl.Mvvm" version="0.6.7.79" />
-	         <dependency id="SimpleInjector" version="3.1.5" />
-             <dependency id="BTProgressHUD" version="1.2.0.3"/>
-             <dependency id="Rx-Main" version="2.2.5" />
+         	 <dependency id="NControl.Mvvm" version="0.6.7.79" />
              <dependency id="NControl.XAnimation" version="0.1.0.0" />
-        	</group>    
-        	 <group targetFramework="MonoAndroid10">
-         	 <dependency id="Xamarin.Forms" version="2.3.0.49" />
-	         <dependency id="NGraphics" version="0.4.0" />
-	         <dependency id="NControl" version="0.9.1.0" />
-	         <dependency id="NControl.Controls" version="0.9.4.1" />
-	         <dependency id="NControl.Mvvm" version="0.6.7.79" />
-	         <dependency id="SimpleInjector" version="3.1.5" />
-             <dependency id="BTProgressHUD" version="1.2.0.3"/>
-             <dependency id="Rx-Main" version="2.2.5" />
+    	</group>    
+    	 <group targetFramework="MonoAndroid10">
+             <dependency id="NControl.Mvvm" version="0.6.7.79" />	
              <dependency id="NControl.XAnimation" version="0.1.0.0" />
         	</group>         
        </dependencies>

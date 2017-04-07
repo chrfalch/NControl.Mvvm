@@ -151,6 +151,10 @@
       <Project>{D757C407-D204-468E-8A85-8A3C79712FD6}</Project>
       <Name>NControl.Mvvm.Fluid</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\NControl.Mvvm.RX\NControl.Mvvm.RX.csproj">
+      <Project>{FF1500C5-85DE-49EA-9541-848DD767EF44}</Project>
+      <Name>NControl.Mvvm.RX</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />

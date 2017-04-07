@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{7531
 		README.MD = README.MD
 		LICENSE.md = LICENSE.md
 		NControl.MVVM.Fluid.nuspec = NControl.MVVM.Fluid.nuspec
+		NControl.MVVM.Reactive.nuspec = NControl.MVVM.Reactive.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.Mvvm", "NControl.MVVM\NControl.Mvvm.csproj", "{6AF0AE38-F4D7-4A23-9E9F-4B11DF18ECC7}"
@@ -47,6 +48,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XAnimationDemo.Droid", "Animation\Droid\XAnimationDemo.Droid.csproj", "{B39137AE-7426-4415-8202-D6367D557806}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.XAnimation.Tests", "Animation\NControl.XAnimation.Tests\NControl.XAnimation.Tests.csproj", "{D61CD6E3-36EC-4517-B3A5-E07864B149BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NControl.Mvvm.RX", "NControl.Mvvm.RX\NControl.Mvvm.RX.csproj", "{FF1500C5-85DE-49EA-9541-848DD767EF44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -250,6 +253,18 @@ Global
 		{D61CD6E3-36EC-4517-B3A5-E07864B149BE}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{D61CD6E3-36EC-4517-B3A5-E07864B149BE}.Debug|iPhone.ActiveCfg = Debug|Any CPU
 		{D61CD6E3-36EC-4517-B3A5-E07864B149BE}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{FF1500C5-85DE-49EA-9541-848DD767EF44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF1500C5-85DE-49EA-9541-848DD767EF44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF1500C5-85DE-49EA-9541-848DD767EF44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF1500C5-85DE-49EA-9541-848DD767EF44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF1500C5-85DE-49EA-9541-848DD767EF44}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{FF1500C5-85DE-49EA-9541-848DD767EF44}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{FF1500C5-85DE-49EA-9541-848DD767EF44}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{FF1500C5-85DE-49EA-9541-848DD767EF44}.Release|iPhone.Build.0 = Release|Any CPU
+		{FF1500C5-85DE-49EA-9541-848DD767EF44}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{FF1500C5-85DE-49EA-9541-848DD767EF44}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{FF1500C5-85DE-49EA-9541-848DD767EF44}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{FF1500C5-85DE-49EA-9541-848DD767EF44}.Debug|iPhone.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6AF0AE38-F4D7-4A23-9E9F-4B11DF18ECC7} = {7531541E-B7FF-4E7E-B336-A7DAB576105A}
@@ -266,5 +281,6 @@ Global
 		{C1B317F8-212D-480A-AA4E-5E25BDBC08A2} = {83E5DC0E-47BC-45D9-A58D-69E5103E1955}
 		{B39137AE-7426-4415-8202-D6367D557806} = {83E5DC0E-47BC-45D9-A58D-69E5103E1955}
 		{D61CD6E3-36EC-4517-B3A5-E07864B149BE} = {1ACA5A0C-0661-4274-A97E-9DC7E9B512BD}
+		{FF1500C5-85DE-49EA-9541-848DD767EF44} = {7531541E-B7FF-4E7E-B336-A7DAB576105A}
 	EndGlobalSection
 EndGlobal
