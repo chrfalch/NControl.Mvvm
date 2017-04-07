@@ -63,11 +63,11 @@ namespace MvvmDemo
 		/// Returns the EmployeSelected command
 		/// </summary>
 		/// <value>The view EmployeSelected command.</value>
-		public Command<Employee> EmployeSelectedCommand {
+		public ICommand EmployeSelectedCommand {
 			get {
-				return GetOrCreateCommand<Employee> (async(emp) => {
+				return GetOrCreateCommandAsync<Employee> (async(emp) => {
 		            
-					await MvvmApp.Current.Presenter.ShowViewModelAsync<EmployeeDetailsViewModel>(emp, PresentationMode.Popup);
+					await MvvmApp.Current.Presenter.ShowViewModelAsync<EmployeeDetailsViewModel>(PresentationMode.Popup, parameter: emp);
 
 				}, (emp) => emp != null);
 			}

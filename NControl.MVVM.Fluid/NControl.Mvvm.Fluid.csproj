@@ -39,7 +39,6 @@
     <Compile Include="Contracts\IXAnimatable.cs" />
     <Compile Include="Contracts\INavigationContainerProvider.cs" />
     <Compile Include="Providers\NavigationContainerProvider.cs" />
-    <Compile Include="Contracts\ILeftBorderProvider.cs" />
     <Compile Include="Controls\FluidActivityIndicatorView.cs" />
     <Compile Include="Contracts\IActivityIndicatorViewProvider.cs" />
     <Compile Include="FluidConfig.cs" />

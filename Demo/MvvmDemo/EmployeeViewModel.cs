@@ -34,10 +34,10 @@ namespace MvvmDemo
 			get {
 				return GetOrCreateCommandAsync<Employee> (async (employee) => {
 					await MvvmApp.Current.Presenter.ShowViewModelAsync<EmployeeDetailsViewModel>(
-						employee, PresentationMode.Popup, dismissedCallback: (b) =>
+						PresentationMode.Popup, dismissedCallback: (b) =>
 					{
 						System.Diagnostics.Debug.WriteLine("Yup", "EmployeeDetailsViewModel Closed.");
-					});
+					}, parameter: employee);
 				});
 			}
 		}

@@ -5,7 +5,7 @@ namespace NControl.Mvvm
 {
 	public class NavigationContainerProvider: INavigationContainerProvider
 	{
-		public INavigationContainer CreateNavigationContainer(PresentationMode mode, Size pageSize)
+		public INavigationContainer CreateNavigationContainer(PresentationMode mode)
 		{
 			switch (mode)
 			{

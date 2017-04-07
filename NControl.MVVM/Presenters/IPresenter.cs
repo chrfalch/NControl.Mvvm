@@ -42,19 +42,18 @@ namespace NControl.Mvvm
 		void SetMasterDetailMaster(MasterDetailPage page, bool useMasterAsNavigationPage = false);
 
 		/// <summary>
-		/// Toggles the drawer.
+		/// Toggles the drawer if the presenter has a drawer.
 		/// </summary>
 		void ToggleDrawer();
 
 		// Regular navigation
 		Task ShowViewModelAsync<TViewModel> (
-			object parameter = null, PresentationMode presentationMode = PresentationMode.Default,  
-			bool animate = true, Action<bool> dismissedCallback = null) where TViewModel : BaseViewModel;
+			PresentationMode presentationMode = PresentationMode.Default, Action<bool> dismissedCallback = null, 
+			bool animate = true, object parameter = null) where TViewModel : BaseViewModel;
 
-		Task ShowViewModelAsync(
-			Type viewModelType, object parameter = null, 
-			PresentationMode presentationMode = PresentationMode.Default,
-			bool animate = true, Action<bool> dismissedCallback = null);
+		Task ShowViewModelAsync(Type viewModelType, 
+			PresentationMode presentationMode = PresentationMode.Default, Action<bool> dismissedCallback = null,
+			bool animate = true, object parameter = null);
 
 		/// <summary>
 		/// Dismisses the view model async.

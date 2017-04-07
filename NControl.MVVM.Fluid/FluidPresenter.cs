@@ -26,7 +26,10 @@ namespace NControl.Mvvm
 	{
 		#region Private Members
 
+		// Container page
 		FluidContainerPage _contentPage;
+
+		// Content container provider
 		readonly INavigationContainerProvider _navigationContainerProvider;
 
 		#endregion
@@ -37,15 +40,15 @@ namespace NControl.Mvvm
 		public FluidPresenter(INavigationContainerProvider navigationContainerProvider)
 		{
 			_navigationContainerProvider = navigationContainerProvider;
+			XAnimationPackage.SlowAnimations = true;
 		}
 
 		#region IPresenter implementation
 
 		/// <summary>
-		/// Gets the main page.
+		/// Sets the main page of the application
 		/// </summary>
-		/// <returns>The main page.</returns>
-		public void SetMainPage(Xamarin.Forms.Page page)
+		public void SetMainPage(Page page)
 		{
 			// Create container page
 			_contentPage = new FluidContainerPage();
@@ -55,19 +58,9 @@ namespace NControl.Mvvm
 			var mainViewType = (MvvmApp.Current as FluidMvvmApp).GetMainViewType();
 			var mainView = Container.Resolve(mainViewType) as ContentView;
 
-			// Create container
-			var container = _navigationContainerProvider.CreateNavigationContainer(
-				PresentationMode.Default, Size.Zero);
-			
-			container.AddChild(mainView, PresentationMode.Default);
-
-			// Add to container
-			_contentPage.Container.Children.Add(container.GetRootView(), 0, 0);
-			_contentPage.Stack.Push( new NavigationContext(container));
-			_contentPage.Stack.Peek().NavigationStack.Push(new NavigationElement(mainView, null));
-
-			// Notify
-			(mainView as IView).OnAppearing();
+			PresentView(mainView, PresentationMode.Default, (b) => {
+				throw new InvalidOperationException("Should not dismiss main view/viewmodel!");
+			});
 		}
 
 		/// <summary>
@@ -132,17 +125,17 @@ namespace NControl.Mvvm
 		}
 		#endregion
 
-		#region Regular Navigation
+		#region Navigation
 
 		/// <summary>
 		/// Navigates to the provided view model of type
 		/// </summary>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
 		public Task ShowViewModelAsync<TViewModel>(
-			object parameter = null, PresentationMode presentationMode = PresentationMode.Default, 
-			bool animate = true, Action<bool> dismissedCallback = null) where TViewModel : BaseViewModel
+			PresentationMode presentationMode = PresentationMode.Default, Action<bool> dismissedCallback = null,
+			bool animate = true, object parameter = null) where TViewModel : BaseViewModel
 		{
-			return ShowViewModelAsync(typeof(TViewModel), parameter, presentationMode, animate, dismissedCallback);
+			return ShowViewModelAsync(typeof(TViewModel), presentationMode, dismissedCallback, animate, parameter);
 		}
 
 		/// <summary>
@@ -154,15 +147,18 @@ namespace NControl.Mvvm
 		/// <param name="parameter">Parameter.</param>
 		/// <param name="animate">If set to <c>true</c> animate.</param>
 		/// <param name="dismissedCallback">Dismissed callback.</param>
-		public Task ShowViewModelAsync(
-			Type viewModelType, object parameter = null, PresentationMode presentationMode = 
-			PresentationMode.Default, bool animate = true, Action<bool> dismissedCallback = null)
+		public Task ShowViewModelAsync(Type viewModelType,
+			PresentationMode presentationMode = PresentationMode.Default, Action<bool> dismissedCallback = null,
+			bool animate = true, object parameter = null)
 		{
+			// Get view from viewmodel-mapping
 			var view = MvvmApp.Current.ViewContainer.GetViewFromViewModel(viewModelType);
 			view.GetViewModel().PresentationMode = presentationMode;
 
+			// Should we use a parameter?
 			if (parameter != null)
 			{
+				// TODO: Accept null values as parameters?
 				var bt = viewModelType.GetTypeInfo().BaseType;
 				var paramType = parameter.GetType();
 				var met = bt.GetRuntimeMethod("InitializeAsync", new Type[] { paramType });
@@ -172,65 +168,35 @@ namespace NControl.Mvvm
 				}
 			}
 
+			// Present the view itself
 			return PresentViewAsync(view, dismissedCallback, presentationMode, animate);
 		}
 
 		/// <summary>
 		/// Internal show viewmodel method
 		/// </summary>
-		Task PresentViewAsync(IView view, Action<bool> dismissedCallback, 
-		                      PresentationMode presentationMode, bool animate)
+		Task PresentViewAsync(IView view, Action<bool> dismissedCallback, PresentationMode presentationMode, bool animate)
 		{
 			var tcs = new TaskCompletionSource<bool>();
-			NavigationContext currentContext = null;
 
 			// Start the actual presentation of the view
-			var contents = view as View;
-			if (contents == null)
+			var newView = view as View;
+			if (newView == null)
 				throw new ArgumentException("View must inherit from Xamarin.Forms.View.");
 
-			if (presentationMode == PresentationMode.Default)
+			// Get previous container
+			var fromContainer = _contentPage.CurrentContext.Elements.Peek().Container;
+
+			// Present the view
+			var navigationElement = PresentView(newView, presentationMode, dismissedCallback);
+
+			// Animate or present regularly?
+			if (animate && navigationElement.Container is IXAnimatable)
 			{
-				// Get current context
-				currentContext = _contentPage.Stack.Peek();
-
-				// Add view 
-				currentContext.Container.AddChild(contents, presentationMode);
-				currentContext.NavigationStack.Push(new NavigationElement(contents, dismissedCallback));
-
-			}
-			else if (presentationMode == PresentationMode.Modal ||
-					 presentationMode == PresentationMode.Popup)
-			{
-				// Container and navigation context
-				INavigationContainer container = _navigationContainerProvider.CreateNavigationContainer(
-					presentationMode, new Size(_contentPage.Container.Width, _contentPage.Container.Height));
-
-				var navigationContainer = container as INavigationContainer;
-				if (navigationContainer == null)
-					throw new InvalidOperationException("Need a INavigationContainer when " +
-														"showing modal or as popup.");
-
-				// Add contents
-				navigationContainer.AddChild(contents, presentationMode);
-
-				// Create new navigation context
-				currentContext = new NavigationContext(navigationContainer);
-
-				// Add navigation container to the container
-				_contentPage.Container.Children.Add(container.GetRootView(), 0, 0);
-				_contentPage.Stack.Push(currentContext);
-				_contentPage.Stack.Peek().NavigationStack.Push(new NavigationElement(contents, dismissedCallback));
-
-			}
-
-			if (animate && currentContext.Container is IXAnimatable)
-			{
-				var animations = (currentContext.Container as IXAnimatable).TransitionIn(
-					contents, presentationMode);
-
-				XAnimationPackage.RunAll(animations, () =>
-				{
+				var animations = (navigationElement.Container as IXAnimatable).TransitionIn(
+					fromContainer, presentationMode);
+				
+				XAnimationPackage.RunAll(animations, () => {
 					// Notify
 					view.OnAppearing();
 					tcs.TrySetResult(true);
@@ -243,8 +209,35 @@ namespace NControl.Mvvm
 				tcs.TrySetResult(true);
 			}
 
-
 			return tcs.Task;
+		}
+
+		/// <summary>
+		/// Presents a view with a given presentation mode.
+		/// </summary>
+		NavigationElement PresentView(View view, PresentationMode presentationMode, Action<bool> dismissedAction)
+		{
+			// Create container
+			var container = _navigationContainerProvider.CreateNavigationContainer(
+				presentationMode);
+
+			// Add contents view to container's content area
+			container.SetContent(view);
+			_contentPage.Container.Children.Add(container.GetBaseView(), 0, 0);
+
+			// Create navigation element
+			var navigationElement = new NavigationElement(view, container, dismissedAction);
+
+			// Notify view about view lifecycle events
+			(view as IView).OnAppearing();
+
+			// Add to or create context depending on type of navigation
+			if (presentationMode == PresentationMode.Default && _contentPage.Contexts.Count > 0)
+				_contentPage.CurrentContext.Elements.Push(navigationElement);
+			else
+				_contentPage.Contexts.Push(new NavigationContext(navigationElement));
+
+			return navigationElement;
 		}
 
 		/// <summary>
@@ -257,8 +250,7 @@ namespace NControl.Mvvm
 
 			if (presentationMode == PresentationMode.Default)
 			{
-				var currentContext = _contentPage.Stack.Peek();
-				var navigationElement = currentContext.NavigationStack.FirstOrDefault();
+				var navigationElement = _contentPage.CurrentContext.Elements.Peek();
 				var view = navigationElement?.View;
 
 				// Set up action to run when all transitions and animations
@@ -271,9 +263,9 @@ namespace NControl.Mvvm
 						viewModelProvider.OnDisappearing();
 						viewModelProvider.GetViewModel().ViewModelDismissed();
 					}
-					
-					currentContext.Container.RemoveChild(view, presentationMode);
-					currentContext.NavigationStack.Pop();
+
+					//navigationElement.Container.RemoveChild(view, presentationMode);
+					//currentContext.NavigationStack.Pop();
 
 					if(view is IView)
 						(view as IView).OnDisappearing();
@@ -284,51 +276,51 @@ namespace NControl.Mvvm
 				};
 
 				// Should we animate?
-				if (animate && currentContext.Container is IXAnimatable)
-					XAnimationPackage.RunAll(
-						(currentContext.Container as IXAnimatable).TransitionOut(
-						view, presentationMode), removeAction);				
-				else
+				//if (animate && currentContext.Container is IXAnimatable)
+				//	XAnimationPackage.RunAll(
+				//		(currentContext.Container as IXAnimatable).TransitionOut(
+				//		view, presentationMode), removeAction);				
+				//else
 					removeAction();
 			}
 			else if (presentationMode == PresentationMode.Modal ||
 			         presentationMode == PresentationMode.Popup)
 			{
 				// Get current context (modal)
-				var currentContext = _contentPage.Stack.Pop();
-				var navigationElement = currentContext.NavigationStack.FirstOrDefault();
+				//var currentContext = _contentPage.Stack.Pop();
+				//var navigationElement = currentContext.NavigationStack.FirstOrDefault();
 
-				Action removeAction = () =>
-				{
-					// Call dismiss on all view models
-					foreach (var view in currentContext.NavigationStack.Reverse())
-					{
-						var viewModelProvider = view as IView;
-						if (viewModelProvider != null)
-						{
-							viewModelProvider.OnDisappearing();
-							viewModelProvider.GetViewModel().ViewModelDismissed();
-						}
-					}
+				//Action removeAction = () =>
+				//{
+				//	// Call dismiss on all view models
+				//	foreach (var view in currentContext.NavigationStack.Reverse())
+				//	{
+				//		var viewModelProvider = view as IView;
+				//		if (viewModelProvider != null)
+				//		{
+				//			viewModelProvider.OnDisappearing();
+				//			viewModelProvider.GetViewModel().ViewModelDismissed();
+				//		}
+				//	}
 
-					// Clear navigation stack
-					currentContext.NavigationStack.Clear();
+				//	// Clear navigation stack
+				//	currentContext.NavigationStack.Clear();
 
-					// Remove from view stack
-					_contentPage.Container.Children.Remove(currentContext.Container as View);
+				//	// Remove from view stack
+				//	_contentPage.Container.Children.Remove(currentContext.Container as View);
 
-					// Call dismissed action
-					navigationElement?.DismissedAction?.Invoke(success);
+				//	// Call dismissed action
+				//	navigationElement?.DismissedAction?.Invoke(success);
 
-					tcs.TrySetResult(true);
-				};
+				//	tcs.TrySetResult(true);
+				//};
 
-				if (animate && currentContext.Container is IXAnimatable)
-					XAnimationPackage.RunAll(
-						(currentContext.Container as IXAnimatable).TransitionOut(
-							currentContext.Container as View, presentationMode), removeAction);
-				else
-					removeAction();
+				//if (animate && currentContext.Container is IXAnimatable)
+				//	XAnimationPackage.RunAll(
+				//		(currentContext.Container as IXAnimatable).TransitionOut(
+				//			currentContext.Container as View, presentationMode), removeAction);
+				//else
+					//removeAction();
 			}
 					
 			return tcs.Task;
@@ -352,13 +344,12 @@ namespace NControl.Mvvm
 
 	public class NavigationContext
 	{
-		public Stack<NavigationElement> NavigationStack { get; private set; }
-		public INavigationContainer Container { get; private set; }
+		public Stack<NavigationElement> Elements { get; private set; }
 
-		public NavigationContext (INavigationContainer container)
+		public NavigationContext(NavigationElement root)
 		{
-			Container = container;
-			NavigationStack = new Stack<NavigationElement>();
+			Elements = new Stack<NavigationElement>();
+			Elements.Push(root);
 		}
 	}
 
@@ -366,11 +357,13 @@ namespace NControl.Mvvm
 	{
 		public View View { get; private set; }
 		public Action<bool> DismissedAction { get; private set; }
+		public INavigationContainer Container { get; private set; }
 
-		public NavigationElement(View view, Action<bool> dismissedAction)
+		public NavigationElement(View view, INavigationContainer container, Action<bool> dismissedAction)
 		{
 			View = view;
 			DismissedAction = dismissedAction;
+			Container = container;
 		}
 	}
 }

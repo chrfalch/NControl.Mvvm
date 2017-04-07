@@ -64,8 +64,7 @@ namespace NControl.Mvvm
 
 		#region Transitions
 
-		public IEnumerable<XAnimationPackage> TransitionIn(
-			View view, PresentationMode presentationMode)
+		public IEnumerable<XAnimationPackage> TransitionIn(INavigationContainer fromContainer, PresentationMode presentationMode)
 		{
 			var retVal = new[] {
 				new XAnimationPackage(_overlay)
@@ -89,13 +88,13 @@ namespace NControl.Mvvm
 
 			var child = GetChild(0);
 			if (child is IXViewAnimatable)
-				return (child as IXViewAnimatable).TransitionIn(child, this, retVal, presentationMode);
+				return (child as IXViewAnimatable).TransitionIn(fromContainer, this, retVal, presentationMode);
 
 			return retVal;
 		}
 
 		public IEnumerable<XAnimationPackage> TransitionOut(
-			View view, PresentationMode presentationMode)
+			View view, View toView, PresentationMode presentationMode)
 		{
 			var retVal = new[] {
 				new XAnimationPackage(_overlay)					
@@ -123,32 +122,22 @@ namespace NControl.Mvvm
 
 		#region Navigation Container
 
-		public void AddChild(View view, PresentationMode presentationMode)
+		/// <summary>
+		/// Sets the content.
+		/// </summary>
+		public void SetContent(View content)
 		{
-			_container.Children.Add(view);
-
-			if (view is ILeftBorderProvider)
-				(view as ILeftBorderProvider).IsLeftBorderVisible = _container.Children.Count > 1;
+			_container.Children.Add(content);
 		}
 
-		public void RemoveChild(View view, PresentationMode presentationMode)
-		{			
-			_container.Children.Remove(view);
-		}
+		public View GetBaseView() { return this; }
 
-		public int Count
-		{
-			get { return _container.Children.Count; }
-		}
-
-		public View GetRootView() { return this; }
-
-		public View GetNavigationBarView()
+		public View GetChromeView()
 		{
 			return null;
 		}
 
-		public View GetContainerView()
+		public View GetContentsView()
 		{
 			return _container;
 		}

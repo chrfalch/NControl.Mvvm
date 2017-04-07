@@ -15,7 +15,7 @@ namespace NControl.Mvvm
 	}
 
 	public abstract class BaseFluidContentsView<TViewModel> : ContentView, IView<TViewModel>,
-		IToolbarItemsContainer, ILeftBorderProvider, IXViewAnimatable
+		IToolbarItemsContainer, IXViewAnimatable
 		where TViewModel : BaseViewModel
 	{
 
@@ -98,16 +98,6 @@ namespace NControl.Mvvm
 		#endregion
 
 		#region Public Properties
-
-		/// <summary>
-		/// Hide/Shows the left border
-		/// </summary>
-		/// <value><c>true</c> if left border is visible; otherwise, <c>false</c>.</value>
-		public bool IsLeftBorderVisible
-		{
-			get { return _leftBorder.IsVisible; }
-			set { _leftBorder.IsVisible = value; }
-		}
 
 		/// <summary>
 		/// Returns the toolbar items
@@ -238,7 +228,7 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Toolbar items collection changed.
 		/// </summary>
-		void ToolbarItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		void ToolbarItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.Action != NotifyCollectionChangedAction.Add)
 				return;
@@ -250,24 +240,24 @@ namespace NControl.Mvvm
 		#region IXViewAnimatable
 
 		public IEnumerable<XAnimationPackage> TransitionIn(
-			View view, INavigationContainer container, IEnumerable<XAnimationPackage> animations, 
-			PresentationMode presentationMode)
+			INavigationContainer fromContainer, INavigationContainer toContainer, 
+			IEnumerable<XAnimationPackage> animations, PresentationMode presentationMode)
 		{
 			switch (presentationMode)
-			{				
+			{
 				case PresentationMode.Modal:
-					return ModalTransitionIn(container, animations);
+					return ModalTransitionIn(fromContainer, animations);
 				case PresentationMode.Popup:
-					return PopupTransitionIn(container, animations);
-				
+					return PopupTransitionIn(fromContainer, animations);
+
 				case PresentationMode.Default:
 				default:
-					return DefaultTransitionIn(container, animations);
+					return DefaultTransitionIn(fromContainer, animations);
 			}
 		}
 
 		public IEnumerable<XAnimationPackage> TransitionOut(
-			View view, INavigationContainer container, IEnumerable<XAnimationPackage> animations, 
+			View view, INavigationContainer container, IEnumerable<XAnimationPackage> animations,
 			PresentationMode presentationMode)
 		{
 			switch (presentationMode)
@@ -339,6 +329,14 @@ namespace NControl.Mvvm
 
 		#endregion
 
+		#region Overridden Members
+
+		/// <summary>
+		/// Ons the measure.
+		/// </summary>
+		/// <returns>The measure.</returns>
+		/// <param name="widthConstraint">Width constraint.</param>
+		/// <param name="heightConstraint">Height constraint.</param>
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
 		{
 			var retVal = base.OnMeasure(widthConstraint, heightConstraint);
@@ -355,5 +353,7 @@ namespace NControl.Mvvm
 				Request = new Size(retVal.Request.Width, height),
 			};
 		}
+
+		#endregion
 	}
 }

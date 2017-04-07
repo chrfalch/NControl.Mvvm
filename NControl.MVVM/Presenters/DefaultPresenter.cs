@@ -181,19 +181,19 @@ namespace NControl.Mvvm
 		/// </summary>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
 		public Task ShowViewModelAsync<TViewModel> (
-			object parameter = null, PresentationMode presentationMode = PresentationMode.Default, 
-			bool animate = true, Action<bool> dismissedCallback = null) where TViewModel : BaseViewModel
+			PresentationMode presentationMode = PresentationMode.Default, 
+			Action<bool> dismissedCallback = null, bool animate = true, object parameter = null) where TViewModel : BaseViewModel
 		{
-			return ShowViewModelAsync(typeof(TViewModel), parameter, presentationMode, animate, dismissedCallback);
+			return ShowViewModelAsync(typeof(TViewModel), presentationMode, dismissedCallback, animate, parameter);
 		}
 
 		/// <summary>
 		/// Navigates to the provided view model of type
 		/// </summary>
 		/// <typeparam name="TViewModel">The 1st type parameter.</typeparam>
-		public async Task ShowViewModelAsync(
-			Type viewModelType, object parameter = null, PresentationMode presentationMode = PresentationMode.Default,
-			bool animate = true, Action<bool> dismissedCallback = null)
+		public async Task ShowViewModelAsync(Type viewModelType, 
+			PresentationMode presentationMode = PresentationMode.Default,
+			Action<bool> dismissedCallback = null, bool animate = true, object parameter = null)
 		{       
 			if (_masterDetailPage != null && !_usingMasterAsNavigationStack)
 				_masterDetailPage.IsPresented = false;

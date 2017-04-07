@@ -100,7 +100,6 @@ namespace NControl.XAnimation
 			return this;
 		}
 
-
 		/// <summary>
 		/// Duration the specified milliseconds.
 		/// </summary>
@@ -186,6 +185,11 @@ namespace NControl.XAnimation
 		{
 			return this;
 		}
+
+		/// <summary>
+		/// Set to true to speed down animations
+		/// </summary>
+		public static bool SlowAnimations { get; set;}
 
 		/// <summary>
 		/// Runs this animation

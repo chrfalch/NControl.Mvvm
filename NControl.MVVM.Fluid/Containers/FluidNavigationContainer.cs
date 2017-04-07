@@ -16,15 +16,14 @@ namespace NControl.Mvvm
 		Cancelled,
 	}
 
-	public class FluidNavigationContainer : ContentView,
-		INavigationContainer, IXAnimatable
+	public class FluidNavigationContainer : ContentView, INavigationContainer, IXAnimatable
 	{
 		#region Private Members
 
 		double _xstart;
 
 		protected readonly RelativeLayout _layout;
-		protected readonly Grid _container;
+		protected readonly ContentView _container;
 		protected readonly Grid _navigationContainer;
 		protected readonly FluidNavigationBar _navigationBar;
 
@@ -53,11 +52,11 @@ namespace NControl.Mvvm
 			_navigationBar.BackButtonCommand = new AsyncCommand(async _ =>
 			{
 				if (BackButtonVisible)
-					await MvvmApp.Current.Presenter.DismissViewModelAsync(
-						GetViewModel().PresentationMode);
+					await MvvmApp.Current.Presenter.DismissViewModelAsync(						
+						(_container.Content as IView).GetViewModel().PresentationMode);
 			});
 
-			_container = new Grid();
+			_container = new ContentView();
 
 			_navigationContainer = new Grid
 			{
@@ -146,58 +145,58 @@ namespace NControl.Mvvm
 		/// </summary>
 		public void UpdateFromGestureRecognizer(double x, double velocity, PanState state)
 		{
-			var view = _container.Children.Last();
-			var index = _container.Children.IndexOf(view);
-			var fromView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
+			//var view = _container.Children.Last();
+			//var index = _container.Children.IndexOf(view);
+			//var fromView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
 
-			var animateNavigation = GetViewHasNavigationBar(view) != GetViewHasNavigationBar(fromView);
+			//var animateNavigation = GetViewHasNavigationBar(view) != GetViewHasNavigationBar(fromView);
 
-			switch (state)
-			{
-				case PanState.Started:					
-					_xstart = x;
-					break;
+			//switch (state)
+			//{
+			//	case PanState.Started:					
+			//		_xstart = x;
+			//		break;
 
-				case PanState.Moving:
+			//	case PanState.Moving:
 
-					view.TranslationX = Math.Max(0, x - _xstart);
+			//		view.TranslationX = Math.Max(0, x - _xstart);
 
-					if (fromView != null)
-						fromView.TranslationX = Math.Max(-(Width / 4), -(Width / 4) +
-							(x - _xstart)/4);
+			//		if (fromView != null)
+			//			fromView.TranslationX = Math.Max(-(Width / 4), -(Width / 4) +
+			//				(x - _xstart)/4);
 
-					if (animateNavigation)
-					{
-						var distanceToAnimate = (_navigationBarHeight);
-						var distanceAnimated = x - _xstart;
-						var factor = distanceAnimated / Width;
+			//		if (animateNavigation)
+			//		{
+			//			var distanceToAnimate = (_navigationBarHeight);
+			//			var distanceAnimated = x - _xstart;
+			//			var factor = distanceAnimated / Width;
 
-						if (GetViewHasNavigationBar(fromView))
-						{
-							_navigationContainer.TranslationY = -distanceToAnimate + (distanceToAnimate * factor);
-						}
-						else
-						{
-							_navigationContainer.TranslationY = -(distanceToAnimate * factor);
-						}
-					}
+			//			if (GetViewHasNavigationBar(fromView))
+			//			{
+			//				_navigationContainer.TranslationY = -distanceToAnimate + (distanceToAnimate * factor);
+			//			}
+			//			else
+			//			{
+			//				_navigationContainer.TranslationY = -(distanceToAnimate * factor);
+			//			}
+			//		}
 					
-					break;
+			//		break;
 
-				case PanState.Ended:
+			//	case PanState.Ended:
 
-					CheckTranslationAndSnap(velocity);
+			//		CheckTranslationAndSnap(velocity);
 
-					break;
-				case PanState.Cancelled:
+			//		break;
+			//	case PanState.Cancelled:
 
-					view.TranslationX = 0;
+			//		view.TranslationX = 0;
 
-					if (fromView != null)
-						fromView.TranslationX = -(Width / 4);
+			//		if (fromView != null)
+			//			fromView.TranslationX = -(Width / 4);
 					
-					break;
-			}
+			//		break;
+			//}
 		}
 		#endregion
 
@@ -206,43 +205,22 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Add a new child to the container
 		/// </summary>
-		public void AddChild(View view, PresentationMode presentationMode)
+		public void SetContent(View content)
 		{
-			_container.Children.Add(view);
-
-			if (view is ILeftBorderProvider)
-				(view as ILeftBorderProvider).IsLeftBorderVisible = _container.Children.Count > 1;
-
-			BindingContext = GetViewModel();
-			UpdateToolbarItems(view);
+			if (!(content is IView))
+				throw new ArgumentException("Content must implement IView");
+			
+			_container.Content = content;
+			BindingContext = (content as IView).GetViewModel();
+			UpdateToolbarItems(content);
 			OnPropertyChanged(nameof(BackButtonVisible));
 		}
-
-		/// <summary>
-		/// Remove a view from the container
-		/// </summary>
-		public void RemoveChild(View view, PresentationMode presentationMode)
-		{			
-			if (!_container.Children.Contains(view))
-				throw new ArgumentException("View not part of child collection.");
-
-			_container.Children.Remove(view);
-
-			BindingContext = GetViewModel();
-			UpdateToolbarItems(_container.Children.LastOrDefault());
-			OnPropertyChanged(nameof(BackButtonVisible));		
-		}
-
-		/// <summary>
-		/// Returns number of children in container
-		/// </summary>
-		public int Count { get { return _container == null ? 0 : _container.Children.Count; } }
 
 		/// <summary>
 		/// Gets the root view.
 		/// </summary>
 		/// <returns>The root view.</returns>
-		public View GetRootView()
+		public View GetBaseView()
 		{
 			return this;
 		}
@@ -250,25 +228,20 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Returns true if backbutton should be visible
 		/// </summary>
-		public bool BackButtonVisible { get { return Count > 1; } }
+		public bool BackButtonVisible { get { return true; /*Count > 1;*/ } }
 
 		#endregion
 
 		#region Transitions (IXAnimatable)
 
-		public View GetNavigationBarView()
+		public View GetChromeView()
 		{
 			return _navigationContainer;
 		}
 
-		public View GetContainerView()
+		public View GetContentsView()
 		{
 			return _container;
-		}
-
-		public View GetChild(int index)
-		{
-			return _container.Children.ElementAt(index);
 		}
 
 		public virtual View GetOverlayView()
@@ -279,36 +252,23 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Transition a new view in 
 		/// </summary>
-		public virtual IEnumerable<XAnimationPackage> TransitionIn(
-			View view, PresentationMode presentationMode)
+		public virtual IEnumerable<XAnimationPackage> TransitionIn(INavigationContainer fromContainer, PresentationMode presentationMode)
 		{
 			if (presentationMode == PresentationMode.Default)
 			{
 				var animations = new List<XAnimationPackage>();
 
-				var index = _container.Children.IndexOf(view);
-				var fromView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
-
-				// Navigation bar?
-				if (GetViewHasNavigationBar(fromView) != GetViewHasNavigationBar(view))
-				{
-					if (GetViewHasNavigationBar(view))
-						animations.AddRange(ShowNavigationBar(true));					
-					else
-						animations.AddRange(HideNavigationbar(true));					
-				}
-
 				// Animate the new contents in
-				animations.Add(new XAnimationPackage(view)
+				animations.Add(new XAnimationPackage(this)
 					.Translate(Width, 0)
 					.Set()
 	               	.Translate(0, 0));
 
 				// Move previous a litle bit out
-				animations.Add(new XAnimationPackage(fromView).Translate(-(Width / 4), 0));
+				animations.Add(new XAnimationPackage(fromContainer.GetBaseView()).Translate(-(Width / 4), 0));
 
-				if (view is IXViewAnimatable)
-					return (view as IXViewAnimatable).TransitionIn(view, this, animations, presentationMode);
+				if (_container.Content is IXViewAnimatable)
+					return (_container.Content as IXViewAnimatable).TransitionIn(fromContainer, this, animations, presentationMode);
 
 				return animations;
 
@@ -316,7 +276,7 @@ namespace NControl.Mvvm
 			else if (presentationMode == PresentationMode.Modal)
 			{
 				// Animate the new contents in
-				var animateContentsIn = new XAnimationPackage(view);
+				var animateContentsIn = new XAnimationPackage(this);
 				animateContentsIn
 					.Translate(0, Height)
 					.Set()
@@ -326,16 +286,15 @@ namespace NControl.Mvvm
 
 				var retVal = new[] { animateContentsIn };
 
-				var child = GetChild(0);
-				if (child is IXViewAnimatable)
-					return (child as IXViewAnimatable).TransitionIn(child, this, retVal, presentationMode);
+				if (_container.Content is IXViewAnimatable)
+					return (_container.Content as IXViewAnimatable).TransitionIn(fromContainer, this, retVal, presentationMode);
 
 				return retVal;
 			}
 			else if (presentationMode == PresentationMode.Popup)
 			{
 				// Animate the new contents in
-				var animateContentsIn = new XAnimationPackage(view);
+				var animateContentsIn = new XAnimationPackage(this);
 				animateContentsIn
 					.Translate(0, Height)
 					.Set()
@@ -343,8 +302,8 @@ namespace NControl.Mvvm
 
 				var retVal = new[] { animateContentsIn };
 
-				if (view is IXViewAnimatable)
-					return (view as IXViewAnimatable).TransitionIn(view, this, retVal, presentationMode);
+				if (_container.Content is IXViewAnimatable)
+					return (_container.Content as IXViewAnimatable).TransitionIn(fromContainer, this, retVal, presentationMode);
 
 				return retVal;
 			}
@@ -355,14 +314,11 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Transitions the out.
 		/// </summary>
-		public virtual IEnumerable<XAnimationPackage> TransitionOut(View view, PresentationMode presentationMode)
+		public virtual IEnumerable<XAnimationPackage> TransitionOut(View view, View toView, PresentationMode presentationMode)
 		{
 			if (presentationMode == PresentationMode.Default)
 			{
 				var animations = new List<XAnimationPackage>();
-
-				var index = _container.Children.IndexOf(view);
-				var toView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
 
 				// Navigation bar?
 				if (GetViewHasNavigationBar(toView) != GetViewHasNavigationBar(view))
@@ -377,9 +333,9 @@ namespace NControl.Mvvm
 				animations.Add(new XAnimationPackage(view).Translate(Width, 0));
 				animations.Add(new XAnimationPackage(toView).Translate(0, 0));
 
-				var child = GetChild(0);
-				if (child is IXViewAnimatable)
-					return (child as IXViewAnimatable).TransitionOut(child, this, animations, presentationMode);
+				//var child = GetChild(0);
+				//if (child is IXViewAnimatable)
+				//	return (child as IXViewAnimatable).TransitionOut(child, this, animations, presentationMode);
 
 				return animations;
 			}
@@ -394,9 +350,9 @@ namespace NControl.Mvvm
 						.Translate(0, Height),
 				};
 
-				var child = GetChild(0);
-				if (child is IXViewAnimatable)
-					return (child as IXViewAnimatable).TransitionOut(child, this, retVal, presentationMode);
+				//var child = GetChild(0);
+				//if (child is IXViewAnimatable)
+				//	return (child as IXViewAnimatable).TransitionOut(child, this, retVal, presentationMode);
 
 				return retVal;
 			}
@@ -408,69 +364,60 @@ namespace NControl.Mvvm
 
 		#region Private Members
 
-		IViewModel GetViewModel()
-		{
-			var current = _container.Children.LastOrDefault() as IView;
-			if (current != null)
-				return current.GetViewModel();
-
-			return null;
-		}
-
 		void CheckTranslationAndSnap(double velocity)
 		{
-			var view = _container.Children.Last();
-			var index = _container.Children.IndexOf(view);
-			var toView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
+			//var view = _container.Children.Last();
+			//var index = _container.Children.IndexOf(view);
+			//var toView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
 
-			double toViewTranslationX = 0.0;
-			double fromViewTranslationX = toView != null ? toView.TranslationX : 0;
+			//double toViewTranslationX = 0.0;
+			//double fromViewTranslationX = toView != null ? toView.TranslationX : 0;
 
-			var offset = view.TranslationX % (-1 * Width);
-			bool resetTransformations = true;
+			//var offset = view.TranslationX % (-1 * Width);
+			//bool resetTransformations = true;
 
-			if (offset > Width * 0.33)
-			{
-				toViewTranslationX = Width;
-				fromViewTranslationX = 0;
-				resetTransformations = true;
-			}
+			//if (offset > Width * 0.33)
+			//{
+			//	toViewTranslationX = Width;
+			//	fromViewTranslationX = 0;
+			//	resetTransformations = true;
+			//}
 			
-			var distance = toViewTranslationX - view.TranslationX;
-			var duration = Math.Min(0.2, Math.Max(0.2, velocity.Equals(-1) ? 0.2f : distance / velocity));
+			//var distance = toViewTranslationX - view.TranslationX;
+			//var duration = Math.Min(0.2, Math.Max(0.2, velocity.Equals(-1) ? 0.2f : distance / velocity));
 
-			new XAnimationPackage(view)
-				.Duration((long)(duration*1000))
-				.Translate(toViewTranslationX, 0)
-				.Animate()
-				.Run(() => {
-				if(fromViewTranslationX.Equals(0))
-					MvvmApp.Current.Presenter.DismissViewModelAsync(
-						GetViewModel().PresentationMode, false, false);
-			});
+			//new XAnimationPackage(view)
+			//	.Duration((long)(duration*1000))
+			//	.Translate(toViewTranslationX, 0)
+			//	.Animate()
+			//	.Run(() => {
+			//	if(fromViewTranslationX.Equals(0))
+			//		MvvmApp.Current.Presenter.DismissViewModelAsync(
+			//			GetViewModel().PresentationMode, false, false);
+			//});
 
-			if(toView != null)
-				new XAnimationPackage(toView)
-					.Duration((long)(duration * 1000))
-					.Translate(fromViewTranslationX, 0)
-					.Animate()
-					.Run();
+			//if(toView != null)
+			//	new XAnimationPackage(toView)
+			//		.Duration((long)(duration * 1000))
+			//		.Translate(fromViewTranslationX, 0)
+			//		.Animate()
+			//		.Run();
 
-			if (GetViewHasNavigationBar(toView) != GetViewHasNavigationBar(view))
-			{
-				if (GetViewHasNavigationBar(toView))
-				{
-					new XAnimationPackage(_navigationContainer)
-					   	.Translate(0, resetTransformations ? -(_navigationBarHeight):0)
-						.Animate().Run();
-				}
-				else
-				{
-					new XAnimationPackage(_navigationContainer)
-						.Translate(0, resetTransformations ?  0: -(_navigationBarHeight))
-						.Animate().Run();
-				}
-			}
+			//if (GetViewHasNavigationBar(toView) != GetViewHasNavigationBar(view))
+			//{
+			//	if (GetViewHasNavigationBar(toView))
+			//	{
+			//		new XAnimationPackage(_navigationContainer)
+			//		   	.Translate(0, resetTransformations ? -(_navigationBarHeight):0)
+			//			.Animate().Run();
+			//	}
+			//	else
+			//	{
+			//		new XAnimationPackage(_navigationContainer)
+			//			.Translate(0, resetTransformations ?  0: -(_navigationBarHeight))
+			//			.Animate().Run();
+			//	}
+			//}
 		}
 
 		void UpdateToolbarItems(View view)
@@ -520,7 +467,7 @@ namespace NControl.Mvvm
 
 		Rectangle GetContainerRectangle()
 		{
-			var topView = _container.Children.LastOrDefault();
+			var topView = _container.Content;
 			var hasNavigationBar = GetViewHasNavigationBar(topView);
 
 			return new Rectangle(
@@ -538,7 +485,7 @@ namespace NControl.Mvvm
 			if (_container == null)
 				return "Empty";
 
-			return "FluidNavigationContainer: " + string.Join(", ", _container.Children.Select(v => v.GetType().Name));
+			return "FluidNavigationContainer: " + _container.Content.GetType().Name;
 		}
 	}
 }

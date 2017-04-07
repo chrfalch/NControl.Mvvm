@@ -5,6 +5,6 @@ namespace NControl.Mvvm
 {
 	public interface INavigationContainerProvider
 	{
-		INavigationContainer CreateNavigationContainer(PresentationMode mode, Size pageSize);
+		INavigationContainer CreateNavigationContainer(PresentationMode mode);
 	}
 }

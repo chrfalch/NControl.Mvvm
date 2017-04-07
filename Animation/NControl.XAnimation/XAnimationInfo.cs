@@ -17,10 +17,13 @@ namespace NControl.XAnimation
 	/// </summary>
 	public class XAnimationInfo
 	{
+		long _duration;
+		long _delay;
+
 		static int Counter = 0;
 
-		public long Delay { get; set; }
-		public long Duration { get; set; }
+		public long Delay { get { return _delay * (XAnimationPackage.SlowAnimations ? 5 : 1); } set { _delay = value; } }
+		public long Duration { get { return _duration * (XAnimationPackage.SlowAnimations ? 5 : 1); } set { _duration = value; } }
 		public int AnimationId { get; set; }
 
 		public double Scale { get; set; }
