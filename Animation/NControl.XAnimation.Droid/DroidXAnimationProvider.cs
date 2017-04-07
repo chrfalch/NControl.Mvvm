@@ -51,8 +51,8 @@ namespace NControl.XAnimation.Droid
 				var viewGroup = GetViewGroup(element);
 				var nativeAnimation = viewGroup.Animate();
 				nativeAnimation
-					.SetDuration(animationInfo.Duration)
-					.SetStartDelay(animationInfo.Delay)
+					.SetDuration(GetTime(animationInfo.Duration))
+					.SetStartDelay(GetTime(animationInfo.Delay))
 					.SetInterpolator(GetInterpolator(animationInfo))
 					.SetListener(new AnimatorListener(null, animationFinishedAction, null, null));
 
@@ -73,9 +73,9 @@ namespace NControl.XAnimation.Droid
 					var colorAnimator = ObjectAnimator.OfInt(viewGroup, "backgroundColor", fromColor, toColor);
 					colorAnimator.SetTarget(viewGroup);
 					colorAnimator.SetEvaluator(new ArgbEvaluator());
-					colorAnimator.SetDuration(animationInfo.Duration);
+					colorAnimator.SetDuration(GetTime(animationInfo.Duration));
 					colorAnimator.SetInterpolator(GetInterpolator(animationInfo));
-					colorAnimator.StartDelay = animationInfo.Delay;
+					colorAnimator.StartDelay = GetTime(animationInfo.Delay);
 					colorAnimator.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
 
 					animations.Add(colorAnimator);
@@ -146,9 +146,9 @@ namespace NControl.XAnimation.Droid
 
 			var resizeAnimation = ValueAnimator.OfFloat(0.0f, 1.0f);
 
-			resizeAnimation.SetDuration(animationInfo.Duration);
+			resizeAnimation.SetDuration(GetTime(animationInfo.Duration));
 			resizeAnimation.SetInterpolator(GetInterpolator(animationInfo));
-			resizeAnimation.StartDelay = animationInfo.Delay;
+			resizeAnimation.StartDelay = GetTime(animationInfo.Delay);
 			resizeAnimation.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
 			resizeAnimation.AddUpdateListener(new UpdateListener((obj) =>
 			{
@@ -276,6 +276,11 @@ namespace NControl.XAnimation.Droid
 				default:
 					return new LinearInterpolator();
 			}
+		}
+
+		long GetTime(long time)
+		{
+			return time * (XAnimationPackage.SlowAnimations ? 5 : 1);
 		}
 	}
 

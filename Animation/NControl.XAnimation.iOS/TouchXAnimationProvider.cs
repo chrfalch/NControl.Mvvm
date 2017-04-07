@@ -80,7 +80,7 @@ namespace NControl.XAnimation.iOS
 			CATransaction.Begin();
 			CATransaction.DisableActions = true;
 			CATransaction.AnimationTimingFunction = GetTimingFunctionFromAnimationInfo(animationInfo);
-			CATransaction.AnimationDuration = animationInfo.Duration / 1000.0;
+			CATransaction.AnimationDuration = GetTime(animationInfo.Duration);
 			CATransaction.CompletionBlock = completed;
 
 			// Add animations
@@ -151,8 +151,8 @@ namespace NControl.XAnimation.iOS
 		{
 			// Create group of animations
 			var group = new CAAnimationGroup();
-			group.Duration = animationInfo.Duration / 1000.0;
-			group.BeginTime = CAAnimation.CurrentMediaTime() + (animationInfo.Delay / 1000.0);
+			group.Duration = GetTime(animationInfo.Duration);
+			group.BeginTime = CAAnimation.CurrentMediaTime() + (GetTime(animationInfo.Delay));
 			group.Animations = animations.ToArray();
 			group.TimingFunction = GetTimingFunctionFromAnimationInfo(animationInfo);
 			return group;
@@ -175,6 +175,11 @@ namespace NControl.XAnimation.iOS
 				default:
 					return CAMediaTimingFunction.FromName(CAMediaTimingFunction.Linear);					
 			}
+		}
+
+		float GetTime(long time)
+		{
+			return (float)(time * (XAnimationPackage.SlowAnimations ? 5 : 1) / 1000.0);
 		}
 
 		List<CAAnimation> GetAnimationsForElement(VisualElement element, UIView view, XAnimationInfo animationInfo)
