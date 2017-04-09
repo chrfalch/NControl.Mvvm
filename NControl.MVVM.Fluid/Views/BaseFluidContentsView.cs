@@ -257,19 +257,19 @@ namespace NControl.Mvvm
 		}
 
 		public IEnumerable<XAnimationPackage> TransitionOut(
-			View view, INavigationContainer container, IEnumerable<XAnimationPackage> animations,
-			PresentationMode presentationMode)
+			INavigationContainer toContainer, INavigationContainer fromContainer, 
+			IEnumerable<XAnimationPackage> animations,PresentationMode presentationMode)
 		{
 			switch (presentationMode)
 			{
 				case PresentationMode.Modal:
-					return ModalTransitionOut(container, animations);
+					return ModalTransitionOut(toContainer, animations);
 				case PresentationMode.Popup:
-					return PopupTransitionOut(container, animations);
+					return PopupTransitionOut(toContainer, animations);
 
-				case PresentationMode.Default:
+				// case PresentationMode.Default:
 				default:
-					return DefaultTransitionOut(container, animations);
+					return DefaultTransitionOut(toContainer, animations);
 			}
 		}
 

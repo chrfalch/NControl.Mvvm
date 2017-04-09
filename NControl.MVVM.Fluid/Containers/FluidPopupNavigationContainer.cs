@@ -94,7 +94,7 @@ namespace NControl.Mvvm
 		}
 
 		public IEnumerable<XAnimationPackage> TransitionOut(
-			View view, View toView, PresentationMode presentationMode)
+			INavigationContainer toContainer, PresentationMode presentationMode)
 		{
 			var retVal = new[] {
 				new XAnimationPackage(_overlay)					
@@ -113,7 +113,8 @@ namespace NControl.Mvvm
 
 			var child = GetChild(0);
 			if (child is IXViewAnimatable)
-				return (child as IXViewAnimatable).TransitionOut(child, this, retVal, presentationMode);
+				return (child as IXViewAnimatable).TransitionOut(
+					toContainer, this, retVal, presentationMode);
 
 			return retVal;
 		}

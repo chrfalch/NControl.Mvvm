@@ -8,6 +8,6 @@ namespace NControl.Mvvm
 	public interface IXAnimatable
 	{
 		IEnumerable<XAnimationPackage> TransitionIn(INavigationContainer fromContainer, PresentationMode presentationMode);		
-		IEnumerable<XAnimationPackage> TransitionOut(View view, View toView, PresentationMode presentationMode);
+		IEnumerable<XAnimationPackage> TransitionOut(INavigationContainer toContainer, PresentationMode presentationMode);
 	}
 }

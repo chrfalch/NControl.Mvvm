@@ -40,7 +40,6 @@ namespace NControl.Mvvm
 		public FluidPresenter(INavigationContainerProvider navigationContainerProvider)
 		{
 			_navigationContainerProvider = navigationContainerProvider;
-			XAnimationPackage.SlowAnimations = true;
 		}
 
 		#region IPresenter implementation
@@ -248,80 +247,44 @@ namespace NControl.Mvvm
 		{
 			var tcs = new TaskCompletionSource<bool>();
 
-			if (presentationMode == PresentationMode.Default)
+			// Get previous container
+			var fromElement = _contentPage.CurrentContext.Elements.Pop();
+			NavigationElement toElement = null;
+			if (_contentPage.CurrentContext.Elements.Count == 0)
 			{
-				var navigationElement = _contentPage.CurrentContext.Elements.Peek();
-				var view = navigationElement?.View;
+				// Pop the context, we're on the last one
+				_contentPage.Contexts.Pop();
+				toElement = _contentPage.CurrentContext.Elements.Peek();
+			}
+			else
+			{
+				toElement = _contentPage.CurrentContext.Elements.Peek();
+			}
 
-				// Set up action to run when all transitions and animations
-				// are done
-				Action removeAction = () =>
+			// Set up action to run when all transitions and animations
+			// are done
+			Action removeAction = () =>
+			{
+				var viewModelProvider = fromElement.View as IView;
+				if (viewModelProvider != null)
 				{
-					var viewModelProvider = view as IView;
-					if (viewModelProvider != null)
-					{
-						viewModelProvider.OnDisappearing();
-						viewModelProvider.GetViewModel().ViewModelDismissed();
-					}
+					viewModelProvider.OnDisappearing();
+					viewModelProvider.GetViewModel().ViewModelDismissed();
+				}
 
-					//navigationElement.Container.RemoveChild(view, presentationMode);
-					//currentContext.NavigationStack.Pop();
+				// Call dismissed action
+				fromElement?.DismissedAction?.Invoke(success);
 
-					if(view is IView)
-						(view as IView).OnDisappearing();
+				tcs.TrySetResult(true);
+			};
 
-					navigationElement?.DismissedAction?.Invoke(success);
-
-					tcs.TrySetResult(true);
-				};
-
-				// Should we animate?
-				//if (animate && currentContext.Container is IXAnimatable)
-				//	XAnimationPackage.RunAll(
-				//		(currentContext.Container as IXAnimatable).TransitionOut(
-				//		view, presentationMode), removeAction);				
-				//else
-					removeAction();
-			}
-			else if (presentationMode == PresentationMode.Modal ||
-			         presentationMode == PresentationMode.Popup)
-			{
-				// Get current context (modal)
-				//var currentContext = _contentPage.Stack.Pop();
-				//var navigationElement = currentContext.NavigationStack.FirstOrDefault();
-
-				//Action removeAction = () =>
-				//{
-				//	// Call dismiss on all view models
-				//	foreach (var view in currentContext.NavigationStack.Reverse())
-				//	{
-				//		var viewModelProvider = view as IView;
-				//		if (viewModelProvider != null)
-				//		{
-				//			viewModelProvider.OnDisappearing();
-				//			viewModelProvider.GetViewModel().ViewModelDismissed();
-				//		}
-				//	}
-
-				//	// Clear navigation stack
-				//	currentContext.NavigationStack.Clear();
-
-				//	// Remove from view stack
-				//	_contentPage.Container.Children.Remove(currentContext.Container as View);
-
-				//	// Call dismissed action
-				//	navigationElement?.DismissedAction?.Invoke(success);
-
-				//	tcs.TrySetResult(true);
-				//};
-
-				//if (animate && currentContext.Container is IXAnimatable)
-				//	XAnimationPackage.RunAll(
-				//		(currentContext.Container as IXAnimatable).TransitionOut(
-				//			currentContext.Container as View, presentationMode), removeAction);
-				//else
-					//removeAction();
-			}
+			// Should we animate?
+			if (animate && fromElement.Container is IXAnimatable)
+				XAnimationPackage.RunAll(
+					(fromElement.Container as IXAnimatable).TransitionOut(toElement.Container,
+					presentationMode), removeAction);
+			else
+				removeAction();		
 					
 			return tcs.Task;
 		}
@@ -364,6 +327,11 @@ namespace NControl.Mvvm
 			View = view;
 			DismissedAction = dismissedAction;
 			Container = container;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0}", Container);
 		}
 	}
 }

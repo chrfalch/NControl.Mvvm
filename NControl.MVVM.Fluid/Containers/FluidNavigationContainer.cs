@@ -252,12 +252,13 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Transition a new view in 
 		/// </summary>
-		public virtual IEnumerable<XAnimationPackage> TransitionIn(INavigationContainer fromContainer, PresentationMode presentationMode)
+		public virtual IEnumerable<XAnimationPackage> TransitionIn(
+			INavigationContainer fromContainer, PresentationMode presentationMode)
 		{
+			var animations = new List<XAnimationPackage>();
+
 			if (presentationMode == PresentationMode.Default)
 			{
-				var animations = new List<XAnimationPackage>();
-
 				// Animate the new contents in
 				animations.Add(new XAnimationPackage(this)
 					.Translate(Width, 0)
@@ -265,99 +266,73 @@ namespace NControl.Mvvm
 	               	.Translate(0, 0));
 
 				// Move previous a litle bit out
-				animations.Add(new XAnimationPackage(fromContainer.GetBaseView()).Translate(-(Width * 0.25), 0));
-
-				if (_container.Content is IXViewAnimatable)
-					return (_container.Content as IXViewAnimatable).TransitionIn(fromContainer, this, animations, presentationMode);
-
-				return animations;
-
+				animations.Add(new XAnimationPackage(fromContainer.GetBaseView())
+               		.Translate(-(Width * 0.25), 0));
 			}
 			else if (presentationMode == PresentationMode.Modal)
 			{
 				// Animate the new contents in
-				var animateContentsIn = new XAnimationPackage(this);
-				animateContentsIn
+				animations.Add(new XAnimationPackage(this)
 					.Translate(0, Height)
 					.Set()
 					.Duration(350)
 					.Easing(EasingFunction.EaseIn)
-					.Translate(0, 0);
-
-				var retVal = new[] { animateContentsIn };
-
-				if (_container.Content is IXViewAnimatable)
-					return (_container.Content as IXViewAnimatable).TransitionIn(fromContainer, this, retVal, presentationMode);
-
-				return retVal;
+            		.Translate(0, 0));
 			}
 			else if (presentationMode == PresentationMode.Popup)
 			{
 				// Animate the new contents in
-				var animateContentsIn = new XAnimationPackage(this);
-				animateContentsIn
+				animations.Add(new XAnimationPackage(this)
 					.Translate(0, Height)
 					.Set()
-					.Translate(0, 0);
-
-				var retVal = new[] { animateContentsIn };
-
-				if (_container.Content is IXViewAnimatable)
-					return (_container.Content as IXViewAnimatable).TransitionIn(fromContainer, this, retVal, presentationMode);
-
-				return retVal;
+	               	.Translate(0, 0));
 			}
 
-			return null;
+			// Additional animations?
+			if (_container.Content is IXViewAnimatable)
+					return (_container.Content as IXViewAnimatable).TransitionIn(
+					fromContainer, this, animations, presentationMode);
+
+			return animations;
+
 		}
 
 		/// <summary>
-		/// Transitions the out.
+		/// Transitions out.
 		/// </summary>
-		public virtual IEnumerable<XAnimationPackage> TransitionOut(View view, View toView, PresentationMode presentationMode)
+		public virtual IEnumerable<XAnimationPackage> TransitionOut(INavigationContainer toContainer, 
+        	PresentationMode presentationMode)
 		{
+			var animations = new List<XAnimationPackage>();
+
 			if (presentationMode == PresentationMode.Default)
 			{
-				var animations = new List<XAnimationPackage>();
+				// Animate the new contents in
+				animations.Add(new XAnimationPackage(this)
+					.Translate(Width, 0)
+					.Animate());
 
-				// Navigation bar?
-				if (GetViewHasNavigationBar(toView) != GetViewHasNavigationBar(view))
-				{
-					if (GetViewHasNavigationBar(toView))
-						animations.AddRange(ShowNavigationBar(true));					
-					else
-						animations.AddRange(HideNavigationbar(true));					
-				}
-
-				// Animate
-				animations.Add(new XAnimationPackage(view).Translate(Width, 0));
-				animations.Add(new XAnimationPackage(toView).Translate(0, 0));
-
-				//var child = GetChild(0);
-				//if (child is IXViewAnimatable)
-				//	return (child as IXViewAnimatable).TransitionOut(child, this, animations, presentationMode);
-
-				return animations;
+				// Move previous a litle bit out
+				animations.Add(new XAnimationPackage(toContainer.GetBaseView()).Translate(0, 0));
 			}
-
-			if (presentationMode == PresentationMode.Modal)
+			else if (presentationMode == PresentationMode.Modal)
 			{
 				// Animate
-				var retVal = new[]
-				{
-					new XAnimationPackage(view)
-						.Easing(EasingFunction.EaseOut)
-						.Translate(0, Height),
-				};
-
-				//var child = GetChild(0);
-				//if (child is IXViewAnimatable)
-				//	return (child as IXViewAnimatable).TransitionOut(child, this, retVal, presentationMode);
-
-				return retVal;
+				animations.Add(new XAnimationPackage(this)
+				    .Easing(EasingFunction.EaseIn)
+	                .Translate(0, Height));
+			}
+			else if (presentationMode == PresentationMode.Popup)
+			{
+				
 			}
 
-			return null;
+			// Additional animations?
+			if (_container.Content is IXViewAnimatable)
+				return (_container.Content as IXViewAnimatable).TransitionOut(toContainer, this,
+					animations, presentationMode);
+
+			return animations;
 		}
 
 		#endregion
