@@ -20,7 +20,7 @@ namespace NControl.Mvvm
 	{
 		#region Private Members
 
-		double _xstart;
+		// double _xstart;
 
 		protected readonly RelativeLayout _layout;
 		protected readonly ContentView _container;
@@ -226,9 +226,18 @@ namespace NControl.Mvvm
 		}
 
 		/// <summary>
+		/// Gets or sets the navigation context
+		/// </summary>
+		public NavigationContext NavigationContext { get; set; }
+
+		/// <summary>
 		/// Returns true if backbutton should be visible
 		/// </summary>
-		public bool BackButtonVisible { get { return true; /*Count > 1;*/ } }
+		public bool BackButtonVisible 
+		{ 
+			get { return NavigationContext != null ?
+				NavigationContext.Elements.Count > 1 : false; } 
+		}
 
 		#endregion
 

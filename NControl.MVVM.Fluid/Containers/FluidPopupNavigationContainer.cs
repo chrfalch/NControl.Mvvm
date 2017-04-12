@@ -131,6 +131,11 @@ namespace NControl.Mvvm
 			_container.Children.Add(content);
 		}
 
+		/// <summary>
+		/// Gets or sets the navigation context
+		/// </summary>
+		public NavigationContext NavigationContext { get; set; }
+
 		public View GetBaseView() { return this; }
 
 		public View GetChromeView()

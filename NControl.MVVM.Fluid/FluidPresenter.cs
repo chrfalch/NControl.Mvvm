@@ -232,9 +232,15 @@ namespace NControl.Mvvm
 
 			// Add to or create context depending on type of navigation
 			if (presentationMode == PresentationMode.Default && _contentPage.Contexts.Count > 0)
+			{
+				container.NavigationContext = _contentPage.CurrentContext;
 				_contentPage.CurrentContext.Elements.Push(navigationElement);
+			}
 			else
-				_contentPage.Contexts.Push(new NavigationContext(navigationElement));
+			{
+				container.NavigationContext = new NavigationContext(navigationElement);
+				_contentPage.Contexts.Push(container.NavigationContext);
+			}
 
 			return navigationElement;
 		}
@@ -265,7 +271,7 @@ namespace NControl.Mvvm
 			// are done
 			Action removeAction = () =>
 			{
-				var viewModelProvider = fromElement.View as IView;
+				var viewModelProvider = fromElement.Container.GetContentsView() as IView;
 				if (viewModelProvider != null)
 				{
 					viewModelProvider.OnDisappearing();
@@ -318,13 +324,11 @@ namespace NControl.Mvvm
 
 	public class NavigationElement
 	{
-		public View View { get; private set; }
 		public Action<bool> DismissedAction { get; private set; }
 		public INavigationContainer Container { get; private set; }
 
 		public NavigationElement(View view, INavigationContainer container, Action<bool> dismissedAction)
 		{
-			View = view;
 			DismissedAction = dismissedAction;
 			Container = container;
 		}

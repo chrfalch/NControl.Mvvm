@@ -80,7 +80,7 @@ namespace NControl.Mvvm
 				return base.OnBackButtonPressed();
 
 			// Find current viewmodel
-			var viewModelProvider = CurrentNavigationElement.View as IView;
+			var viewModelProvider = CurrentNavigationElement.Container.GetContentsView() as IView;
 			if (viewModelProvider == null)
 				return base.OnBackButtonPressed();
 

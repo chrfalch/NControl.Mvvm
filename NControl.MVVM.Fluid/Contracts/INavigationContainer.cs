@@ -15,7 +15,8 @@ namespace NControl.Mvvm
 		View GetContentsView();
 
 		/// <summary>
-		/// Returns the chrome view for the container
+		/// Returns the chrome view for the container. Chrome is the
+		/// navigationbar, frame or other "bling"
 		/// </summary>
 		View GetChromeView();
 
@@ -25,8 +26,13 @@ namespace NControl.Mvvm
 		View GetOverlayView();
 
 		/// <summary>
-		/// Sets the content.
+		/// Sets the content that is to be displayed in the container
 		/// </summary>
 		void SetContent(View content);
+
+		/// <summary>
+		/// Gets or sets the navigation context for the container
+		/// </summary>
+		NavigationContext NavigationContext { get; set; }
 	}
 }
