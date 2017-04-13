@@ -116,22 +116,25 @@ namespace NControl.XAnimation.Droid
 			}
 		}
 
+		public void Set(VisualElement element, XAnimationInfo animationInfo)
+		{
+			element.Opacity = (float)animationInfo.Opacity;
+			element.Rotation = (float)animationInfo.Rotate;
+			element.Scale = (float)animationInfo.Scale;
+			element.TranslationX = (float)animationInfo.TranslationX;
+			element.TranslationY = (float)animationInfo.TranslationY;
+
+			if (animationInfo.AnimateRectangle)
+				element.Layout(animationInfo.Rectangle);
+			
+			if(animationInfo.AnimateColor)
+				element.BackgroundColor = animationInfo.Color;
+		}
+
 		public void Set(XAnimationInfo animationInfo)
 		{
 			foreach (var element in _animation.Elements)
-			{
-				element.Opacity = (float)animationInfo.Opacity;
-				element.Rotation = (float)animationInfo.Rotate;
-				element.Scale = (float)animationInfo.Scale;
-				element.TranslationX = (float)animationInfo.TranslationX;
-				element.TranslationY = (float)animationInfo.TranslationY;
-
-				if (animationInfo.AnimateRectangle)
-					element.Layout(animationInfo.Rectangle);
-				
-				if(animationInfo.AnimateColor)
-					element.BackgroundColor = animationInfo.Color;
-			}
+				Set(element, animationInfo);
 		}
 
 		#region Private Members

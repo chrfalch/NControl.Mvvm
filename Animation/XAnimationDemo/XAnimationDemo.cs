@@ -36,9 +36,16 @@ namespace XAnimationDemo
 							})
 						},
 						new Button{
-							Text = "Comparsion...",
+							Text = "Performane",
 							Command = new Command(()=> {
 								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage());
+							})
+						},
+
+						new Button{
+							Text = "Interpolate",
+							Command = new Command(() => {
+								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationInterpolatePage());
 							})
 						},
 

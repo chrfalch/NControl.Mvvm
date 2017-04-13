@@ -34,6 +34,7 @@
     <Compile Include="XAnimationDemoPage2.cs" />
     <Compile Include="XAnimationDemoPage3.cs" />
     <Compile Include="XAnimationDemoPage4.cs" />
+    <Compile Include="XAnimationInterpolatePage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">

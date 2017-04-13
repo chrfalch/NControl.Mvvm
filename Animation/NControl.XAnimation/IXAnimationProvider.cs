@@ -10,5 +10,6 @@ namespace NControl.XAnimation
 		void Initialize(XAnimationPackage animation);
 		void Animate(XAnimationInfo animationInfo, Action completed);
 		void Set(XAnimationInfo animationInfo);
+		void Set(VisualElement element, XAnimationInfo animationInfo);
 	}
 }

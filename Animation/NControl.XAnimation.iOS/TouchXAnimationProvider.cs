@@ -101,6 +101,11 @@ namespace NControl.XAnimation.iOS
 				SetElementFromAnimationInfo(element, animationInfo);
 		}
 
+		public void Set(VisualElement element, XAnimationInfo animationInfo)
+		{
+            SetElementFromAnimationInfo(element, animationInfo);
+		}
+
 		#region Private Members
 
 		Dictionary<VisualElement, XAnimationInfo> GetChildHierarchyInfoInt(VisualElement element, XAnimationInfo animationInfo)
