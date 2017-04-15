@@ -35,7 +35,8 @@ namespace NControl.Mvvm
 				Content = _container,
 			};
 
-			_containerBorders = new FluidShadowView{
+			_containerBorders = new FluidShadowView
+			{
 				HasShadow = true,
 				BorderRadius = (int)MvvmApp.Current.Sizes.Get(FluidConfig.DefaultPopupCornerRadius),
 				Content = _containerContents
@@ -86,9 +87,9 @@ namespace NControl.Mvvm
 					.Animate()
 			};
 
-			var child = GetChild(0);
-			if (child is IXViewAnimatable)
-				return (child as IXViewAnimatable).TransitionIn(fromContainer, this, retVal, presentationMode);
+			if (GetContentsView() is IXViewAnimatable)
+				return (GetContentsView() as IXViewAnimatable).TransitionIn(
+					fromContainer, this, retVal, presentationMode);
 
 			return retVal;
 		}
@@ -97,11 +98,11 @@ namespace NControl.Mvvm
 			INavigationContainer toContainer, PresentationMode presentationMode)
 		{
 			var retVal = new[] {
-				new XAnimationPackage(_overlay)					
+				new XAnimationPackage(_overlay)
 					.Opacity(0.0)
 					.Duration(Duration)
 					.Easing(EasingFunction.EaseOut)
-				    .Animate(),
+					.Animate(),
 
 				new XAnimationPackage(_containerBorders)
 					.Scale(1.3)
@@ -111,9 +112,8 @@ namespace NControl.Mvvm
 					.Animate()
 			};
 
-			var child = GetChild(0);
-			if (child is IXViewAnimatable)
-				return (child as IXViewAnimatable).TransitionOut(
+			if (GetContentsView() is IXViewAnimatable)
+				return (GetContentsView() as IXViewAnimatable).TransitionOut(
 					toContainer, this, retVal, presentationMode);
 
 			return retVal;
@@ -123,58 +123,24 @@ namespace NControl.Mvvm
 
 		#region Navigation Container
 
-		/// <summary>
-		/// Sets the content.
-		/// </summary>
-		public void SetContent(View content)
-		{
-			_container.Children.Add(content);
-		}
-
-		/// <summary>
-		/// Gets or sets the navigation context
-		/// </summary>
+		public void SetContent(View content) { _container.Children.Add(content); }
 		public NavigationContext NavigationContext { get; set; }
-
 		public View GetBaseView() { return this; }
-
-		public View GetChromeView()
-		{
-			return null;
-		}
-
-		public View GetContentsView()
-		{
-			return _container;
-		}
-
-		public View GetChild(int index)
-		{
-			return _container.Children.ElementAt(index);
-		}
-
-		public View GetOverlayView()
-		{
-			return _overlay;
-		}
+		public View GetChromeView() { return null; }
+		public View GetContentsView() { return _container; }
+		public View GetChild(int index) { return _container.Children.ElementAt(index); }
+		public View GetOverlayView() { return _overlay; }
 
 		#endregion
 
+		#region Private Members
+
 		Rectangle GetContentSize()
 		{
-			var s = (_container.Children.LastOrDefault() as ContentView).Measure(double.PositiveInfinity, double.PositiveInfinity);
+			var s = (_container.Children.LastOrDefault() as ContentView)
+				.Measure(double.PositiveInfinity, double.PositiveInfinity);
+
 			var contentSize = new Size(Width * 0.7, s.Request.Height);
-
-			//var lastView = _container.Children.LastOrDefault(); // as IContentSizeProvider;
-			//var contentSize = ContentSize;
-			//if (lastView != null)
-			//{
-			//	if (!lastView.ContentSize.Width.Equals(0.0))
-			//		contentSize.Width = lastView.ContentSize.Width;
-
-			//	if (!lastView.ContentSize.Height.Equals(0.0))
-			//		contentSize.Height = lastView.ContentSize.Height;
-			//}
 
 			return new Rectangle(
 				(_layout.Width / 2) - (contentSize.Width / 2),
@@ -182,5 +148,7 @@ namespace NControl.Mvvm
 				contentSize.Width, contentSize.Height);
 
 		}
+
+		#endregion
 	}
 }
