@@ -21,14 +21,14 @@ namespace NControl.Mvvm
 
 			_titleLabel = new Label { 
 				HorizontalTextAlignment = TextAlignment.Center,
-				TextColor = MvvmApp.Current.Colors.Get(Config.NegativeTextColor),
+				TextColor = Config.NegativeTextColor,
 			};
 
 			_subTitleLabel = new Label
 			{
 				HorizontalTextAlignment = TextAlignment.Center,
 				FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
-                TextColor = MvvmApp.Current.Colors.Get(Config.NegativeTextColor),
+                TextColor = Config.NegativeTextColor,
 			};
 
 			_spinner = new FluidActivityIndicator
@@ -38,7 +38,7 @@ namespace NControl.Mvvm
 
 			_overlay = new ContentView
 			{
-				BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewTransparentBackgroundColor),
+				BackgroundColor = Config.ViewTransparentBackgroundColor,
 				Content = new VerticalWizardStackLayout
 				{
 					HorizontalOptions = LayoutOptions.CenterAndExpand,

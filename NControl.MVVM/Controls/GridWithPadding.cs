@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Xamarin.Forms;
 
 namespace NControl.Mvvm
@@ -9,8 +9,7 @@ namespace NControl.Mvvm
 		{
 			ColumnSpacing = 0;
 			RowSpacing = 0;
-			Padding = new Thickness(MvvmApp.Current.Sizes.Get(Config.DefaultPadding) * 2, 
-           		MvvmApp.Current.Sizes.Get(Config.DefaultPadding));
+			Padding = new Thickness(Config.DefaultPadding * 2, Config.DefaultPadding);
 		}
 	}
 }

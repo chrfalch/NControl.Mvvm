@@ -57,7 +57,7 @@ namespace NControl.Mvvm
 		/// The TextColor property.
 		/// </summary>
 		public static BindableProperty TextColorProperty = BindableProperty.Create(
-			nameof(TextColor), typeof(Color), typeof(IconLabel), MvvmApp.Current.Colors.Get(Config.TextColor),
+			nameof(TextColor), typeof(Color), typeof(IconLabel), Config.TextColor,
 			BindingMode.OneWay);
 
 		/// <summary>

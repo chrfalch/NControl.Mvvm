@@ -11,8 +11,8 @@ namespace NControl.Mvvm
         public VerticalWizardStackLayout()
         {
             VerticalOptions = LayoutOptions.Center;        
-			Spacing = MvvmApp.Current.Sizes.Get(Config.DefaultLargeSpacing);
-            Padding = MvvmApp.Current.Sizes.Get(Config.DefaultLargePadding);
+			Spacing = Config.DefaultLargeSpacing;
+            Padding = Config.DefaultLargePadding;
         }
     }
 }

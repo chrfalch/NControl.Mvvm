@@ -39,8 +39,8 @@ namespace NControl.Mvvm
 		{
 			Content = _layout = new RelativeLayout();
 
-			_statusbarHeight = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultStatusbarHeight);
-			_navigationBarHeight = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultNavigationBarHeight);
+			_statusbarHeight = FluidConfig.DefaultStatusbarHeight;
+			_navigationBarHeight = FluidConfig.DefaultNavigationBarHeight;
 
 			_navigationBar = new FluidNavigationBar { 
 				BindingContext = this, 
@@ -86,7 +86,7 @@ namespace NControl.Mvvm
 			_layout.Children.Add(_navigationContainer, () => GetNavigationBarRectangle());
 			_layout.Children.Add(new BoxView
 			{
-				BackgroundColor = MvvmApp.Current.Colors.Get(Config.PrimaryColor),
+				BackgroundColor = Config.PrimaryColor,
 				VerticalOptions = LayoutOptions.Start,
 			}, () => new Rectangle(0, 0, _layout.Width, _statusbarHeight));
 

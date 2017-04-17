@@ -29,16 +29,16 @@ namespace NControl.Mvvm
 			_container = new Grid();
 			_containerContents = new FluidRoundCornerView
 			{
-				BorderRadius = (int)MvvmApp.Current.Sizes.Get(FluidConfig.DefaultPopupCornerRadius),
-				BorderColor = MvvmApp.Current.Colors.Get(Config.BorderColor),
-				BorderWidth = MvvmApp.Current.Sizes.Get(Config.DefaultBorderSize),
+				BorderRadius = FluidConfig.DefaultPopupCornerRadius,
+				BorderColor = Config.BorderColor,
+				BorderWidth = Config.DefaultBorderSize,
 				Content = _container,
 			};
 
 			_containerBorders = new FluidShadowView
 			{
 				HasShadow = true,
-				BorderRadius = (int)MvvmApp.Current.Sizes.Get(FluidConfig.DefaultPopupCornerRadius),
+				BorderRadius = FluidConfig.DefaultPopupCornerRadius,
 				Content = _containerContents
 			};
 
@@ -49,7 +49,7 @@ namespace NControl.Mvvm
 
 		public static BindableProperty OverlayBackgroundColorProperty = BindableProperty.Create(
 			nameof(OverlayBackgroundColor), typeof(Color),
-			typeof(FluidPopupNavigationContainer), MvvmApp.Current.Colors.Get(Config.ViewTransparentBackgroundColor),
+			typeof(FluidPopupNavigationContainer), Config.ViewTransparentBackgroundColor,
 			BindingMode.OneWay);
 
 		/// <summary>

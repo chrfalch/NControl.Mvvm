@@ -42,7 +42,7 @@ namespace MvvmDemo
 										new FontMaterialDesignLabel{
 											Text = FontMaterialDesignLabel.MDNaturePeople,
 											FontSize = 66,
-											TextColor = MvvmApp.Current.Colors.Get(Config.LightTextColor),
+											TextColor = Config.LightTextColor,
 										},
 
 										new Label{

@@ -22,18 +22,18 @@ namespace NControl.Mvvm
 			BackgroundColor = Color.Transparent;
 
 			_headerView = new ContentView { 
-				BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewBackgroundColor) 
+				BackgroundColor = Config.ViewBackgroundColor 
 			};
 
 			_contentView = new ContentView
 			{
 				WidthRequest = Width*0.8,
 				VerticalOptions = LayoutOptions.FillAndExpand,
-				BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewBackgroundColor),
+				BackgroundColor = Config.ViewBackgroundColor,
 			};
 
 			_footerView = new ContentView { 
-				BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewBackgroundColor) 
+				BackgroundColor = Config.ViewBackgroundColor 
 			};
 
 			SetupMenuView();

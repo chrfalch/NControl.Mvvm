@@ -75,12 +75,7 @@
     <Compile Include="Controls\VerticalStackLayout.cs" />
     <Compile Include="Controls\VerticalWizardStackLayout.cs" />
     <Compile Include="Environment\IEnvironmentProvider.cs" />
-    <Compile Include="Configuration\ISizeProvider.cs" />
-    <Compile Include="Configuration\DefaultSizeProvider.cs" />
-    <Compile Include="Configuration\IFontProvider.cs" />
-    <Compile Include="Configuration\IColorProvider.cs" />
     <Compile Include="Configuration\Config.cs" />
-    <Compile Include="Configuration\DefaultColorProvider.cs" />
     <Compile Include="Touch\IGestureRecognizerProvider.cs" />
     <Compile Include="Touch\GestureRecognizerBehavior.cs" />
     <Compile Include="Controls\HorizontalStackLayout.cs" />

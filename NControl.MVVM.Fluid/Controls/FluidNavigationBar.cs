@@ -22,11 +22,11 @@ namespace NControl.Mvvm
 
 		public FluidNavigationBar()
 		{
-			BackgroundColor = MvvmApp.Current.Colors.Get(Config.PrimaryColor);
+			BackgroundColor = Config.PrimaryColor;
 			Spacing = 0;
 			Padding = 0;
 
-			var navigationBarHeight = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultNavigationBarHeight);
+			var navigationBarHeight = FluidConfig.DefaultNavigationBarHeight;
 
 			_toolbarItems.CollectionChanged += HandleToolbarItemsCollectionChanged;
 
@@ -53,7 +53,7 @@ namespace NControl.Mvvm
 				BindingContext = this,
 				HorizontalTextAlignment = TextAlignment.Center,
 				VerticalTextAlignment = TextAlignment.Center,
-				TextColor = MvvmApp.Current.Colors.Get(Config.AccentTextColor),
+				TextColor = Config.AccentTextColor,
 
 			}.BindTo(Label.TextColorProperty, nameof(TintColor));
 
@@ -88,7 +88,7 @@ namespace NControl.Mvvm
 
 			_leftViewContainer.Children.Add(new FluidToolbarControl(_backButton)
 			{				
-				WidthRequest = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultToolbarItemWidth) + 12,
+				WidthRequest = FluidConfig.DefaultToolbarItemWidth + 12,
 			});
 		}
 
@@ -96,7 +96,7 @@ namespace NControl.Mvvm
 
 		public static BindableProperty TintColorProperty = BindableProperty.Create(
 			nameof(TintColor), typeof(Color), typeof(FluidNavigationBar), 
-			MvvmApp.Current.Colors.Get(Config.NegativeTextColor), BindingMode.OneWay);
+			Config.NegativeTextColor, BindingMode.OneWay);
 
 		/// <summary>
 		/// Gets or sets the tint color.
@@ -251,7 +251,7 @@ namespace NControl.Mvvm
 			if (lastToolbarItem != null)
 			{
 				lastToolbarItem.Content.Margin = new Thickness(0, 0, 12, 0);
-				lastToolbarItem.WidthRequest = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultToolbarItemWidth) + 12;
+				lastToolbarItem.WidthRequest = FluidConfig.DefaultToolbarItemWidth + 12;
 			}
 		}
 		#endregion

@@ -15,8 +15,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		public static BindableProperty BorderColorProperty = BindableProperty.Create(
 			nameof(BorderColor), typeof(Color), typeof(FluidRoundCornerView), 
-			MvvmApp.Current.Colors.Get(Config.BorderColor),
-			BindingMode.OneWay);
+			Config.BorderColor, BindingMode.OneWay);
 
 		/// <summary>
 		/// Gets or sets the BorderColor of the FluidShadowView instance.
@@ -32,8 +31,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		public static BindableProperty BorderWidthProperty = BindableProperty.Create(
 			nameof(BorderWidth), typeof(double), typeof(FluidRoundCornerView), 
-			MvvmApp.Current.Sizes.Get(Config.DefaultBorderSize),
-			BindingMode.OneWay);
+			Config.DefaultBorderSize, BindingMode.OneWay);
 
 		/// <summary>
 		/// Gets or sets the BorderWidth of the FluidShadowView instance.
@@ -49,7 +47,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		public static BindableProperty BorderRadiusProperty = BindableProperty.Create(
 			nameof(BorderRadius), typeof(int), typeof(FluidRoundCornerView), 
-			(int)MvvmApp.Current.Sizes.Get(FluidConfig.DefaultBorderRadius), BindingMode.OneWay);
+			FluidConfig.DefaultBorderRadius, BindingMode.OneWay);
 
 		/// <summary>
 		/// Gets or sets the BorderRadius of the FluidShadowView instance.

@@ -14,8 +14,8 @@ namespace NControl.Mvvm
 
 		public FluidActivityIndicator()
 		{
-			HeightRequest = MvvmApp.Current.Sizes.Get(Config.DefaultActivityIndicatorSize);
-			WidthRequest = MvvmApp.Current.Sizes.Get(Config.DefaultActivityIndicatorSize);
+			HeightRequest = Config.DefaultActivityIndicatorSize;
+			WidthRequest = Config.DefaultActivityIndicatorSize;
 
 			Content = _layout = new RelativeLayout();
 			Opacity = 0.0;
@@ -79,7 +79,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		public static BindableProperty ColorProperty = BindableProperty.Create(
 			nameof(Color), typeof(Color), typeof(FluidActivityIndicator),
-			MvvmApp.Current.Colors.Get(Config.PrimaryColor), BindingMode.OneWay);
+			Config.PrimaryColor, BindingMode.OneWay);
 
 		/// <summary>
 		/// Gets or sets the Color of the CustomActivitySpinner instance.
@@ -173,7 +173,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		public static BindableProperty ColorProperty = BindableProperty.Create(
 			nameof(Color), typeof(Color), typeof(SpinningCircleControl),
-			MvvmApp.Current.Colors.Get(Config.TextColor), BindingMode.OneWay,
+			Config.TextColor, BindingMode.OneWay,
 			null, propertyChanged: (bindable, oldValue, newValue) =>
 			{
 				var ctrl = (SpinningCircleControl)bindable;

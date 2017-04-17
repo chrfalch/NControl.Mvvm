@@ -26,7 +26,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		public static BindableProperty ShadowColorProperty = BindableProperty.Create(
 			nameof(ShadowColor), typeof(Color), typeof(FluidShadowView),
-			MvvmApp.Current.Colors.Get(FluidConfig.DefaultShadowColor), BindingMode.OneWay);
+			FluidConfig.DefaultShadowColor, BindingMode.OneWay);
 
 		/// <summary>
 		/// Gets or sets the ShadowColor of the FluidShadowView instance.

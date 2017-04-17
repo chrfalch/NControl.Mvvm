@@ -83,14 +83,7 @@ namespace NControl.Mvvm
 				// Set up services
 				using (PerformanceTimer.Current.BeginTimer(this, "Registering Services"))
 					RegisterServices();
-
-				// Register configuration providers
-				using (PerformanceTimer.Current.BeginTimer(this, "Registering Settings"))
-				{
-					RegisterSizeProvider();
-					RegisterColorProvider();
-				}
-
+				
 				// Initialize platform app
 				using (PerformanceTimer.Current.BeginTimer(this, "Platform Initialize"))
 					platform.Initialize();
@@ -120,7 +113,7 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Get the specified key and callback.
 		/// </summary>
-		public T Get<T>(Func<T> callback = null, [CallerMemberName] string key = null) where T : class
+		public T Get<T>(Func<T> callback = null, [CallerMemberName] string key = null)
 		{
 			if (string.IsNullOrEmpty(key))
 				throw new ArgumentException("key");
@@ -139,7 +132,7 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Set the specified key and value.
 		/// </summary>
-		public void Set<T>(T value = null, [CallerMemberName] string key = null) where T : class
+		public void Set<T>(T value, [CallerMemberName] string key = null)
 		{
 			if (string.IsNullOrEmpty(key))
 				throw new ArgumentException("key");
@@ -180,16 +173,6 @@ namespace NControl.Mvvm
 		/// <value>The environment.</value>
         public IEnvironmentProvider Environment { get { return Get(()=>Container.Resolve<IEnvironmentProvider>()); } }
 
-		/// <summary>
-		/// Returns the default sizes for the app
-		/// </summary>
-		public ISizeProvider Sizes { get { return Get(()=>Container.Resolve<ISizeProvider>()); } }
-
-		/// <summary>
-		/// Gets the color constants
-		/// </summary>
-		public IColorProvider Colors { get { return Get(()=>Container.Resolve<IColorProvider>()); } }
-
 		#endregion
 
 		#region Protected Members
@@ -212,33 +195,11 @@ namespace NControl.Mvvm
 		}
 
 		/// <summary>
-		/// Registers the size provider.
-		/// </summary>
-		protected virtual void RegisterSizeProvider()
-		{
-			Container.RegisterSingleton<ISizeProvider, DefaultSizeProvider>();
-		}
-
-		/// <summary>
 		/// Set up default sizes
 		/// </summary>
 		protected virtual void SetupSizes()
 		{
-			Current.Sizes.Set(Config.DefaultPadding, 8);
-			Current.Sizes.Set(Config.DefaultSpacing, 8);
-			Current.Sizes.Set(Config.DefaultLargePadding, 24);
-			Current.Sizes.Set(Config.DefaultLargeSpacing, 14);
-			Current.Sizes.Set(Config.DefaultBorderSize, 0.5 * Current.Environment.DisplayDensity);
-			Current.Sizes.Set(Config.DefaultBoldBorderSize, 1.0 * Current.Environment.DisplayDensity);
-			Current.Sizes.Set(Config.DefaultActivityIndicatorSize, 44);
-		}
-
-		/// <summary>
-		/// Registers the color provider.
-		/// </summary>
-		protected virtual void RegisterColorProvider()
-		{
-			Container.RegisterSingleton<IColorProvider, DefaultColorProvider>();
+            
 		}
 
 		/// <summary>
@@ -246,19 +207,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		protected virtual void SetupColors()
 		{
-			Current.Colors.Set(Config.PrimaryColor, Color.FromHex("#2196F3"));
-			Current.Colors.Set(Config.PrimaryDarkColor, Color.FromHex("#1976D2"));
-			Current.Colors.Set(Config.AccentColor, Color.Accent);
-
-			Current.Colors.Set(Config.TextColor, Color.Black);
-			Current.Colors.Set(Config.NegativeTextColor, Color.White);
-			Current.Colors.Set(Config.AccentTextColor, Color.Accent);
-			Current.Colors.Set(Config.LightTextColor, Color.FromHex("CECECE"));
-
-			Current.Colors.Set(Config.BorderColor, Color.FromHex("CECECE"));
-
-			Current.Colors.Set(Config.ViewBackgroundColor, Color.FromHex("FEFEFE"));
-			Current.Colors.Set(Config.ViewTransparentBackgroundColor, Color.Black.MultiplyAlpha(0.75));
+			
             
 		}
 

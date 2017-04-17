@@ -7,7 +7,7 @@ namespace NControl.Mvvm
 	{
 		public FluidToolbarControl(View innerControl)
 		{
-			WidthRequest = MvvmApp.Current.Sizes.Get(FluidConfig.DefaultToolbarItemWidth);
+			WidthRequest = FluidConfig.DefaultToolbarItemWidth;
 			Content = innerControl;
 		}
 	}

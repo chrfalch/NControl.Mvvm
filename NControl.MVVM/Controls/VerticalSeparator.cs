@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Xamarin.Forms;
 
 namespace NControl.Mvvm
@@ -7,8 +7,8 @@ namespace NControl.Mvvm
 	{
 		public VerticalSeparator()
 		{			
-			HeightRequest = MvvmApp.Current.Sizes.Get(Config.DefaultBorderSize);
-			Color = MvvmApp.Current.Colors.Get(Config.BorderColor);
+			HeightRequest = Config.DefaultBorderSize;
+			Color = Config.BorderColor;
 		}
 	}
 
@@ -16,8 +16,8 @@ namespace NControl.Mvvm
 	{
 		public VerticalLightSeparator()
 		{			
-			HeightRequest = MvvmApp.Current.Sizes.Get(Config.DefaultBorderSize) * 0.5;
-			Color = MvvmApp.Current.Colors.Get(Config.BorderColor);
+			HeightRequest = Config.DefaultBorderSize * 0.5;
+			Color = Config.BorderColor;
 		}
 	}
 }

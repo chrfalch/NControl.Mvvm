@@ -37,11 +37,11 @@ namespace NControl.Mvvm
 		/// </summary>
 		public BaseFluidContentsView()
 		{
-			BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewBackgroundColor);
+			BackgroundColor = Config.ViewBackgroundColor;
 
 			// Main layout
 			_layout = new RelativeLayout();
-			_leftBorder = new BoxView { BackgroundColor = MvvmApp.Current.Colors.Get(Config.BorderColor) };
+			_leftBorder = new BoxView { BackgroundColor = Config.BorderColor };
 
 			// OnAppearing/OnDisappearing
 			_onAppearingCommand = new AsyncCommand(async (obj) => await ViewModel.OnAppearingAsync());

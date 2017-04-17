@@ -16,7 +16,7 @@ namespace NControl.Mvvm
 
 			_overlay = new BoxView
 			{
-				BackgroundColor = MvvmApp.Current.Colors.Get(Config.ViewTransparentBackgroundColor),
+				BackgroundColor = Config.ViewTransparentBackgroundColor,
 			};
 
 			layout.Children.Add(_overlay, () => layout.Bounds);
