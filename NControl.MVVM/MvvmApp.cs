@@ -30,7 +30,7 @@ namespace NControl.Mvvm
 		/// <param name="platform">Platform.</param>
 		public MvvmApp(IMvvmPlatform platform)
 		{
-			PerformanceTimer.Current.BeginSection(this);
+			PerformanceTimer.Current.BeginSection();
 
 			// Save static for ease of access
 			Current = this;
@@ -49,7 +49,7 @@ namespace NControl.Mvvm
 		/// <param name="platform">Platform.</param>
 		private void Setup(IMvvmPlatform platform)
 		{
-			PerformanceTimer.Current.BeginSection(this);
+			PerformanceTimer.Current.BeginSection();
 
 			// Register container
 			using (PerformanceTimer.Current.BeginTimer(this, "Setting up container"))
@@ -224,7 +224,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		protected virtual void RegisterViewContainer()
 		{
-			PerformanceTimer.Current.BeginSection(this);
+			PerformanceTimer.Current.BeginSection();
 			Container.RegisterSingleton<IViewContainer, DefaultViewContainer>();
 			PerformanceTimer.Current.EndSection();
 		}

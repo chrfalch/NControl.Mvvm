@@ -19,7 +19,7 @@ namespace MvvmDemo.Droid
 		protected override void OnCreate (Bundle bundle)
 		{
 			PerformanceTimer.Init();
-			PerformanceTimer.Current.BeginSection(this);
+			PerformanceTimer.Current.BeginSection();
 
 			TabLayoutResource = Resource.Layout.Tabbar;
 			ToolbarResource = Resource.Layout.Toolbar;

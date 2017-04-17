@@ -55,13 +55,12 @@ namespace NControl.Mvvm
 		/// <param name="mainPage">Main page.</param>
 		public void SetMainPage(Page mainPage)
 		{
-			PerformanceTimer.Current.BeginSection(this);
+			PerformanceTimer.Current.BeginSection();
 			using(PerformanceTimer.Current.BeginTimer(this, "Setting Application.Current.MainPage"))
 				Application.Current.MainPage = mainPage;
 
 			if (_masterDetailPage == null)
 			{
-				PerformanceTimer.Current.BeginSection(this, "Setting up main page");
 				if (_navigationPageStack.Any())
 					_navigationPageStack.Pop();
 			
@@ -72,19 +71,15 @@ namespace NControl.Mvvm
 				if (navPage != null)
 					navPage.Popped += NavPage_Popped;
 
-				PerformanceTimer.Current.EndSection();
 			}
 			else
 			{
-				PerformanceTimer.Current.BeginSection(this, "Setting Master Details Page");
-
 				if(_masterDetailPage.Detail is NavigationPage)					
 					(_masterDetailPage.Detail as NavigationPage).Popped += NavPage_Popped;
 
 				if (_masterDetailPage.Master is NavigationPage)
 					(_masterDetailPage.Master as NavigationPage).Popped += NavPage_Popped;
 
-				PerformanceTimer.Current.EndSection();
 			}
 
 			PerformanceTimer.Current.EndSection();
