@@ -5,54 +5,76 @@ using System.Runtime.CompilerServices;
 
 namespace NControl.Mvvm
 {
-	public class PerformanceTimer
+	public interface IPerformanceTimer
 	{
-		public static PerformanceTimer Current;
+	IDisposable BeginTimer(object sender, string message = null, [CallerMemberName] string methodName = null);
+		void BeginSection(object sender, string message = null, [CallerMemberName] string methodName = null);
+		void EndSection();
+	}
+
+	public class PerformanceTimerMock : IPerformanceTimer
+	{
+		public void BeginSection(object sender, string message, string methodName){}
+		public void EndSection() {}
+		public IDisposable BeginTimer(object sender, string message, string methodName)
+		{
+			return new DisposableMock();
+		}
+	}
+
+	public class DisposableMock: IDisposable
+	{
+		public void Dispose() { }
+	}
+
+	public class PerformanceTimer: IPerformanceTimer
+	{
+		static IPerformanceTimer _current;
+		public static IPerformanceTimer Current { get {
+				return _current ?? new PerformanceTimerMock();
+			} 
+		}
 
 		List<TimingElement> _elements = new List<TimingElement>();
 		int _level = 0;
 
 		public static void Init()
 		{
-			Current = new PerformanceTimer();
+			_current = new PerformanceTimer();
 		}
 
 		PerformanceTimer()
 		{
 			StartTime = DateTime.Now;
-			CurrentTime = StartTime;
 		}
 
-		public void AddTimer(object sender, string message = null, [CallerMemberName] string methodName = "Unknown")
+		public IDisposable BeginTimer(object sender, string message = null, [CallerMemberName] string methodName = "Unknown")
 		{
-			_elements.Add(new TimingElement
+			var timingElement = new TimingElement
 			{
 				Level = _level,
 				Text = message,
-				Time = DateTime.Now,
-				SincePrevious = DateTime.Now - CurrentTime,
-				SinceStart = DateTime.Now - StartTime,
+				StartTime = DateTime.Now,
 				Reference = new WeakReference<object>(sender),
 				Caller = methodName,
-			});
+			};
 
-			CurrentTime = DateTime.Now;
+			_elements.Add(timingElement);
+
+			return timingElement;
 		}
 
 		public void BeginSection(object sender, string message = null, [CallerMemberName] string methodName = "Unknown")
 		{
 			_level++;
-			AddTimer(sender, message, methodName);
-			_level++;
 		}
 
 		public void EndSection()
 		{
-			_level-=2;
+			_level--;
 		}
 
 		DateTime StartTime { get; set; }
-		DateTime CurrentTime { get; set; }
 
 		public override string ToString()
 		{
@@ -61,29 +83,49 @@ namespace NControl.Mvvm
 			foreach (var e in _elements)
 			{
 				var indentation = new string(' ', e.Level * 2);
-				var idx = _elements.IndexOf(e);
 				object target = null;
 				if (e.Reference != null)
 					e.Reference.TryGetTarget(out target);
 				
-				if (idx < _elements.Count - 1)
-					retVal += $"{_elements.ElementAt(idx + 1).SincePrevious.TotalMilliseconds, 10}:{indentation}[{target?.GetType().Name}.{e.Caller}]: {e.Text}\n";
-				else
-					retVal += $"{"",10}:{indentation}[{target?.GetType().Name}.{e.Caller}]: {e.Text}\n";
+				retVal += $"{(e.EndTime - e.StartTime).TotalMilliseconds, 10}:{indentation}[{target?.GetType().Name}.{e.Caller}]: {e.Text}\n";
 			}
 
 			return retVal;
 		}
 	}
 
-	public class TimingElement
+	public class TimingElement: IDisposable
 	{		
+		public bool IsSection { get; set; }
 		public WeakReference<object> Reference { get; set; }
 		public string Caller { get; set; }
 		public int Level { get; set; }
 		public string Text { get; set; }
-		public DateTime Time { get; set; }
-		public TimeSpan SinceStart { get; set; }
-		public TimeSpan SincePrevious { get; set; }
+		public DateTime StartTime { get; set; }
+		public DateTime EndTime { get; set; }
+
+		#region IDisposable Support
+		bool disposedValue = false; // To detect redundant calls
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					EndTime = DateTime.Now;
+				}
+
+				disposedValue = true;
+			}
+		}
+
+		// This code added to correctly implement the disposable pattern.
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);		
+		}
+		#endregion
 	}
 }

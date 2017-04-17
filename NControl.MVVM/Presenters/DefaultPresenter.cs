@@ -55,30 +55,28 @@ namespace NControl.Mvvm
 		/// <param name="mainPage">Main page.</param>
 		public void SetMainPage(Page mainPage)
 		{
-			PerformanceTimer.Current?.BeginSection(this);
-			PerformanceTimer.Current?.AddTimer(this, "Setting Application.Current.MainPage");
-			Application.Current.MainPage = mainPage;
-			PerformanceTimer.Current?.AddTimer(this, "Setting Application.Current.MainPage done.");
+			PerformanceTimer.Current.BeginSection(this);
+			using(PerformanceTimer.Current.BeginTimer(this, "Setting Application.Current.MainPage"))
+				Application.Current.MainPage = mainPage;
 
 			if (_masterDetailPage == null)
 			{
-				PerformanceTimer.Current?.AddTimer(this, "Popping navigation stack Page");
+				PerformanceTimer.Current.BeginSection(this, "Setting up main page");
 				if (_navigationPageStack.Any())
 					_navigationPageStack.Pop();
-
-				PerformanceTimer.Current?.AddTimer(this, "Pushing Navigation Element");
+			
 				_navigationPageStack.Push(new NavigationElement { Page = mainPage });
 
 				// Is mainpage a navigation page?
 				var navPage = mainPage as NavigationPage;
 				if (navPage != null)
 					navPage.Popped += NavPage_Popped;
-								
-				PerformanceTimer.Current?.AddTimer(this, "Setting Main Page done");
+
+				PerformanceTimer.Current.EndSection();
 			}
 			else
 			{
-				PerformanceTimer.Current?.AddTimer(this, "Setting Master Details Page");
+				PerformanceTimer.Current.BeginSection(this, "Setting Master Details Page");
 
 				if(_masterDetailPage.Detail is NavigationPage)					
 					(_masterDetailPage.Detail as NavigationPage).Popped += NavPage_Popped;
@@ -86,14 +84,14 @@ namespace NControl.Mvvm
 				if (_masterDetailPage.Master is NavigationPage)
 					(_masterDetailPage.Master as NavigationPage).Popped += NavPage_Popped;
 
-				PerformanceTimer.Current?.AddTimer(this, "Setting Master Details Page done");
+				PerformanceTimer.Current.EndSection();
 			}
 
-			PerformanceTimer.Current?.EndSection();
+			PerformanceTimer.Current.EndSection();
 		}
 
-		/// <summary>
-		/// Sets the master detail master.
+		/// <sumy>
+		/// Sets the master .
 		/// </summary>
 		/// <param name="page">Page.</param>
 		public void SetMasterDetailMaster(MasterDetailPage page, bool useMasterAsNavigationStack = false)

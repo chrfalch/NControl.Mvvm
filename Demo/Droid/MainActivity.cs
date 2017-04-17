@@ -19,30 +19,24 @@ namespace MvvmDemo.Droid
 		protected override void OnCreate (Bundle bundle)
 		{
 			PerformanceTimer.Init();
-			PerformanceTimer.Current?.BeginSection(this);
+			PerformanceTimer.Current.BeginSection(this);
 
 			TabLayoutResource = Resource.Layout.Tabbar;
 			ToolbarResource = Resource.Layout.Toolbar;
 
 			base.OnCreate (bundle);
 
-			PerformanceTimer.Current?.AddTimer(this, "Call Xamarin.Forms.Init");
-
-			global::Xamarin.Forms.Forms.Init (this, bundle);
-
-			PerformanceTimer.Current?.AddTimer(this, "Xamarin.Forms.Init Called");
+			using(PerformanceTimer.Current.BeginTimer(this, "Call Xamarin.Forms.Init"))
+				global::Xamarin.Forms.Forms.Init (this, bundle);
 
 
-			PerformanceTimer.Current?.AddTimer(this, "Call LoadApplication");
+			using(PerformanceTimer.Current.BeginTimer(this, "Call LoadApplication"))
+				LoadApplication (new DemoMvvmApp (new FluidDroidPlatform(this)));
 
-			LoadApplication (new DemoMvvmApp (new FluidDroidPlatform(this)));
-
-			PerformanceTimer.Current?.AddTimer(this, "LoadApplication Called");
-
-			PerformanceTimer.Current?.EndSection();
+			PerformanceTimer.Current.EndSection();
 
 			// Results
-			System.Diagnostics.Debug.WriteLine(PerformanceTimer.Current?.ToString());
+			System.Diagnostics.Debug.WriteLine(PerformanceTimer.Current.ToString());
 		}
 	}
 }

@@ -49,26 +49,26 @@ namespace NControl.Mvvm
 		/// </summary>
 		public void SetMainPage(Page page)
 		{
-			PerformanceTimer.Current?.BeginSection(this);
-			PerformanceTimer.Current?.AddTimer(this, "Creating container page");
+			PerformanceTimer.Current.BeginSection(this);
+			PerformanceTimer.Current.BeginTimer(this, "Creating container page");
 
 			// Create container page
 			_contentPage = new FluidContainerPage();
 			Application.Current.MainPage = _contentPage;
 
-			PerformanceTimer.Current?.AddTimer(this, "Container page done.");
+			PerformanceTimer.Current.BeginTimer(this, "Container page done.");
 
 			// instantiate view type
-			PerformanceTimer.Current?.AddTimer(this, "Getting Main View Type");
+			PerformanceTimer.Current.BeginTimer(this, "Getting Main View Type");
 			var mainViewType = (MvvmApp.Current as FluidMvvmApp).GetMainViewType();
 			var mainView = Container.Resolve(mainViewType) as ContentView;
 
-			PerformanceTimer.Current?.AddTimer(this, "Presenting Main View");
+			PerformanceTimer.Current.BeginTimer(this, "Presenting Main View");
 			PresentView(mainView, PresentationMode.Default, (b) => {
 				throw new InvalidOperationException("Should not dismiss main view/viewmodel!");
 			});
 
-			PerformanceTimer.Current?.EndSection();
+			PerformanceTimer.Current.EndSection();
 		}
 
 		/// <summary>

@@ -30,7 +30,7 @@ namespace NControl.Mvvm
 		/// <param name="platform">Platform.</param>
 		public MvvmApp(IMvvmPlatform platform)
 		{
-			PerformanceTimer.Current?.BeginSection(this);
+			PerformanceTimer.Current.BeginSection(this);
 
 			// Save static for ease of access
 			Current = this;
@@ -38,7 +38,7 @@ namespace NControl.Mvvm
 			// Avoid calling virtual members from the constructor:
 			Setup(platform);
 
-			PerformanceTimer.Current?.EndSection();
+			PerformanceTimer.Current.EndSection();
 		}
 
 		#region Setup
@@ -49,56 +49,58 @@ namespace NControl.Mvvm
 		/// <param name="platform">Platform.</param>
 		private void Setup(IMvvmPlatform platform)
 		{
-			PerformanceTimer.Current?.BeginSection(this);
+			PerformanceTimer.Current.BeginSection(this);
 
 			// Register container
-			PerformanceTimer.Current?.AddTimer(this, "Setting up container");
-			Container.Initialize(CreateContainer());
+			using (PerformanceTimer.Current.BeginTimer(this, "Setting up container"))
+				Container.Initialize(CreateContainer());			
 
 			// Create view container and presenter
-			PerformanceTimer.Current?.AddTimer(this, "Registering Views");
-			RegisterViewContainer();
+			using(PerformanceTimer.Current.BeginTimer(this, "Registering Views"))
+				RegisterViewContainer();
 
-			PerformanceTimer.Current?.AddTimer(this, "Registering Presenter");
-			RegisterPresenter();
+			using(PerformanceTimer.Current.BeginTimer(this, "Registering Presenter"))
+				RegisterPresenter();
 
 			// Sets up the messaging service
-			PerformanceTimer.Current?.AddTimer(this, "Registering Messaging Service");
-			RegisterMessagingService();
+			using(PerformanceTimer.Current.BeginTimer(this, "Registering Messaging Service"))
+				RegisterMessagingService();
 
 			// Register providers
-			PerformanceTimer.Current?.AddTimer(this, "Registering Providers");
-			RegisterProviders();
+			using(PerformanceTimer.Current.BeginTimer(this, "Registering Providers"))
+				RegisterProviders();
 
 			// Set up services
-			PerformanceTimer.Current?.AddTimer(this, "Registering Services");
-			RegisterServices();
+			using(PerformanceTimer.Current.BeginTimer(this, "Registering Services"))
+				RegisterServices();
 
 			// Register configuration providers
-			PerformanceTimer.Current?.AddTimer(this, "Registering Settings");
-			RegisterSizeProvider();
-			RegisterColorProvider();
+			using (PerformanceTimer.Current.BeginTimer(this, "Registering Settings"))
+			{
+				RegisterSizeProvider();
+				RegisterColorProvider();
+			}
 
 			// Initialize platform app
-			PerformanceTimer.Current?.AddTimer(this, "Platform Initialize");
-			platform.Initialize();
+			using(PerformanceTimer.Current.BeginTimer(this, "Platform Initialize"))
+				platform.Initialize();
 
 			// Set up views
-			PerformanceTimer.Current?.AddTimer(this, "Registering Views");
-			RegisterViews();
+	      	using(PerformanceTimer.Current.BeginTimer(this, "Registering Views"))
+				RegisterViews();
 
 			// Set up colors and sizes
-			PerformanceTimer.Current?.AddTimer(this, "Settings up settings");
-			SetupSizes();
-			SetupColors();
-			PerformanceTimer.Current?.AddTimer(this, "Settings up settings done.");
+			using (PerformanceTimer.Current.BeginTimer(this, "Settings up settings"))
+			{
+				SetupSizes();
+				SetupColors();
+			}
 
 			// Set main page
-			PerformanceTimer.Current?.AddTimer(this, "Setting Main Page");
-			Presenter.SetMainPage(GetMainPage());
-			PerformanceTimer.Current?.AddTimer(this, "Setting Main Page Done");
+			using(PerformanceTimer.Current.BeginTimer(this, "Setting Main Page"))
+				Presenter.SetMainPage(GetMainPage());
 
-			PerformanceTimer.Current?.EndSection();
+			PerformanceTimer.Current.EndSection();
 		}
 
 		#endregion
@@ -222,9 +224,9 @@ namespace NControl.Mvvm
 		/// </summary>
 		protected virtual void RegisterViewContainer()
 		{
-			PerformanceTimer.Current?.BeginSection(this);
+			PerformanceTimer.Current.BeginSection(this);
 			Container.RegisterSingleton<IViewContainer, DefaultViewContainer>();
-			PerformanceTimer.Current?.EndSection();
+			PerformanceTimer.Current.EndSection();
 		}
 
 		/// <summary>
