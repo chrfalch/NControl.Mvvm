@@ -16,24 +16,23 @@ namespace MvvmDemo.Droid
 	[Activity (Label = "MvvmDemo.Droid", Icon = "@drawable/icon", MainLauncher = true, Theme = "@style/MyTheme", ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
 	public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 	{
-		protected override void OnCreate (Bundle bundle)
+		protected override void OnCreate(Bundle bundle)
 		{
 			PerformanceTimer.Init();
-			PerformanceTimer.Current.BeginSection();
+			using (PerformanceTimer.Current.BeginTimer(this))
+			{
+				TabLayoutResource = Resource.Layout.Tabbar;
+				ToolbarResource = Resource.Layout.Toolbar;
 
-			TabLayoutResource = Resource.Layout.Tabbar;
-			ToolbarResource = Resource.Layout.Toolbar;
+				base.OnCreate(bundle);
 
-			base.OnCreate (bundle);
-
-			using(PerformanceTimer.Current.BeginTimer(this, "Call Xamarin.Forms.Init"))
-				global::Xamarin.Forms.Forms.Init (this, bundle);
+				using (PerformanceTimer.Current.BeginTimer(this, "Call Xamarin.Forms.Init"))
+					global::Xamarin.Forms.Forms.Init(this, bundle);
 
 
-			using(PerformanceTimer.Current.BeginTimer(this, "Call LoadApplication"))
-				LoadApplication (new DemoMvvmApp (new FluidDroidPlatform(this)));
-
-			PerformanceTimer.Current.EndSection();
+				using (PerformanceTimer.Current.BeginTimer(this, "Call LoadApplication"))
+					LoadApplication(new DemoMvvmApp(new FluidDroidPlatform(this)));
+			}
 
 			// Results
 			System.Diagnostics.Debug.WriteLine(PerformanceTimer.Current.ToString());

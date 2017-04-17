@@ -8,14 +8,10 @@ namespace NControl.Mvvm
 	public interface IPerformanceTimer
 	{
 		IDisposable BeginTimer(object sender, string message = null, [CallerMemberName] string methodName = null, [CallerFilePath] string filePath = null, [CallerLineNumber] int lineNumber = -1);
-		void BeginSection();
-		void EndSection();
 	}
 
 	public class PerformanceTimerMock : IPerformanceTimer
 	{
-		public void BeginSection(){}
-		public void EndSection() {}
 		public IDisposable BeginTimer(object sender, string message = null, [CallerMemberName] string methodName = null, [CallerFilePath] string filePath = null, [CallerLineNumber] int lineNumber = -1)
 		{
 			return new DisposableMock();
@@ -41,7 +37,6 @@ namespace NControl.Mvvm
 		}
 
 		List<TimingElement> _elements = new List<TimingElement>();
-		int _level = 0;
 
 		public static void Init()
 		{
@@ -57,8 +52,7 @@ namespace NControl.Mvvm
 		{
 			var timingElement = new TimingElement
 			{
-				Level = _level,
-				Text = message,
+				Text = message?? "",
 				StartTime = DateTime.Now,
 				Reference = new WeakReference<object>(sender),
 				CallerMethodName = methodName,
@@ -72,16 +66,6 @@ namespace NControl.Mvvm
 			_elements.Add(timingElement);
 
 			return timingElement;
-		}
-
-		public void BeginSection()
-		{
-			_level++;
-		}
-
-		public void EndSection()
-		{
-			_level--;
 		}
 
 		DateTime StartTime { get; set; }
@@ -99,13 +83,14 @@ namespace NControl.Mvvm
 				return length;
 			});
 
-			messageLength += 2;
+			messageLength+=2;
+
 			var maxMessageSpacer = new string('=', messageLength);
 			var maxMessageEmptySpacer = new string(' ', messageLength - "Message".Length);
 			   
 			var retVal = 
-				$"{"Self"      , 10}\t{"Total"     , 10}\t  Message{maxMessageEmptySpacer}\t  Location\n" + 
-				$"{"==========", 10}\t{"==========", 10}\t  {maxMessageSpacer            }\t  ========\n";
+				$"{"Self"      , 10}\t{"Total"     , 10}\tMessage{maxMessageEmptySpacer}\t  Location\n" + 
+				$"{"==========", 10}\t{"==========", 10}\t{maxMessageSpacer            }\t  ========\n";
 
 			foreach (var e in _elements)
 			{
@@ -129,7 +114,6 @@ namespace NControl.Mvvm
 
 	public class TimingElement: IDisposable
 	{		
-		public bool IsSection { get; set; }
 		public WeakReference<object> Reference { get; set; }
 		public string CallerMethodName { get; set; }
 		public string CallerPath { get; set; }

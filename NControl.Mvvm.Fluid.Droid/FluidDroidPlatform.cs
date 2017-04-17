@@ -12,12 +12,14 @@ namespace NControl.Mvvm.Droid
 	{
 		public FluidDroidPlatform(Activity activity) : base(activity)
 		{
-			XAnimation.Droid.XAnimation.Init();
+			using(PerformanceTimer.Current.BeginTimer(this))
+				XAnimation.Droid.XAnimation.Init();
 		}
 
 		public override void RegisterActivityIndicator()
 		{
-			Container.RegisterSingleton<IActivityIndicator, FluidActivityIndicatorView>();
+			using(PerformanceTimer.Current.BeginTimer(this))
+				Container.RegisterSingleton<IActivityIndicator, FluidActivityIndicatorView>();
 		}
 	}
 }

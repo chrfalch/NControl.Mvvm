@@ -32,17 +32,26 @@ namespace NControl.Mvvm.Droid
 		/// </summary>
 		public virtual void Initialize ()
 		{
-			NControls.Init ();
+			using (PerformanceTimer.Current.BeginTimer(this))
+			{
+				using(PerformanceTimer.Current.BeginTimer(this, "NControls.Init()"))
+					NControls.Init();
 
-			RegisterActivityIndicator();
-			Container.Register<IImageProvider, DroidImageProvider>();
-			Container.Register<IGestureRecognizerProvider, DroidGestureRecognizerProvider>();
-			Container.RegisterSingleton<IEnvironmentProvider, DroidEnvironmentProvider>();
+				RegisterActivityIndicator();
+
+				using (PerformanceTimer.Current.BeginTimer(this, "Default providers"))
+				{
+					Container.Register<IImageProvider, DroidImageProvider>();
+					Container.Register<IGestureRecognizerProvider, DroidGestureRecognizerProvider>();
+					Container.RegisterSingleton<IEnvironmentProvider, DroidEnvironmentProvider>();
+				}
+			}
 		}
 
 		public virtual void RegisterActivityIndicator()
 		{
-			Container.RegisterSingleton<IActivityIndicator, DroidActivityIndicator>();
+			using(PerformanceTimer.Current.BeginTimer(this))
+				Container.RegisterSingleton<IActivityIndicator, DroidActivityIndicator>();
 		}
 	}
 }

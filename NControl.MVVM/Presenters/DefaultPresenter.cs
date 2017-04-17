@@ -55,40 +55,39 @@ namespace NControl.Mvvm
 		/// <param name="mainPage">Main page.</param>
 		public void SetMainPage(Page mainPage)
 		{
-			PerformanceTimer.Current.BeginSection();
-			using(PerformanceTimer.Current.BeginTimer(this, "Setting Application.Current.MainPage"))
-				Application.Current.MainPage = mainPage;
-
-			if (_masterDetailPage == null)
+			using (PerformanceTimer.Current.BeginTimer(this))
 			{
-				if (_navigationPageStack.Any())
-					_navigationPageStack.Pop();
-			
-				_navigationPageStack.Push(new NavigationElement { Page = mainPage });
+				using (PerformanceTimer.Current.BeginTimer(this, "Setting Application.Current.MainPage"))
+					Application.Current.MainPage = mainPage;
 
-				// Is mainpage a navigation page?
-				var navPage = mainPage as NavigationPage;
-				if (navPage != null)
-					navPage.Popped += NavPage_Popped;
+				if (_masterDetailPage == null)
+				{
+					if (_navigationPageStack.Any())
+						_navigationPageStack.Pop();
 
+					_navigationPageStack.Push(new NavigationElement { Page = mainPage });
+
+					// Is mainpage a navigation page?
+					var navPage = mainPage as NavigationPage;
+					if (navPage != null)
+						navPage.Popped += NavPage_Popped;
+
+				}
+				else
+				{
+					if (_masterDetailPage.Detail is NavigationPage)
+						(_masterDetailPage.Detail as NavigationPage).Popped += NavPage_Popped;
+
+					if (_masterDetailPage.Master is NavigationPage)
+						(_masterDetailPage.Master as NavigationPage).Popped += NavPage_Popped;
+
+				}
 			}
-			else
-			{
-				if(_masterDetailPage.Detail is NavigationPage)					
-					(_masterDetailPage.Detail as NavigationPage).Popped += NavPage_Popped;
-
-				if (_masterDetailPage.Master is NavigationPage)
-					(_masterDetailPage.Master as NavigationPage).Popped += NavPage_Popped;
-
-			}
-
-			PerformanceTimer.Current.EndSection();
 		}
 
-		/// <sumy>
-		/// Sets the master .
+		/// <summary>
+		/// Sets the master details page.
 		/// </summary>
-		/// <param name="page">Page.</param>
 		public void SetMasterDetailMaster(MasterDetailPage page, bool useMasterAsNavigationStack = false)
 		{
 			_masterDetailPage = page;

@@ -30,15 +30,14 @@ namespace NControl.Mvvm
 		/// <param name="platform">Platform.</param>
 		public MvvmApp(IMvvmPlatform platform)
 		{
-			PerformanceTimer.Current.BeginSection();
+			using (PerformanceTimer.Current.BeginTimer(this))
+			{
+				// Save static for ease of access
+				Current = this;
 
-			// Save static for ease of access
-			Current = this;
-
-			// Avoid calling virtual members from the constructor:
-			Setup(platform);
-
-			PerformanceTimer.Current.EndSection();
+				// Avoid calling virtual members from the constructor:
+				Setup(platform);
+			}
 		}
 
 		#region Setup
@@ -47,60 +46,60 @@ namespace NControl.Mvvm
 		/// Setup the specified platform.
 		/// </summary>
 		/// <param name="platform">Platform.</param>
-		private void Setup(IMvvmPlatform platform)
+		void Setup(IMvvmPlatform platform)
 		{
-			PerformanceTimer.Current.BeginSection();
-
-			// Register container
-			using (PerformanceTimer.Current.BeginTimer(this, "Setting up container"))
-				Container.Initialize(CreateContainer());			
-
-			// Create view container and presenter
-			using(PerformanceTimer.Current.BeginTimer(this, "Registering Views"))
-				RegisterViewContainer();
-
-			using(PerformanceTimer.Current.BeginTimer(this, "Registering Presenter"))
-				RegisterPresenter();
-
-			// Sets up the messaging service
-			using(PerformanceTimer.Current.BeginTimer(this, "Registering Messaging Service"))
-				RegisterMessagingService();
-
-			// Register providers
-			using(PerformanceTimer.Current.BeginTimer(this, "Registering Providers"))
-				RegisterProviders();
-
-			// Set up services
-			using(PerformanceTimer.Current.BeginTimer(this, "Registering Services"))
-				RegisterServices();
-
-			// Register configuration providers
-			using (PerformanceTimer.Current.BeginTimer(this, "Registering Settings"))
+			using (PerformanceTimer.Current.BeginTimer(this))
 			{
-				RegisterSizeProvider();
-				RegisterColorProvider();
+				// Register container
+				using (PerformanceTimer.Current.BeginTimer(this, "Setting up container"))
+					Container.Initialize(CreateContainer());
+
+				// Create view container and presenter
+				using (PerformanceTimer.Current.BeginTimer(this, "Registering Views"))
+					RegisterViewContainer();
+
+				using (PerformanceTimer.Current.BeginTimer(this, "Registering Presenter"))
+					RegisterPresenter();
+
+				// Sets up the messaging service
+				using (PerformanceTimer.Current.BeginTimer(this, "Registering Messaging Service"))
+					RegisterMessagingService();
+
+				// Register providers
+				using (PerformanceTimer.Current.BeginTimer(this, "Registering Providers"))
+					RegisterProviders();
+
+				// Set up services
+				using (PerformanceTimer.Current.BeginTimer(this, "Registering Services"))
+					RegisterServices();
+
+				// Register configuration providers
+				using (PerformanceTimer.Current.BeginTimer(this, "Registering Settings"))
+				{
+					RegisterSizeProvider();
+					RegisterColorProvider();
+				}
+
+				// Initialize platform app
+				using (PerformanceTimer.Current.BeginTimer(this, "Platform Initialize"))
+					platform.Initialize();
+
+				// Set up views
+				using (PerformanceTimer.Current.BeginTimer(this, "Registering Views"))
+					RegisterViews();
+
+				// Set up colors and sizes
+				using (PerformanceTimer.Current.BeginTimer(this, "Settings up settings"))
+				{
+					SetupSizes();
+					SetupColors();
+				}
+
+				// Set main page
+				using (PerformanceTimer.Current.BeginTimer(this, "Setting Main Page"))
+					Presenter.SetMainPage(GetMainPage());
+
 			}
-
-			// Initialize platform app
-			using(PerformanceTimer.Current.BeginTimer(this, "Platform Initialize"))
-				platform.Initialize();
-
-			// Set up views
-	      	using(PerformanceTimer.Current.BeginTimer(this, "Registering Views"))
-				RegisterViews();
-
-			// Set up colors and sizes
-			using (PerformanceTimer.Current.BeginTimer(this, "Settings up settings"))
-			{
-				SetupSizes();
-				SetupColors();
-			}
-
-			// Set main page
-			using(PerformanceTimer.Current.BeginTimer(this, "Setting Main Page"))
-				Presenter.SetMainPage(GetMainPage());
-
-			PerformanceTimer.Current.EndSection();
 		}
 
 		#endregion
@@ -224,9 +223,8 @@ namespace NControl.Mvvm
 		/// </summary>
 		protected virtual void RegisterViewContainer()
 		{
-			PerformanceTimer.Current.BeginSection();
-			Container.RegisterSingleton<IViewContainer, DefaultViewContainer>();
-			PerformanceTimer.Current.EndSection();
+			using(PerformanceTimer.Current.BeginTimer(this))
+				Container.RegisterSingleton<IViewContainer, DefaultViewContainer>();			
 		}
 
 		/// <summary>
