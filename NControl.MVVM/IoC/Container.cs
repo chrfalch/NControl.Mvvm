@@ -33,7 +33,9 @@ namespace NControl.Mvvm
 		/// <param name="provider">Provider.</param>
 		public static void Initialize(IContainer provider)
 		{
+			PerformanceTimer.Current?.BeginSection(null);
 			_containerProvider = provider;
+			PerformanceTimer.Current?.EndSection();
 		}
 
 		#region Members

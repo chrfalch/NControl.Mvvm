@@ -1,4 +1,4 @@
-﻿/****************************** Module Header ******************************\
+/****************************** Module Header ******************************\
 Module Name:  DefaultPresenter.cs
 Copyright (c) Christian Falch
 All rights reserved.
@@ -55,13 +55,18 @@ namespace NControl.Mvvm
 		/// <param name="mainPage">Main page.</param>
 		public void SetMainPage(Page mainPage)
 		{
+			PerformanceTimer.Current?.BeginSection(this);
+			PerformanceTimer.Current?.AddTimer(this, "Setting Application.Current.MainPage");
 			Application.Current.MainPage = mainPage;
+			PerformanceTimer.Current?.AddTimer(this, "Setting Application.Current.MainPage done.");
 
 			if (_masterDetailPage == null)
 			{
+				PerformanceTimer.Current?.AddTimer(this, "Popping navigation stack Page");
 				if (_navigationPageStack.Any())
 					_navigationPageStack.Pop();
 
+				PerformanceTimer.Current?.AddTimer(this, "Pushing Navigation Element");
 				_navigationPageStack.Push(new NavigationElement { Page = mainPage });
 
 				// Is mainpage a navigation page?
@@ -69,15 +74,22 @@ namespace NControl.Mvvm
 				if (navPage != null)
 					navPage.Popped += NavPage_Popped;
 								
+				PerformanceTimer.Current?.AddTimer(this, "Setting Main Page done");
 			}
 			else
 			{
+				PerformanceTimer.Current?.AddTimer(this, "Setting Master Details Page");
+
 				if(_masterDetailPage.Detail is NavigationPage)					
 					(_masterDetailPage.Detail as NavigationPage).Popped += NavPage_Popped;
 
 				if (_masterDetailPage.Master is NavigationPage)
 					(_masterDetailPage.Master as NavigationPage).Popped += NavPage_Popped;
+
+				PerformanceTimer.Current?.AddTimer(this, "Setting Master Details Page done");
 			}
+
+			PerformanceTimer.Current?.EndSection();
 		}
 
 		/// <summary>
