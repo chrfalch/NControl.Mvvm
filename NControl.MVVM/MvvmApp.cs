@@ -156,7 +156,7 @@ namespace NControl.Mvvm
 		/// <returns>The container.</returns>
 		protected virtual IContainer CreateContainer()
 		{
-			return new SimpleInjectContainer();
+			return new TinyIOCContainer();
 		}
 
 		/// <summary>

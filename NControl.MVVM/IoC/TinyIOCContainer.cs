@@ -8,29 +8,30 @@ EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 \***************************************************************************/
 using System;
+using TinyIoC;
 
 namespace NControl.Mvvm
 {
 	/// <summary>
 	/// Simple inject container.
 	/// </summary>
-	public class SimpleInjectContainer: IContainer
+	public class TinyIOCContainer: IContainer
 	{
 		#region Private Members
 
 		/// <summary>
 		/// The container.
 		/// </summary>
-		protected SimpleInjector.Container _container;
+		protected TinyIoCContainer _container;
 
 		#endregion
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NControl.MVVM.SimpleInjectContainer"/> class.
+		/// Initializes a new instance of the container class.
 		/// </summary>
-		public SimpleInjectContainer ()
+		public TinyIOCContainer ()
 		{
-			_container = new SimpleInjector.Container ();
+			_container = new TinyIoCContainer ();
 		}
 
 		#region IContainer implementation
@@ -42,7 +43,7 @@ namespace NControl.Mvvm
 		public TTypeToResolve Resolve<TTypeToResolve> () 
 			where TTypeToResolve : class
 		{
-			return _container.GetInstance<TTypeToResolve> ();
+			return _container.Resolve<TTypeToResolve> ();
 		}
 
 		/// <summary>
@@ -52,7 +53,7 @@ namespace NControl.Mvvm
 		/// <param name="typeToResolve">Type to resolve.</param>
 		public object Resolve (Type typeToResolve)
 		{
-			return _container.GetInstance (typeToResolve);
+			return _container.Resolve (typeToResolve);
 		}
 
 		/// <summary>
@@ -64,7 +65,7 @@ namespace NControl.Mvvm
 			where RegisterType : class 
 			where RegisterImplementation : class, RegisterType
 		{
-			_container.Register<RegisterType, RegisterImplementation> ();
+			_container.Register<RegisterType, RegisterImplementation> ().AsMultiInstance();
 		}
 
 		/// <summary>
@@ -76,7 +77,7 @@ namespace NControl.Mvvm
 		/// <param name="registerImplementation">Register implementation.</param>
 		public void Register (Type registerType, Type registerImplementation)
 		{
-			_container.Register (registerType, registerImplementation);
+			_container.Register (registerType, registerImplementation).AsMultiInstance();
 		}
 
 		/// <summary>
@@ -89,7 +90,7 @@ namespace NControl.Mvvm
 			where RegisterType : class 
 			where RegisterImplementation : class, RegisterType
 		{
-			_container.Register<RegisterType> (()=> registerImplementation);
+			_container.Register<RegisterType>(registerImplementation).AsMultiInstance();
 		}
 
 		/// <summary>
@@ -101,7 +102,7 @@ namespace NControl.Mvvm
 			where RegisterType : class 
 			where RegisterImplementation : class, RegisterType
 		{
-			_container.RegisterSingleton<RegisterType, RegisterImplementation> ();
+			_container.Register<RegisterType, RegisterImplementation> ().AsSingleton();
 		}
 
 		/// <summary>
@@ -113,7 +114,7 @@ namespace NControl.Mvvm
 		/// <param name="RegisterImplementation">Register implementation.</param>
 		public void RegisterSingleton (Type RegisterType, Type RegisterImplementation)
 		{
-			_container.RegisterSingleton (RegisterType, RegisterImplementation);
+			_container.Register(RegisterType, RegisterImplementation).AsSingleton();
 		}
 
 		/// <summary>
@@ -124,7 +125,7 @@ namespace NControl.Mvvm
 		public void RegisterSingleton<RegisterType>(Func<RegisterType> callback)
 			where RegisterType : class
 		{
-			_container.RegisterSingleton<RegisterType>(callback);
+			_container.Register(typeof(RegisterType), (container, overlads) => callback());
 		}
 
 		#endregion

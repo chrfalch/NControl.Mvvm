@@ -59,17 +59,19 @@ namespace NControl.Mvvm
 				}
 
 				// instantiate view type
+				Type mainViewType = null;
 				using (PerformanceTimer.Current.BeginTimer(this, "Getting Main View Type"))
-				{
-					var mainViewType = (MvvmApp.Current as FluidMvvmApp).GetMainViewType();
-					var mainView = Container.Resolve(mainViewType) as ContentView;
+					mainViewType = (MvvmApp.Current as FluidMvvmApp).GetMainViewType();
 
-					using (PerformanceTimer.Current.BeginTimer(this, "Presenting Main View"))
-						PresentView(mainView, PresentationMode.Default, (b) =>
-						{
-							throw new InvalidOperationException("Should not dismiss main view/viewmodel!");
-						});
-				}
+				ContentView mainView = null;
+				using (PerformanceTimer.Current.BeginTimer(this, "Getting Main View"))
+					mainView = Container.Resolve(mainViewType) as ContentView;
+
+				using (PerformanceTimer.Current.BeginTimer(this, "Presenting Main View"))
+					PresentView(mainView, PresentationMode.Default, (b) =>
+					{
+						throw new InvalidOperationException("Should not dismiss main view/viewmodel!");
+					});
 			}
 		}
 

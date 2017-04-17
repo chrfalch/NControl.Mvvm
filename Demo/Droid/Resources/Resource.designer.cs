@@ -27,7 +27,6 @@ namespace MvvmDemo.Droid
 		public static void UpdateIdValues()
 		{
 			global::NGraphics.Android.Resource.String.library_name = global::MvvmDemo.Droid.Resource.String.library_name;
-			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::MvvmDemo.Droid.Resource.Attribute.actionBarSize;
 			global::NControl.Droid.Resource.Animation.abc_fade_in = global::MvvmDemo.Droid.Resource.Animation.abc_fade_in;
 			global::NControl.Droid.Resource.Animation.abc_fade_out = global::MvvmDemo.Droid.Resource.Animation.abc_fade_out;
 			global::NControl.Droid.Resource.Animation.abc_grow_fade_in_from_bottom = global::MvvmDemo.Droid.Resource.Animation.abc_grow_fade_in_from_bottom;
@@ -3598,6 +3597,7 @@ namespace MvvmDemo.Droid
 			global::NControl.Controls.Droid.Resource.Styleable.ViewStubCompat_android_id = global::MvvmDemo.Droid.Resource.Styleable.ViewStubCompat_android_id;
 			global::NControl.Controls.Droid.Resource.Styleable.ViewStubCompat_android_inflatedId = global::MvvmDemo.Droid.Resource.Styleable.ViewStubCompat_android_inflatedId;
 			global::NControl.Controls.Droid.Resource.Styleable.ViewStubCompat_android_layout = global::MvvmDemo.Droid.Resource.Styleable.ViewStubCompat_android_layout;
+			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::MvvmDemo.Droid.Resource.Attribute.actionBarSize;
 			global::NControl.XAnimation.Droid.Resource.Animation.abc_fade_in = global::MvvmDemo.Droid.Resource.Animation.abc_fade_in;
 			global::NControl.XAnimation.Droid.Resource.Animation.abc_fade_out = global::MvvmDemo.Droid.Resource.Animation.abc_fade_out;
 			global::NControl.XAnimation.Droid.Resource.Animation.abc_grow_fade_in_from_bottom = global::MvvmDemo.Droid.Resource.Animation.abc_grow_fade_in_from_bottom;
