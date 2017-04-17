@@ -36,7 +36,7 @@ namespace MvvmDemo.Droid
 			}
 
 			// Results
-			System.Diagnostics.Debug.WriteLine(PerformanceTimer.Current.ToString());
+			Console.WriteLine(PerformanceTimer.Current.ToString());
 		}
 	}
 }

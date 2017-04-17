@@ -27,7 +27,7 @@ namespace MvvmDemo.iOS
 			var retVal = base.FinishedLaunching(uiApplication, launchOptions);
 
 			// Results
-			System.Diagnostics.Debug.WriteLine(PerformanceTimer.Current.ToString());
+			Console.WriteLine(PerformanceTimer.Current.ToString());
 
 			return retVal;
 		}
