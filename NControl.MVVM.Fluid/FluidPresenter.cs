@@ -284,7 +284,7 @@ namespace NControl.Mvvm
 			// are done
 			Action removeAction = () =>
 			{
-				var viewModelProvider = fromElement.Container.GetContentsView() as IView;
+				var viewModelProvider = fromElement.View as IView;
 				if (viewModelProvider != null)
 				{
 					viewModelProvider.OnDisappearing();
@@ -337,6 +337,7 @@ namespace NControl.Mvvm
 
 	public class NavigationElement
 	{
+		public View View { get; private set; }
 		public Action<bool> DismissedAction { get; private set; }
 		public INavigationContainer Container { get; private set; }
 
@@ -344,6 +345,7 @@ namespace NControl.Mvvm
 		{
 			DismissedAction = dismissedAction;
 			Container = container;
+			View = view;
 		}
 
 		public override string ToString()
