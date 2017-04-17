@@ -285,14 +285,17 @@ namespace NControl.Mvvm
 			Action removeAction = () =>
 			{
 				var viewModelProvider = fromElement.View as IView;
-				if (viewModelProvider != null)
-				{
-					viewModelProvider.OnDisappearing();
-					viewModelProvider.GetViewModel().ViewModelDismissed();
-				}
-
+				if (viewModelProvider == null)
+					throw new ArgumentException("View must implement IView");
+				
+				viewModelProvider.OnDisappearing();
+				viewModelProvider.GetViewModel().ViewModelDismissed();
+		
 				// Call dismissed action
 				fromElement?.DismissedAction?.Invoke(success);
+
+				// Remove from view hierarchy
+				_contentPage.Container.Children.Remove(fromElement.Container.GetBaseView());
 
 				tcs.TrySetResult(true);
 			};
