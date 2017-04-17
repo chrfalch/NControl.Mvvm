@@ -11,6 +11,8 @@ WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 using System;
 using Xamarin.Forms;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace NControl.Mvvm
 {
@@ -19,6 +21,15 @@ namespace NControl.Mvvm
 	/// </summary>
 	public abstract class MvvmApp : Application
 	{
+		#region Private Members
+
+		/// <summary>
+		/// Cache for elements
+		/// </summary>
+		readonly Dictionary<string, object> _storage = new Dictionary<string, object>();
+
+		#endregion
+
 		/// <summary>
 		/// The app.
 		/// </summary>
@@ -107,44 +118,77 @@ namespace NControl.Mvvm
 		#region Properties
 
 		/// <summary>
-		/// Returns the presenter.
+		/// Get the specified key and callback.
 		/// </summary>
-		/// <value>The presenter.</value>
-		public IPresenter Presenter { get { return Container.Resolve<IPresenter>(); } }
+		public T Get<T>(Func<T> callback = null, [CallerMemberName] string key = null) where T : class
+		{
+			if (string.IsNullOrEmpty(key))
+				throw new ArgumentException("key");
+
+			if (!_storage.ContainsKey(key))
+			{
+				if (callback == null)
+					_storage.Add(key, default(T));
+				else
+					_storage.Add(key, callback());
+			}
+
+			return (T)_storage[key];
+		}
+
+		/// <summary>
+		/// Set the specified key and value.
+		/// </summary>
+		public void Set<T>(T value = null, [CallerMemberName] string key = null) where T : class
+		{
+			if (string.IsNullOrEmpty(key))
+				throw new ArgumentException("key");
+			
+			if (!_storage.ContainsKey(key))
+				_storage.Add(key, value);
+			else
+				_storage[key] = value;
+		}
 
 		/// <summary>
 		/// Returns the presenter.
 		/// </summary>
 		/// <value>The presenter.</value>
-		public IViewContainer ViewContainer { get { return Container.Resolve<IViewContainer>(); } }
+		public IPresenter Presenter { get { return Get(()=>Container.Resolve<IPresenter>()); } }
+
+		/// <summary>
+		/// Returns the presenter.
+		/// </summary>
+		/// <value>The presenter.</value>
+		public IViewContainer ViewContainer { get { return Get(()=>Container.Resolve<IViewContainer>()); } }
 
 		/// <summary>
 		/// Gets the activity indicator.
 		/// </summary>
 		/// <value>The view container.</value>
-		public IActivityIndicator ActivityIndicator { get { return Container.Resolve<IActivityIndicator>(); } }
+		public IActivityIndicator ActivityIndicator { get { return Get(()=>Container.Resolve<IActivityIndicator>()); } }
 
 		/// <summary>
 		/// Gets the messaging service.
 		/// </summary>
 		/// <value>The messaging service.</value>
-		public IMessageHub MessageHub { get { return Container.Resolve<IMessageHub>(); } }
+		public IMessageHub MessageHub { get { return Get(()=>Container.Resolve<IMessageHub>()); } }
 
 		/// <summary>
 		/// Returns the environment information
 		/// </summary>
 		/// <value>The environment.</value>
-		public IEnvironmentProvider Environment { get { return Container.Resolve<IEnvironmentProvider>(); } }
+        public IEnvironmentProvider Environment { get { return Get(()=>Container.Resolve<IEnvironmentProvider>()); } }
 
 		/// <summary>
 		/// Returns the default sizes for the app
 		/// </summary>
-		public ISizeProvider Sizes { get { return Container.Resolve<ISizeProvider>(); } }
+		public ISizeProvider Sizes { get { return Get(()=>Container.Resolve<ISizeProvider>()); } }
 
 		/// <summary>
 		/// Gets the color constants
 		/// </summary>
-		public IColorProvider Colors { get { return Container.Resolve<IColorProvider>(); } }
+		public IColorProvider Colors { get { return Get(()=>Container.Resolve<IColorProvider>()); } }
 
 		#endregion
 
