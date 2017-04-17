@@ -7,6 +7,7 @@ using NControl.Mvvm.iOS;
 using NControl.Controls.iOS;
 using Xamarin.Forms.Platform.iOS;
 using Xamarin.Forms;
+using NControl.Mvvm;
 
 namespace MvvmDemo.iOS
 {
@@ -15,10 +16,20 @@ namespace MvvmDemo.iOS
 	{
 		public override bool FinishedLaunching (UIApplication uiApplication, NSDictionary launchOptions)
 		{
-			global::Xamarin.Forms.Forms.Init ();
-			LoadApplication (new DemoMvvmApp (new FluidTouchPlatform()));
+			PerformanceTimer.Init();
 
-			return base.FinishedLaunching (uiApplication, launchOptions);
+			using (PerformanceTimer.Current.BeginTimer(this))
+			{
+				global::Xamarin.Forms.Forms.Init();
+				LoadApplication(new DemoMvvmApp(new FluidTouchPlatform()));
+			}
+
+			var retVal = base.FinishedLaunching(uiApplication, launchOptions);
+
+			// Results
+			System.Diagnostics.Debug.WriteLine(PerformanceTimer.Current.ToString());
+
+			return retVal;
 		}
 	}
 }
