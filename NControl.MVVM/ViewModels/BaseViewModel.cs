@@ -67,6 +67,14 @@ namespace NControl.Mvvm
 			Title = GetType().Name;
 		}
 
+		/// <summary>
+		/// Finalizer
+		/// </summary>
+		~BaseViewModel()
+		{
+			System.Diagnostics.Debug.WriteLine(this.GetType().Name + " Finalized.");
+		}
+
 		#endregion
 
 		#region Protected Members
@@ -311,7 +319,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		public virtual async Task OnAppearingAsync()
 		{
-			System.Diagnostics.Debug.WriteLine(GetType().Name + " showing");
+			System.Diagnostics.Debug.WriteLine(GetType().Name + " OnAppearingAsync");
 			IsShowing = true;
 
 			// Call initialize
@@ -327,7 +335,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		public virtual Task OnDisappearingAsync()
 		{
-			System.Diagnostics.Debug.WriteLine(GetType().Name + " not showing");
+			System.Diagnostics.Debug.WriteLine(GetType().Name + " OnDisappearingAsync.");
 			IsShowing = false;
 			return Task.FromResult(true);
 		}
@@ -337,7 +345,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		public virtual void ViewModelDismissed()
 		{
-			System.Diagnostics.Debug.WriteLine(GetType().Name + " popped.");
+			System.Diagnostics.Debug.WriteLine(GetType().Name + " Dismissed.");
 			UnsubscribeToOnMessageProperties();
 		}
 
