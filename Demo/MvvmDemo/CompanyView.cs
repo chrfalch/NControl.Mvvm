@@ -22,6 +22,7 @@ namespace MvvmDemo
 
 		protected override View CreateContents()
 		{
+
 			return new Grid
 			{				
 				Children = {
@@ -51,16 +52,6 @@ namespace MvvmDemo
 										}
 									},
 								},
-
-								//LoadingView = new Grid{
-								//	Children = {
-								//		new ActivityIndicator{
-								//			IsRunning = true,
-								//			VerticalOptions = LayoutOptions.Center,
-								//			HorizontalOptions = LayoutOptions.Center
-								//		}
-								//	}
-								//}
 							}
 							.BindTo(ListViewControl.RefreshCommandProperty, NameOf(vm => vm.RefreshCommand))
 							.BindTo(ListViewControl.StateProperty, NameOf(vm => vm.CollectionState)),
