@@ -1,5 +1,6 @@
 using System;
 using NControl.Mvvm;
+using NControl.XAnimation;
 using Xamarin.Forms;
 
 namespace MvvmDemo
@@ -15,6 +16,7 @@ namespace MvvmDemo
 		/// <param name="platform">Platform.</param>
 		public DemoMvvmApp (IMvvmPlatform platform): base(platform)
 		{
+			XAnimationPackage.SlowAnimations = false;
 		}
 
 		public override Type GetMainViewType()
