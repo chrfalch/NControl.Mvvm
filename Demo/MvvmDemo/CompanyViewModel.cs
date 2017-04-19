@@ -57,7 +57,7 @@ namespace MvvmDemo
 			get {
 				return GetOrCreateCommandAsync<Company> (async(company) => {
 					await MvvmApp.Current.Presenter.ShowViewModelAsync<EmployeeViewModel>(parameter:company, dismissedCallback:(b) => {
-						System.Diagnostics.Debug.WriteLine("Yup", "Employee Details Closed.");
+						System.Diagnostics.Debug.WriteLine("Employee Details Closed.");
 					});
 				});
 			}

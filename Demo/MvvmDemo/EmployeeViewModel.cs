@@ -36,7 +36,7 @@ namespace MvvmDemo
 					await MvvmApp.Current.Presenter.ShowViewModelAsync<EmployeeDetailsViewModel>(
 						PresentationMode.Popup, dismissedCallback: (b) =>
 					{
-						System.Diagnostics.Debug.WriteLine("Yup", "EmployeeDetailsViewModel Closed.");
+						System.Diagnostics.Debug.WriteLine("EmployeeDetailsViewModel Closed.");
 					}, parameter: employee);
 				});
 			}
