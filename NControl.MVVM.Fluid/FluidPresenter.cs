@@ -292,10 +292,11 @@ namespace NControl.Mvvm
 				viewModelProvider.GetViewModel().ViewModelDismissed();
 		
 				// Call dismissed action
-				fromElement?.DismissedAction?.Invoke(success);
+				fromElement.DismissedAction?.Invoke(success);
 
 				// Remove from view hierarchy
 				_contentPage.Container.Children.Remove(fromElement.Container.GetBaseView());
+				fromElement.View = null;fromElement.Container = null;fromElement.DismissedAction = null;
 
 				tcs.TrySetResult(true);
 			};
@@ -340,15 +341,20 @@ namespace NControl.Mvvm
 
 	public class NavigationElement
 	{
-		public View View { get; private set; }
-		public Action<bool> DismissedAction { get; private set; }
-		public INavigationContainer Container { get; private set; }
+		public View View { get; set; }
+		public Action<bool> DismissedAction { get; set; }
+		public INavigationContainer Container { get; set; }
 
 		public NavigationElement(View view, INavigationContainer container, Action<bool> dismissedAction)
 		{
 			DismissedAction = dismissedAction;
 			Container = container;
 			View = view;
+		}
+
+		~NavigationElement()
+		{
+			System.Diagnostics.Debug.WriteLine("NavigationElement finalizer");
 		}
 
 		public override string ToString()
