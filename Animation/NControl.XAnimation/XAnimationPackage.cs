@@ -26,7 +26,7 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// State list
 		/// </summary>
-		readonly Stack<Dictionary<WeakReference<VisualElement>, XAnimationInfo>> _states = 
+		readonly Stack<Dictionary<WeakReference<VisualElement>, XAnimationInfo>> _states =
 			new Stack<Dictionary<WeakReference<VisualElement>, XAnimationInfo>>();
 
 		/// <summary>
@@ -200,7 +200,7 @@ namespace NControl.XAnimation
 			var stateDict = new Dictionary<WeakReference<VisualElement>, XAnimationInfo>();
 
 			Dictionary<WeakReference<VisualElement>, XAnimationInfo> currentState = null;
-			if(_states.Count > 0)
+			if (_states.Count > 0)
 				currentState = _states.Peek();
 
 			foreach (var elementRef in _elements)
@@ -228,7 +228,7 @@ namespace NControl.XAnimation
 		{
 			if (_states.Count == 0)
 				return;
-			
+
 			var currentState = _states.Pop();
 			foreach (var elementRef in _elements)
 			{
@@ -294,7 +294,7 @@ namespace NControl.XAnimation
 				var timeCounter = 0.0;
 				foreach (var info in _animationInfos)
 				{
-					if (animationStartTime >= timeCounter && 
+					if (animationStartTime >= timeCounter &&
 						animationStartTime <= timeCounter + info.Duration)
 					{
 						animationInfo = info;
@@ -325,19 +325,20 @@ namespace NControl.XAnimation
 					startPoint = _animationInfos.ElementAt(index - 1);
 
 				// Create interpolated point
-				var interpolatedPoint = new XAnimationInfo { 					
+				var interpolatedPoint = new XAnimationInfo
+				{
 
-					Rotate = startPoint.Rotate + 
-                   		((animationInfo.Rotate - startPoint.Rotate) * value),
+					Rotate = startPoint.Rotate +
+						   ((animationInfo.Rotate - startPoint.Rotate) * value),
 
-					Opacity = startPoint.Opacity + 
-                   		((animationInfo.Opacity - startPoint.Opacity) * value),
+					Opacity = startPoint.Opacity +
+						   ((animationInfo.Opacity - startPoint.Opacity) * value),
 
-					TranslationX = startPoint.TranslationX + 
-                         ((animationInfo.TranslationX - startPoint.TranslationX) * value),
+					TranslationX = startPoint.TranslationX +
+						 ((animationInfo.TranslationX - startPoint.TranslationX) * value),
 
-					TranslationY = startPoint.TranslationY + 
-                         ((animationInfo.TranslationY - startPoint.TranslationY) * value),
+					TranslationY = startPoint.TranslationY +
+						 ((animationInfo.TranslationY - startPoint.TranslationY) * value),
 				};
 
 				// Interpolate with previous elements
@@ -419,13 +420,13 @@ namespace NControl.XAnimation
 
 			if (animationInfo.OnlyTransform)
 			{
-				DoLog("{0}", animationInfo);
+				DoLog(()=> animationInfo.ToString());
 				Provider.Set(animationInfo);
 				HandleCompletedAction();
 			}
 			else
 			{
-				DoLog("Run({0})", animationInfo);
+                DoLog(() => animationInfo.ToString());
 
 				// Tell the animation provider to animate
 				Provider.Animate(animationInfo, () =>
@@ -454,10 +455,11 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// Log
 		/// </summary>
-		void DoLog(string message, params object[] args)
-		{			
-			var ticks = DateTime.Now;				
-			System.Diagnostics.Debug.WriteLine(ticks.TimeOfDay + " - XAnimation: " + string.Format(message, args));
+		void DoLog(Func<string> messageCallback)
+		{
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine(DateTime.Now.TimeOfDay + " - XAnimation: " + messageCallback());
+#endif
 		}
 
 		#endregion
