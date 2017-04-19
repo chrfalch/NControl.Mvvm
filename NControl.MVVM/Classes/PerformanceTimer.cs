@@ -88,7 +88,7 @@ namespace NControl.Mvvm
 			var maxMessageSpacer = new string('=', messageLength);
 			var maxMessageEmptySpacer = new string(' ', messageLength - "Message".Length);
 			   
-			var retVal = 
+			var retVal = "\n" + 
 				$"{"Self"      , 10}\t{"Total"     , 10}\tMessage{maxMessageEmptySpacer}\t  Location\n" + 
 				$"{"==========", 10}\t{"==========", 10}\t{maxMessageSpacer            }\t  ========\n";
 
