@@ -53,7 +53,7 @@ namespace NControl.Mvvm.iOS
 				NativeView.Layer.ShadowRadius = (float)Element.ShadowRadius;
 				NativeView.Layer.ShadowPath = UIBezierPath.FromRoundedRect(NativeView.Bounds, (nfloat)Element.BorderRadius).CGPath;
 				NativeView.Layer.ShadowOffset = new CoreGraphics.CGSize(Element.ShadowOffset.Width, Element.ShadowOffset.Height);
-				//NativeView.Layer.ShouldRasterize = true;
+				NativeView.Layer.ShouldRasterize = true;
 				NativeView.Layer.RasterizationScale = UIScreen.MainScreen.Scale;
 			}
 			else
