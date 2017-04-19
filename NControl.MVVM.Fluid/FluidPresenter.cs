@@ -296,7 +296,7 @@ namespace NControl.Mvvm
 
 				// Remove from view hierarchy
 				_contentPage.Container.Children.Remove(fromElement.Container.GetBaseView());
-				fromElement.View = null;fromElement.Container = null;fromElement.DismissedAction = null;
+				fromElement.Container.SetContent(null);
 
 				tcs.TrySetResult(true);
 			};

@@ -226,6 +226,14 @@ namespace NControl.Mvvm
 		/// </summary>
 		public void SetContent(View content)
 		{
+			if (content == null)
+			{
+				_container.Content = null;
+				BindingContext = null;
+                UpdateToolbarItems(null);
+				return;
+			}
+
 			if (!(content is IView))
 				throw new ArgumentException("Content must implement IView");
 			
@@ -404,6 +412,10 @@ namespace NControl.Mvvm
 		void UpdateToolbarItems(View view)
 		{
 			_navigationBar.ToolbarItems.Clear();
+
+			if (view == null)
+				return;
+			
 			var toolbarItemsProvider = view as IToolbarItemsContainer;
 			if (toolbarItemsProvider != null)
 				_navigationBar.ToolbarItems.AddRange(toolbarItemsProvider.ToolbarItems);

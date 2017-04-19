@@ -11,7 +11,7 @@ namespace NControl.Mvvm
 	{
 		readonly RelativeLayout _layout;
 		readonly FluidBlurOverlay _overlay;
-		readonly Grid _container;
+		readonly ContentView _container;
 		readonly ContentView _containerBorders;
 		readonly ContentView _containerContents;
 
@@ -26,7 +26,7 @@ namespace NControl.Mvvm
 			_layout.Children.Add(_overlay, () => _layout.Bounds);
 
 			// Create container
-			_container = new Grid();
+			_container = new ContentView();
 			_containerContents = new FluidRoundCornerView
 			{
 				BorderRadius = FluidConfig.DefaultPopupCornerRadius,
@@ -123,12 +123,24 @@ namespace NControl.Mvvm
 
 		#region Navigation Container
 
-		public void SetContent(View content) { _container.Children.Add(content); }
+		public void SetContent(View content) 
+		{ 
+			if (content == null)
+			{
+				_container.Content = null;				       
+				return;
+			}
+
+			if (!(content is IView))
+				throw new ArgumentException("Content must implement IView");
+
+			_container.Content = content;
+		}
+
 		public NavigationContext NavigationContext { get; set; }
 		public View GetBaseView() { return this; }
 		public View GetChromeView() { return null; }
 		public View GetContentsView() { return _container; }
-		public View GetChild(int index) { return _container.Children.ElementAt(index); }
 		public View GetOverlayView() { return _overlay; }
 
 		#endregion
@@ -137,7 +149,7 @@ namespace NControl.Mvvm
 
 		Rectangle GetContentSize()
 		{
-			var s = (_container.Children.LastOrDefault() as ContentView)
+			var s = (_container.Content as ContentView)
 				.Measure(double.PositiveInfinity, double.PositiveInfinity);
 
 			var contentSize = new Size(Width * 0.7, s.Request.Height);
