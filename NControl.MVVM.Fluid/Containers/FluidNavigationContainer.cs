@@ -20,7 +20,7 @@ namespace NControl.Mvvm
 	{
 		#region Private Members
 
-		// double _xstart;
+		double _xstart;
 
 		protected readonly RelativeLayout _layout;
 		protected readonly ContentView _container;
@@ -94,6 +94,16 @@ namespace NControl.Mvvm
 
 			// Bindings
 			this.BindTo(TitleProperty, nameof(IViewModel.Title));
+
+			// Recognizer
+			//var recognizer = new GestureRecognizerBehavior();
+			//recognizer.Touched += Recognizer_Touched;
+			//Behaviors.Add(recognizer);
+		}
+
+		~FluidNavigationContainer()
+		{
+			System.Diagnostics.Debug.WriteLine(this.GetType().Name + " Finalized.");
 		}
 
 		#region Protected Members
@@ -140,64 +150,73 @@ namespace NControl.Mvvm
 
 		#region Public Members
 
+		void Recognizer_Touched(object sender, GestureRecognizerEventArgs e)
+		{
+			// UpdateFromGestureRecognizer(e.FirstPoint.X, e.Velocity, e.TouchType);
+		}
+
 		/// <summary>
 		/// Callback from gesture recognizer in platform code
 		/// </summary>
-		public void UpdateFromGestureRecognizer(double x, double velocity, PanState state)
+		public void UpdateFromGestureRecognizer(double x, double velocity, TouchType state)
 		{
-			//var view = _container.Children.Last();
-			//var index = _container.Children.IndexOf(view);
-			//var fromView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
+			var fromView = NavigationContext.Elements.Last();
+			var index = NavigationContext.Elements.ToList().IndexOf(fromView);
+			var toView = index > 0 ? NavigationContext.Elements.ElementAt(index - 1) : null;
 
-			//var animateNavigation = GetViewHasNavigationBar(view) != GetViewHasNavigationBar(fromView);
+			if (toView == null)
+				return;
+			
+			var animateNavigation = GetViewHasNavigationBar(toView.View) != GetViewHasNavigationBar(fromView.View);
 
-			//switch (state)
-			//{
-			//	case PanState.Started:					
-			//		_xstart = x;
-			//		break;
+			switch (state)
+			{
+				case TouchType.Start:					
+					_xstart = x;
+					break;
 
-			//	case PanState.Moving:
+				case TouchType.Moving:
 
-			//		view.TranslationX = Math.Max(0, x - _xstart);
+					toView.View.TranslationX = Math.Max(0, x - _xstart);
 
-			//		if (fromView != null)
-			//			fromView.TranslationX = Math.Max(-(Width / 4), -(Width / 4) +
-			//				(x - _xstart)/4);
+					if (fromView != null)
+						fromView.View.TranslationX = Math.Max(-(Width / 4), -(Width / 4) +
+							(x - _xstart)/4);
 
-			//		if (animateNavigation)
-			//		{
-			//			var distanceToAnimate = (_navigationBarHeight);
-			//			var distanceAnimated = x - _xstart;
-			//			var factor = distanceAnimated / Width;
+					if (animateNavigation)
+					{
+						var distanceToAnimate = (_navigationBarHeight);
+						var distanceAnimated = x - _xstart;
+						var factor = distanceAnimated / Width;
 
-			//			if (GetViewHasNavigationBar(fromView))
-			//			{
-			//				_navigationContainer.TranslationY = -distanceToAnimate + (distanceToAnimate * factor);
-			//			}
-			//			else
-			//			{
-			//				_navigationContainer.TranslationY = -(distanceToAnimate * factor);
-			//			}
-			//		}
+						if (GetViewHasNavigationBar(fromView.View))
+						{
+							_navigationContainer.TranslationY = -distanceToAnimate + (distanceToAnimate * factor);
+						}
+						else
+						{
+							_navigationContainer.TranslationY = -(distanceToAnimate * factor);
+						}
+					}
 					
-			//		break;
+					break;
 
-			//	case PanState.Ended:
+				case TouchType.Ended:
 
-			//		CheckTranslationAndSnap(velocity);
+					CheckTranslationAndSnap(-1, fromView.View, toView.View);
 
-			//		break;
-			//	case PanState.Cancelled:
+					break;
+				case TouchType.Cancelled:
 
-			//		view.TranslationX = 0;
+					toView.View.TranslationX = 0;
 
-			//		if (fromView != null)
-			//			fromView.TranslationX = -(Width / 4);
+					if (fromView != null)
+						fromView.View.TranslationX = -(Width / 4);
 					
-			//		break;
-			//}
+					break;
+			}
 		}
+
 		#endregion
 
 		#region INavigationContainer
@@ -220,10 +239,7 @@ namespace NControl.Mvvm
 		/// Gets the root view.
 		/// </summary>
 		/// <returns>The root view.</returns>
-		public View GetBaseView()
-		{
-			return this;
-		}
+		public View GetBaseView() { return this; }
 
 		/// <summary>
 		/// Gets or sets the navigation context
@@ -348,60 +364,41 @@ namespace NControl.Mvvm
 
 		#region Private Members
 
-		void CheckTranslationAndSnap(double velocity)
-		{
-			//var view = _container.Children.Last();
-			//var index = _container.Children.IndexOf(view);
-			//var toView = index > 0 ? _container.Children.ElementAt(index - 1) : null;
+		void CheckTranslationAndSnap(double velocity, View toView, View fromView)
+		{			
+			double toViewTranslationX = 0.0;
+			double fromViewTranslationX = toView != null ? toView.TranslationX : 0;
 
-			//double toViewTranslationX = 0.0;
-			//double fromViewTranslationX = toView != null ? toView.TranslationX : 0;
+			var offset = fromView.TranslationX % (-1 * Width);
+			bool resetTransformations = true;
 
-			//var offset = view.TranslationX % (-1 * Width);
-			//bool resetTransformations = true;
-
-			//if (offset > Width * 0.33)
-			//{
-			//	toViewTranslationX = Width;
-			//	fromViewTranslationX = 0;
-			//	resetTransformations = true;
-			//}
+			if (offset > Width * 0.33)
+			{
+				toViewTranslationX = Width;
+				fromViewTranslationX = 0;
+				resetTransformations = true;
+			}
 			
-			//var distance = toViewTranslationX - view.TranslationX;
-			//var duration = Math.Min(0.2, Math.Max(0.2, velocity.Equals(-1) ? 0.2f : distance / velocity));
+			var distance = toViewTranslationX - fromView.TranslationX;
+			var duration = Math.Min(0.2, Math.Max(0.2, velocity.Equals(-1) ? 0.2f : distance / velocity));
 
-			//new XAnimationPackage(view)
-			//	.Duration((long)(duration*1000))
-			//	.Translate(toViewTranslationX, 0)
-			//	.Animate()
-			//	.Run(() => {
-			//	if(fromViewTranslationX.Equals(0))
-			//		MvvmApp.Current.Presenter.DismissViewModelAsync(
-			//			GetViewModel().PresentationMode, false, false);
-			//});
+			new XAnimationPackage(toView)
+				.Duration((long)(duration*1000))
+				.Translate(toViewTranslationX, 0)
+				.Animate()
+				.Run(() => {
+					if (fromViewTranslationX.Equals(0));
+					// TODO:
+					//MvvmApp.Current.Presenter.DismissViewModelAsync(
+					//	GetViewModel().PresentationMode, false, false);
+			});
 
-			//if(toView != null)
-			//	new XAnimationPackage(toView)
-			//		.Duration((long)(duration * 1000))
-			//		.Translate(fromViewTranslationX, 0)
-			//		.Animate()
-			//		.Run();
-
-			//if (GetViewHasNavigationBar(toView) != GetViewHasNavigationBar(view))
-			//{
-			//	if (GetViewHasNavigationBar(toView))
-			//	{
-			//		new XAnimationPackage(_navigationContainer)
-			//		   	.Translate(0, resetTransformations ? -(_navigationBarHeight):0)
-			//			.Animate().Run();
-			//	}
-			//	else
-			//	{
-			//		new XAnimationPackage(_navigationContainer)
-			//			.Translate(0, resetTransformations ?  0: -(_navigationBarHeight))
-			//			.Animate().Run();
-			//	}
-			//}
+			if(toView != null)
+				new XAnimationPackage(fromView)
+					.Duration((long)(duration * 1000))
+					.Translate(fromViewTranslationX, 0)
+					.Animate()
+					.Run();			
 		}
 
 		void UpdateToolbarItems(View view)

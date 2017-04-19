@@ -24,33 +24,42 @@ namespace NControl.Mvvm.iOS
 			_lastPosition = CGPoint.Empty;
 		}
 
-		public override void TouchesBegan(Foundation.NSSet touches, UIEvent evt)
+		public override void TouchesBegan(NSSet touches, UIEvent evt)
 		{
 			base.TouchesBegan(touches, evt);
 
 			_lastTimeStamp = CAAnimation.CurrentMediaTime();
 			_lastPosition = ((UITouch)touches.FirstOrDefault()).LocationInView(View);
 
-			Touched?.Invoke(this, new GestureRecognizerEventArgs(TouchType.Start, GetTouchPoints(touches), -1));
+			var args = new GestureRecognizerEventArgs(TouchType.Start, GetTouchPoints(touches), -1);
+			Touched?.Invoke(this, args);
+
+			if (args.Cancel)
+				base.State = UIGestureRecognizerState.Failed;
 		}
 
-		public override void TouchesMoved(Foundation.NSSet touches, UIEvent evt)
+		public override void TouchesMoved(NSSet touches, UIEvent evt)
 		{
 			base.TouchesMoved(touches, evt);
 
-			Touched?.Invoke(this, new GestureRecognizerEventArgs(TouchType.Moving, GetTouchPoints(touches), GetVelocity(touches)));
+			var args = new GestureRecognizerEventArgs(TouchType.Moving, GetTouchPoints(touches), GetVelocity(touches));
+			Touched?.Invoke(this, args);
+
+			if (args.Cancel)
+				base.State = UIGestureRecognizerState.Failed;
 		}
 
-		public override void TouchesEnded(Foundation.NSSet touches, UIEvent evt)
+		public override void TouchesEnded(NSSet touches, UIEvent evt)
 		{
 			base.TouchesEnded(touches, evt);
 
-			Touched?.Invoke(this, new GestureRecognizerEventArgs(TouchType.Ended, GetTouchPoints(touches), GetVelocity(touches)));
+			var args = new GestureRecognizerEventArgs(TouchType.Ended, GetTouchPoints(touches), GetVelocity(touches));
+			Touched?.Invoke(this, args);
 
 			base.State = UIGestureRecognizerState.Failed;
 		}
 
-		public override void TouchesCancelled(Foundation.NSSet touches, UIEvent evt)
+		public override void TouchesCancelled(NSSet touches, UIEvent evt)
 		{
 			base.TouchesCancelled(touches, evt);
 
@@ -80,7 +89,7 @@ namespace NControl.Mvvm.iOS
 			return velocity;
 		}
 
-		IEnumerable<Point> GetTouchPoints(Foundation.NSSet touches)
+		IEnumerable<Point> GetTouchPoints(NSSet touches)
 		{
 			var points = new List<Point>((int)touches.Count);
 			foreach (UITouch touch in touches)
