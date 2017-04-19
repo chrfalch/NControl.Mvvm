@@ -112,7 +112,6 @@ namespace NControl.Mvvm
 								
 				var firstAngle = IsCounterClockWise ? -1 * (Angle + 360) : Angle + 360;
 				var resetAngle = IsCounterClockWise ? -1 * Angle : Angle;
-				System.Diagnostics.Debug.WriteLine(firstAngle + " - " + resetAngle);
 
 				// Animate running
 				new XAnimationPackage(this)
