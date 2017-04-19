@@ -50,7 +50,7 @@ namespace NControl.Mvvm
 				RefreshCommand = _refreshCommand,
 			}
 				.BindTo(ItemsView<Cell>.ItemsSourceProperty, nameof(ItemsSource))
-				.BindTo(ListView.ItemTemplateProperty, nameof(ItemTemplate))
+				.BindTo(ItemsView<Cell>.ItemTemplateProperty, nameof(ItemTemplate))
 				.BindTo(ListView.IsRefreshingProperty, nameof(IsRefreshing))
 				.BindTo(ListViewEx.ItemSelectedCommandProperty, nameof(ItemSelectedCommand))
 				.BindTo(ListView.IsPullToRefreshEnabledProperty, nameof(IsPullToRefreshEnabled))
@@ -59,14 +59,15 @@ namespace NControl.Mvvm
 				.BindTo(ListView.SeparatorVisibilityProperty, nameof(SeparatorVisibility));
 
 			// Setup default empty message view
-			_emptyMessageView = new ContentView { 
+			_emptyMessageView = new ContentView
+			{
 				Opacity = 0.0,
 			};
 
 			// Setup default loading view
-			_loadingView = new ContentView{};
+			_loadingView = new ContentView { };
 
-			_activityIndicator = new FluidActivityIndicator {};
+			_activityIndicator = new FluidActivityIndicator { };
 
 			// Add default values to the loading view and empty view
 			_loadingView.Content = new VerticalStackLayoutWithPadding
@@ -79,7 +80,7 @@ namespace NControl.Mvvm
 
 			// Set up empty message
 			_emptyMessageView.Content = new VerticalWizardStackLayout
-			{				
+			{
 				Children = {
 					new Label
 					{
@@ -271,13 +272,13 @@ namespace NControl.Mvvm
 
 			switch (newValue)
 			{
-				case CollectionState.NotLoaded:					
-					ShowEmptyListView(false, ()=> ShowLoadingView(true));
+				case CollectionState.NotLoaded:
+					ShowEmptyListView(false, () => ShowLoadingView(true));
 					break;
 
 				case CollectionState.Loaded:
 
-					ShowLoadingView(false, ()=> ShowEmptyListView(
+					ShowLoadingView(false, () => ShowEmptyListView(
 						ItemsSource == null ||
 						(ItemsSource is ICollection && (ItemsSource as ICollection).Count == 0)));
 
@@ -287,7 +288,7 @@ namespace NControl.Mvvm
 					break;
 
 				case CollectionState.Loading:
-					ShowEmptyListView(false, ()=> ShowLoadingView(!IsRefreshing));
+					ShowEmptyListView(false, () => ShowLoadingView(!IsRefreshing));
 
 					break;
 
@@ -335,11 +336,13 @@ namespace NControl.Mvvm
 		void ShowLoadingView(bool show, Action callback = null)
 		{
 			_activityIndicator.IsRunning = show;
+			_listView.IsVisible = !show;			 
 			AnimateVisibility(show, _loadingView, callback);
 		}
 
-		void ShowEmptyListView(bool show, Action callback = null) 
+		void ShowEmptyListView(bool show, Action callback = null)
 		{
+			_listView.IsVisible = !show;
 			AnimateVisibility(show, _emptyMessageView, callback);
 		}
 		#endregion
