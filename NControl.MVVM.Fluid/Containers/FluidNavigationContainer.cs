@@ -29,6 +29,7 @@ namespace NControl.Mvvm
 		/// Animation for the swipe movement back/forth
 		/// </summary>
 		IEnumerable<XAnimationPackage> _dismissAnimationPackage;
+		IEnumerable<XAnimationPackage> _pushAnimationPackage;
 
 		#endregion
 
@@ -313,7 +314,10 @@ namespace NControl.Mvvm
 			var toView = index > 0 ? NavigationContext.Elements.ElementAt(index - 1) : null;
 
 			if (toView == null)
+			{
+				e.Cancel = true;
 				return;
+			}
 
 			switch (e.TouchType)
 			{
@@ -328,6 +332,7 @@ namespace NControl.Mvvm
 
 					_start = e.FirstPoint;
 					_dismissAnimationPackage = CreateTransitionOutAnimation(fromView.Container);
+					_pushAnimationPackage = CreateTransitionInAnimation(fromView.Container, false);
 
 					break;
 
@@ -351,26 +356,27 @@ namespace NControl.Mvvm
 						// Perform Dismiss
 						XAnimationPackage.RunAll(_dismissAnimationPackage, () => {
 							_dismissAnimationPackage = null;
+							_pushAnimationPackage = null;
 							MvvmApp.Current.Presenter.DismissViewModelAsync(PresentationMode.Default, animate: false);
 						});
 					}
 					else
 					{
 						// Cancel Dismissal
-						foreach (var anim in _dismissAnimationPackage)
-							anim.Interpolate(0.0);
-
-						_dismissAnimationPackage = null;
+						XAnimationPackage.RunAll(_pushAnimationPackage, () => { 
+							_dismissAnimationPackage = null;
+							_pushAnimationPackage = null;
+						});
 					}
 
 					break;
 
 				case TouchType.Cancelled:
 
-					foreach (var anim in _dismissAnimationPackage)
-						anim.Interpolate(0.0);
-
-					_dismissAnimationPackage = null;
+					XAnimationPackage.RunAll(_pushAnimationPackage, () => { 
+						_dismissAnimationPackage = null;
+						_pushAnimationPackage = null;
+					});
 
 					break;
 			}
@@ -455,18 +461,22 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Create the animations for pushing a new element
 		/// </summary>
-		IEnumerable<XAnimationPackage> CreateTransitionInAnimation(INavigationContainer fromContainer)
+		IEnumerable<XAnimationPackage> CreateTransitionInAnimation(INavigationContainer fromContainer, bool includeSet = true)
 		{
 			var animations = new List<XAnimationPackage>();
 
-			animations.Add(new XAnimationPackage(this)
-					.Translate(Width, 0)
-					.Set()
-	               	.Translate(0, 0));
+			if(includeSet)
+				animations.Add(new XAnimationPackage(this)
+						.Translate(Width, 0)
+						.Set()
+		               	.Translate(0, 0));
+			else
+				animations.Add(new XAnimationPackage(this)
+						.Translate(0, 0));
 
-				// Move previous a litle bit out
-				animations.Add(new XAnimationPackage(fromContainer.GetBaseView())
-               		.Translate(-(Width* 0.25), 0));
+			// Move previous a litle bit out
+			animations.Add(new XAnimationPackage(fromContainer.GetBaseView())
+           		.Translate(-(Width* 0.25), 0));
 
 			return animations;
 		}
