@@ -250,7 +250,6 @@ namespace NControl.XAnimation
 
 			// Run the first animation in the list of animation objects
 			var animationInfo = _animationInfos.First();
-			_animationInfos.Remove(animationInfo);
 			RunAnimation(animationInfo, completed);
 		}
 
@@ -356,16 +355,13 @@ namespace NControl.XAnimation
 				// Swap out previous
 				previousAnimations = nextPreviousList;
 			}
-
-			// Remove temporary state if set
-			//if (didSaveState)
-			//	_states.Pop();
 		}
 
 		/// <summary>
 		/// Run multiple animations and return with completed action when all are done.
 		/// </summary>
-		public static void RunAll(IEnumerable<XAnimationPackage> animations, Action completed = null)
+		public static void RunAll(IEnumerable<XAnimationPackage> animations, 
+			Action completed = null)
 		{
 			if (animations == null || animations.Count() == 0)
 			{
@@ -461,10 +457,10 @@ namespace NControl.XAnimation
 			Action HandleCompletedAction = () =>
 			{
 				// Start next
-				if (_animationInfos.Count > 0 && _runningState)
+				if (animationInfo != _animationInfos.Last() && _runningState)
 				{
-					animationInfo = _animationInfos.First();
-					_animationInfos.Remove(animationInfo);
+					var index = _animationInfos.IndexOf(animationInfo);
+					animationInfo = _animationInfos.ElementAt(index + 1);
 					RunAnimation(animationInfo, completed);
 				}
 				else
