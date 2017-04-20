@@ -36,7 +36,7 @@ namespace XAnimationDemo
 							})
 						},
 						new Button{
-							Text = "Performane",
+							Text = "Performance",
 							Command = new Command(()=> {
 								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage());
 							})
