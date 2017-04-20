@@ -349,6 +349,10 @@ namespace NControl.Mvvm
 					if (px > 0.33 && py < 0.2)
 					{
 						// Perform Dismiss
+						XAnimationPackage.RunAll(_dismissAnimationPackage, () => {
+							_dismissAnimationPackage = null;
+							MvvmApp.Current.Presenter.DismissViewModelAsync(PresentationMode.Default, animate: false);
+						});
 					}
 					else
 					{
