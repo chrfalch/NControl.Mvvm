@@ -45,6 +45,11 @@ namespace NControl.XAnimation
 		/// </summary>
 		bool _runningState = false;
 
+		/// <summary>
+		/// The interpolation start.
+		/// </summary>
+		Dictionary<WeakReference<VisualElement>, XAnimationInfo> _interpolationStart;
+
 		#endregion
 
 		#region Constructors
@@ -154,12 +159,12 @@ namespace NControl.XAnimation
 			return this;
 		}
 
-		public XAnimationPackage Frame(Rectangle rect)
-		{
-			GetCurrentAnimation().AnimateRectangle = true;
-			GetCurrentAnimation().Rectangle = rect;
-			return this;
-		}
+		//public XAnimationPackage Frame(Rectangle rect)
+		//{
+		//	GetCurrentAnimation().AnimateRectangle = true;
+		//	GetCurrentAnimation().Rectangle = rect;
+		//	return this;
+		//}
 
 		/// <summary>
 		/// Creates a custom easing curve. See more here: http://cubic-bezier.com
@@ -197,28 +202,12 @@ namespace NControl.XAnimation
 		/// </summary>
 		public void Save()
 		{
-			var stateDict = new Dictionary<WeakReference<VisualElement>, XAnimationInfo>();
-
 			Dictionary<WeakReference<VisualElement>, XAnimationInfo> currentState = null;
+
 			if (_states.Count > 0)
 				currentState = _states.Peek();
-
-			foreach (var elementRef in _elements)
-			{
-				VisualElement el;
-				if (!elementRef.TryGetTarget(out el))
-					continue;
-
-				XAnimationInfo curInfo = null;
-				if (currentState != null && currentState.ContainsKey(elementRef))
-					curInfo = currentState[elementRef];
-
-				// Get state 
-				var info = GetAnimationInfoFromElement(el, curInfo);
-				stateDict.Add(elementRef, info);
-			}
-
-			_states.Push(stateDict);
+			
+			_states.Push(GetCurrentStateAsDict(currentState));
 		}
 
 		/// <summary>
@@ -281,12 +270,8 @@ namespace NControl.XAnimation
 		public void Interpolate(double value)
 		{
 			// Save state if no state is found
-			//bool didSaveState = false;
-			//if (_states.Count == 0)
-			//{
-			//	Save();
-			//	didSaveState = true;
-			//}
+			if (_interpolationStart == null)
+				_interpolationStart = GetCurrentStateAsDict(null);
 
 			var animationInfoStartTime = 0L;
 			var animationTotalTime = _animationInfos.Sum((arg) => arg.Duration);
@@ -324,13 +309,13 @@ namespace NControl.XAnimation
 			// 4) Save index of animation for ease of lookup
 			var index = _animationInfos.IndexOf(animationInfo);
 
-			System.Diagnostics.Debug.WriteLine(
-				$"{curValue:F2} == ({value:F2} - {startValue:F2}) * ({animationInfo.Duration:F2} " +
-			    $" / ({endValue:F2} - {startValue:F2})) / {animationInfo.Duration:F2} (index: {index})");
+			//System.Diagnostics.Debug.WriteLine(
+			//	$"{curValue:F2} == ({value:F2} - {startValue:F2}) * ({animationInfo.Duration:F2} " +
+			//    $" / ({endValue:F2} - {startValue:F2})) / {animationInfo.Duration:F2} (index: {index})");
 
 
 			// 5) Enumerate and apply, start by getting previous animation
-			Dictionary<WeakReference<VisualElement>, XAnimationInfo> previousAnimations = null;
+			Dictionary<WeakReference<VisualElement>, XAnimationInfo> previousAnimations = _interpolationStart;
 
 			for (var i = 0; i <= index && i <_animationInfos.Count; i++)
 			{
@@ -439,6 +424,32 @@ namespace NControl.XAnimation
 
 				callback(element);
 			}
+		}
+
+		/// <summary>
+		/// Gets the current state as dict. Used to save state
+		/// </summary>
+		Dictionary<WeakReference<VisualElement>, XAnimationInfo> GetCurrentStateAsDict(
+			Dictionary<WeakReference<VisualElement>, XAnimationInfo> currentState)
+		{
+			var stateDict = new Dictionary<WeakReference<VisualElement>, XAnimationInfo>();
+
+			foreach (var elementRef in _elements)
+			{
+				VisualElement el;
+				if (!elementRef.TryGetTarget(out el))
+					continue;
+
+				XAnimationInfo curInfo = null;
+				if (currentState != null && currentState.ContainsKey(elementRef))
+					curInfo = currentState[elementRef];
+
+				// Get state 
+				var info = GetAnimationInfoFromElement(el, curInfo);
+				stateDict.Add(elementRef, info);
+			}
+
+			return stateDict;
 		}
 
 		/// <summary>

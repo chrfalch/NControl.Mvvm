@@ -3,7 +3,7 @@ using NControl.XAnimation;
 using Xamarin.Forms;
 namespace XAnimationDemo
 {
-	public class XAnimationDemoPage3 : ContentPage
+	/*public class XAnimationDemoPage3 : ContentPage
 	{
 		readonly MyRelativeLayout _layout;
 		bool _isExpanded;
@@ -105,5 +105,5 @@ namespace XAnimationDemo
 		{
 			return base.OnMeasure(widthConstraint, heightConstraint);
 		}
-	}
+	}*/
 }
