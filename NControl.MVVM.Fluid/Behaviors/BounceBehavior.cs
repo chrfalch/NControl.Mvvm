@@ -24,7 +24,7 @@ namespace NControl.Mvvm
 		protected override void OnAttachedTo(View bindable)
 		{
 			base.OnAttachedTo(bindable);
-
+			return;
 			_behavior.AttachTo(bindable);
 			_behavior.Touched += (sender, e) => {
 
@@ -61,6 +61,7 @@ namespace NControl.Mvvm
 		protected override void OnDetachingFrom(View bindable)
 		{
 			base.OnDetachingFrom(bindable);
+			return;
 			_behavior.DetachingFrom(bindable);
 		}
 	}

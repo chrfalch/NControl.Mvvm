@@ -34,5 +34,15 @@ namespace NControl.Mvvm
 		/// Gets or sets the navigation context for the container
 		/// </summary>
 		NavigationContext NavigationContext { get; set; }
+
+		/// <summary>
+		/// Called when the container has been navigated to and is presented and ready on screen.
+		/// </summary>
+		void OnNavigatedTo(NavigationElement toElement);
+
+		/// <summary>
+		/// Called when the container has been navigated out/from and is dismissed and not longer visible on screen.
+		/// </summary>
+		void OnNavigatedFrom(NavigationElement fromElement);
 	}
 }

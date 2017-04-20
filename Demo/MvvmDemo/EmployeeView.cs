@@ -31,7 +31,7 @@ namespace MvvmDemo
 					},
 					
 					new ExtendedButton{
-						Text = "Open Da Thing",
+						Text = "About",
 						Command = ViewModel.ShowAboutCommand,
 					}
 				}

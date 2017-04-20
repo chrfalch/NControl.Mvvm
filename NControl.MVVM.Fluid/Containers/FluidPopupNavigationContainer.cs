@@ -143,6 +143,20 @@ namespace NControl.Mvvm
 		public View GetContentsView() { return _container; }
 		public View GetOverlayView() { return _overlay; }
 
+		/// <summary>
+		/// Called when the container has been navigated to and is presented and ready on screen.
+		/// </summary>
+		public void OnNavigatedTo(NavigationElement fromElement)
+		{
+		}
+
+		/// <summary>
+		/// Called when the container has been navigated out/from and is dismissed and not longer visible on screen.
+		/// </summary>
+		public void OnNavigatedFrom(NavigationElement toContainer)
+		{
+		}
+
 		#endregion
 
 		#region Private Members

@@ -209,8 +209,14 @@ namespace NControl.Mvvm
 					fromContainer, presentationMode);
 				
 				XAnimationPackage.RunAll(animations, () => {
-					// Notify
+
+					// Notify appearing
 					view.OnAppearing();
+
+					// Call navigation container
+					navigationElement.Container.OnNavigatedTo(navigationElement);
+
+					// End task
 					tcs.TrySetResult(true);
 				});
 			}
@@ -238,7 +244,7 @@ namespace NControl.Mvvm
 			_contentPage.Container.Children.Add(container.GetBaseView(), 0, 0);
 
 			// Create navigation element
-			var navigationElement = new NavigationElement(view, container, dismissedAction);
+			var navigationElement = new NavigationElement(view, container, _contentPage.Container, dismissedAction);
 
 			// Notify view about view lifecycle events
 			(view as IView).OnAppearing();
@@ -294,6 +300,9 @@ namespace NControl.Mvvm
 				// Call dismissed action
 				fromElement.DismissedAction?.Invoke(success);
 
+				// Call navigation container
+				fromElement.Container.OnNavigatedFrom(fromElement);
+
 				// Remove from view hierarchy
 				_contentPage.Container.Children.Remove(fromElement.Container.GetBaseView());
 				fromElement.Container.SetContent(null);
@@ -341,15 +350,17 @@ namespace NControl.Mvvm
 
 	public class NavigationElement
 	{
-		public View View { get; set; }
-		public Action<bool> DismissedAction { get; set; }
-		public INavigationContainer Container { get; set; }
+		public View View { get; private set; }
+		public Action<bool> DismissedAction { get; private set; }
+		public INavigationContainer Container { get; private set; }
+		public View MainContainer { get; private set; }
 
-		public NavigationElement(View view, INavigationContainer container, Action<bool> dismissedAction)
+		public NavigationElement(View view, INavigationContainer container, View mainContainer, Action<bool> dismissedAction)
 		{
 			DismissedAction = dismissedAction;
 			Container = container;
 			View = view;
+			MainContainer = mainContainer;
 		}
 
 		~NavigationElement()

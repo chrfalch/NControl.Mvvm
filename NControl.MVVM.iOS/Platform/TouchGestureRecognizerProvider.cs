@@ -33,16 +33,23 @@ namespace NControl.Mvvm.iOS
 		/// <param name="element">Element.</param>
 		public void AttachTo(VisualElement element)
 		{
-			element.PropertyChanged += (sender, e) => {
-				if (e.PropertyName == "Renderer")
+			var r = Platform.GetRenderer(element);
+			if (r != null)
+			{
+				r.NativeView.AddGestureRecognizer(_reco);	
+			}
+			else
+			{
+				element.PropertyChanged += (sender, e) =>
 				{
-					var r = Platform.GetRenderer(element);
-					if (r != null)
+					if (e.PropertyName == "Renderer")
 					{
-						r.NativeView.AddGestureRecognizer(_reco);
+						r = Platform.GetRenderer(element);
+						if (r != null)
+							r.NativeView.AddGestureRecognizer(_reco);
 					}
-				}
-			};
+				};
+			}
 		}
 
 		/// <summary>

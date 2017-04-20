@@ -48,6 +48,10 @@ namespace NControl.Mvvm.Droid
 		{
 			_element = element;
 			element.PropertyChanged += Element_PropertyChanged;
+
+			var r = Platform.GetRenderer(_element);
+			if(r != null) 
+				HookRenderer(r);
 		}
 
 		/// <summary>
@@ -94,28 +98,43 @@ namespace NControl.Mvvm.Droid
 			if (e.PropertyName == "Renderer")
 			{
 				var r = Platform.GetRenderer(_element);
-				if (r != null && _touchInterceptor == null)
-				{
-					_view = r.ViewGroup;
-					_touchInterceptor = new DroidTouchInterceptor(_displayDensity);
-					_touchInterceptor.Touched += Interceptor_Touched;
-					_view.AddView(_touchInterceptor);
-				}
+				HookRenderer(r);
 			}
 			else if (e.PropertyName == nameof(VisualElement.Width) ||
 				e.PropertyName == nameof(VisualElement.Height))
 			{
-				if (_touchInterceptor != null && 
-				    !_element.Width.Equals(-1) && 
-				    !_element.Height.Equals(-1))
+				if (_touchInterceptor != null &&
+					!_element.Width.Equals(-1) &&
+					!_element.Height.Equals(-1))
 
-					_touchInterceptor.Layout(0, 0, (int)(_displayDensity * _element.Width), 
-					                         (int)(_displayDensity * _element.Height));		
-				
+					_touchInterceptor.Layout(0, 0, (int)(_displayDensity * _element.Width),
+											 (int)(_displayDensity * _element.Height));
+
 			}
 		}
+
 		#endregion
 
+		#region Private Members
+
+		/// <summary>
+		/// Hooks the renderer.
+		/// </summary>
+		void HookRenderer(IVisualElementRenderer r)
+		{
+			if (r != null && _touchInterceptor == null)
+			{
+				_view = r.ViewGroup;
+				_touchInterceptor = new DroidTouchInterceptor(_displayDensity);
+				_touchInterceptor.Touched += Interceptor_Touched;
+				_view.AddView(_touchInterceptor);
+
+				_touchInterceptor.Layout(0, 0, (int)(_displayDensity* _element.Width),
+			 		(int)(_displayDensity* _element.Height));
+			}
+		}
+
+		#endregion
 	}
 
 	/// <summary>

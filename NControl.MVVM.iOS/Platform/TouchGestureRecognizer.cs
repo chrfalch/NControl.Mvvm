@@ -47,6 +47,8 @@ namespace NControl.Mvvm.iOS
 
 			if (args.Cancel)
 				base.State = UIGestureRecognizerState.Failed;
+			else
+				base.State = UIGestureRecognizerState.Changed;
 		}
 
 		public override void TouchesEnded(NSSet touches, UIEvent evt)
