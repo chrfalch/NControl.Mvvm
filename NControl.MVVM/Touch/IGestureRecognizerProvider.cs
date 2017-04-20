@@ -25,13 +25,16 @@ namespace NControl.Mvvm
 	{
 		public TouchType TouchType { get; private set; }
 		public IEnumerable<Point> Points { get; private set; }
+		public bool Cancel { get; set; }
 
 		/// <summary>
 		/// Units moved pr milliseconds
 		/// </summary>
-		/// <value>The velocity.</value>
 		public double Velocity { get; private set; }
 
+		/// <summary>
+		/// Constructor
+		/// </summary>
 		public GestureRecognizerEventArgs(TouchType touchType, IEnumerable<Point> points, double velocity)
 		{
 			TouchType = touchType;
@@ -39,6 +42,9 @@ namespace NControl.Mvvm
 			Velocity = velocity;
 		}
 
+		/// <summary>
+		/// Returns the first touch point
+		/// </summary>
 		public Point FirstPoint { get { return Points.FirstOrDefault(); } }	
 	}
 }

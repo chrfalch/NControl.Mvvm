@@ -280,71 +280,101 @@ namespace NControl.XAnimation
 		/// </summary>
 		public void Interpolate(double value)
 		{
-			// State
-			if (_states.Count == 0)
-				Save();
+			// Save state if no state is found
+			//bool didSaveState = false;
+			//if (_states.Count == 0)
+			//{
+			//	Save();
+			//	didSaveState = true;
+			//}
 
-			var currentState = _states.Peek();
+			var animationInfoStartTime = 0L;
+			var animationTotalTime = _animationInfos.Sum((arg) => arg.Duration);
+			var animationStartTime = animationTotalTime * value;
 
-			// Find animations
+			// 1) Find start animation as a function of time
 			var animationInfo = _animationInfos.Last();
 			if (_animationInfos.Count > 1)
-			{
-				var animationStartTime = _animationInfos.Sum((arg) => arg.Duration) * value;
-				var timeCounter = 0.0;
+			{				
+				var currentTime = 0L;
+
 				foreach (var info in _animationInfos)
 				{
-					if (animationStartTime >= timeCounter &&
-						animationStartTime <= timeCounter + info.Duration)
+					if (animationStartTime >= currentTime &&
+						animationStartTime <= currentTime + info.Duration)
 					{
 						animationInfo = info;
+						animationInfoStartTime = currentTime;
 						break;
 					}
 
-					timeCounter += info.Duration;
+					currentTime += info.Duration;
 				}
 			}
 
+			// 2) Find start/end on 0.0 -> 1.0 
+			var startValue = animationInfoStartTime * (1.0 / animationTotalTime);
+			var endValue = (animationInfoStartTime + animationInfo.Duration) * (1.0 / animationTotalTime);
+
+			// 3) Find factor to multiply time value with to get from 0 - duration in current 
+			//    animation.
+			var curValue = (value - startValue) * (animationInfo.Duration / (endValue - startValue)) /
+				animationInfo.Duration;
+
+			// 4) Save index of animation for ease of lookup
 			var index = _animationInfos.IndexOf(animationInfo);
-			System.Diagnostics.Debug.WriteLine(index + " - " + animationInfo);
 
-			// Get starting point
-			foreach (var elementRef in _elements)
+			System.Diagnostics.Debug.WriteLine(
+				$"{curValue:F2} == ({value:F2} - {startValue:F2}) * ({animationInfo.Duration:F2} " +
+			    $" / ({endValue:F2} - {startValue:F2})) / {animationInfo.Duration:F2} (index: {index})");
+
+
+			// 5) Enumerate and apply, start by getting previous animation
+			Dictionary<WeakReference<VisualElement>, XAnimationInfo> previousAnimations = null;
+
+			for (var i = 0; i <= index && i <_animationInfos.Count; i++)
 			{
-				// Get element
-				VisualElement element;
-				if (!elementRef.TryGetTarget(out element))
-					continue;
+				var nextPreviousList = new Dictionary<WeakReference<VisualElement>, XAnimationInfo>();
+				var currentAnimation = _animationInfos.ElementAt(i);
 
-				// Get state for element
-				if (!currentState.ContainsKey(elementRef))
-					continue;
-
-				XAnimationInfo startPoint = currentState[elementRef];
-				if (index > 0)
-					startPoint = _animationInfos.ElementAt(index - 1);
-
-				// Create interpolated point
-				var interpolatedPoint = new XAnimationInfo
+				// Get starting point
+				foreach (var elementRef in _elements)
 				{
+					// Get element
+					VisualElement element;
+					if (!elementRef.TryGetTarget(out element))
+						continue;
 
-					Rotate = startPoint.Rotate +
-						   ((animationInfo.Rotate - startPoint.Rotate) * value),
+					// Set animation values
+					if (i < index)
+					{
+						Provider.Set(element, currentAnimation);
+					}
+					else
+					{
+						// Get start point 
+						XAnimationInfo startPoint = null;
+						if(previousAnimations != null)
+							startPoint = previousAnimations[elementRef];
 
-					Opacity = startPoint.Opacity +
-						   ((animationInfo.Opacity - startPoint.Opacity) * value),
+						// Get interpolated point
+						var interpolatedPoint = GetInterpolatedPoint(
+							startPoint, currentAnimation, curValue);
 
-					TranslationX = startPoint.TranslationX +
-						 ((animationInfo.TranslationX - startPoint.TranslationX) * value),
+						Provider.Set(element, interpolatedPoint);
+					}
 
-					TranslationY = startPoint.TranslationY +
-						 ((animationInfo.TranslationY - startPoint.TranslationY) * value),
-				};
+					// Save current state 
+					nextPreviousList.Add(elementRef, _animationInfos.ElementAt(i));
+				}
 
-				// Interpolate with previous elements
-
-				Provider.Set(element, interpolatedPoint);
+				// Swap out previous
+				previousAnimations = nextPreviousList;
 			}
+
+			// Remove temporary state if set
+			//if (didSaveState)
+			//	_states.Pop();
 		}
 
 		/// <summary>
@@ -394,6 +424,22 @@ namespace NControl.XAnimation
 		public IEnumerable<XAnimationInfo> AnimationInfos { get { return _animationInfos; } }
 
 		#region Private Members
+
+		/// <summary>
+		/// Enumerate elements
+		/// </summary>
+		void EnumerateElements(Action<VisualElement> callback)
+		{
+			foreach (var elementRef in _elements)
+			{
+				// Get element
+				VisualElement element;
+				if (!elementRef.TryGetTarget(out element))
+					continue;
+
+				callback(element);
+			}
+		}
 
 		/// <summary>
 		/// Runs the animation.
@@ -510,6 +556,37 @@ namespace NControl.XAnimation
 				element.BackgroundColor = animationInfo.Color;
 		}
 
+		/// <summary>
+		/// Creates a new interpolated set of points from the two animations where
+		/// time is between 0.0 and 1.0.
+		/// </summary>
+		XAnimationInfo GetInterpolatedPoint(XAnimationInfo fromAnimation, XAnimationInfo toAnimation,
+        	double time)
+		{
+			if (fromAnimation == null)
+				return new XAnimationInfo
+				{
+					Rotate = toAnimation.Rotate* time,
+					Opacity = toAnimation.Opacity * time,
+					TranslationX = toAnimation.TranslationX * time,
+					TranslationY = toAnimation.TranslationY * time,
+				};
+
+			return new XAnimationInfo
+			{
+				Rotate = fromAnimation.Rotate +
+					   ((toAnimation.Rotate - fromAnimation.Rotate) * time),
+
+				Opacity = fromAnimation.Opacity +
+					   ((toAnimation.Opacity - fromAnimation.Opacity) * time),
+
+				TranslationX = fromAnimation.TranslationX +
+					 ((toAnimation.TranslationX - fromAnimation.TranslationX) * time),
+
+				TranslationY = fromAnimation.TranslationY +
+					 ((toAnimation.TranslationY - fromAnimation.TranslationY) * time),
+			};
+		}
 		#endregion
 
 		#region Properties

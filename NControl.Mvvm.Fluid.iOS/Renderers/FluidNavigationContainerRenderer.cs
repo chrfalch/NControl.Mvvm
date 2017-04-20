@@ -7,7 +7,7 @@ using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
-[assembly:ExportRenderer(typeof(FluidNavigationContainer), typeof(FluidNavigationContainerRenderer))]
+// [assembly:ExportRenderer(typeof(FluidNavigationContainer), typeof(FluidNavigationContainerRenderer))]
 namespace NControl.Mvvm.iOS
 {
 	public class FluidNavigationContainerRenderer: ViewRenderer<FluidNavigationContainer, UIView> 
@@ -32,38 +32,38 @@ namespace NControl.Mvvm.iOS
 		{
 			base.UpdateNativeWidget();
 
-			if (GestureRecognizers == null || !GestureRecognizers.Contains(_reco))
-				AddGestureRecognizer(_reco);
+			//if (GestureRecognizers == null || !GestureRecognizers.Contains(_reco))
+			//	AddGestureRecognizer(_reco);
 		}
 
 		void HandleSwipe(UIPanGestureRecognizer reco)
 		{
-			if (reco.State == UIGestureRecognizerState.Began)
-			{
-				_startLocation = reco.LocationInView(this);
+			//if (reco.State == UIGestureRecognizerState.Began)
+			//{
+			//	_startLocation = reco.LocationInView(this);
 
-				if (Element != null)
-					Element.UpdateFromGestureRecognizer(_startLocation.X, -1, PanState.Started);
-			}
-			else if (reco.State == UIGestureRecognizerState.Changed)
-			{
-				var stopLocation = reco.LocationInView(this);
-				if (Element != null)
-					Element.UpdateFromGestureRecognizer(stopLocation.X, -1, PanState.Moving);
-			}
-			else if (reco.State == UIGestureRecognizerState.Ended)
-			{
-				var stopLocation = reco.LocationInView(this);
-				var velocity = reco.VelocityInView(this);
+			//	if (Element != null)
+			//		Element.UpdateFromGestureRecognizer(_startLocation.X, -1, PanState.Started);
+			//}
+			//else if (reco.State == UIGestureRecognizerState.Changed)
+			//{
+			//	var stopLocation = reco.LocationInView(this);
+			//	if (Element != null)
+			//		Element.UpdateFromGestureRecognizer(stopLocation.X, -1, PanState.Moving);
+			//}
+			//else if (reco.State == UIGestureRecognizerState.Ended)
+			//{
+			//	var stopLocation = reco.LocationInView(this);
+			//	var velocity = reco.VelocityInView(this);
 
-				if (Element != null)
-					Element.UpdateFromGestureRecognizer(stopLocation.X, (double)velocity.X, PanState.Ended);
-			}
-			else if (reco.State == UIGestureRecognizerState.Cancelled)
-			{
-				if (Element != null)
-					Element.UpdateFromGestureRecognizer(-1, -1, PanState.Cancelled);
-			}
+			//	if (Element != null)
+			//		Element.UpdateFromGestureRecognizer(stopLocation.X, (double)velocity.X, PanState.Ended);
+			//}
+			//else if (reco.State == UIGestureRecognizerState.Cancelled)
+			//{
+			//	if (Element != null)
+			//		Element.UpdateFromGestureRecognizer(-1, -1, PanState.Cancelled);
+			//}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

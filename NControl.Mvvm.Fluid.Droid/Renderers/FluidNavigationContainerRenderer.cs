@@ -8,7 +8,7 @@ using Android.App;
 using NControl.Mvvm;
 using NControl.Mvvm.Droid;
 
-[assembly: ExportRenderer(typeof(FluidNavigationContainer), typeof(FluidNavigationContainerRenderer))]
+// [assembly: ExportRenderer(typeof(FluidNavigationContainer), typeof(FluidNavigationContainerRenderer))]
 namespace NControl.Mvvm.Droid
 {
 	public class FluidNavigationContainerRenderer: ViewRenderer<FluidNavigationContainer, Android.Views.View>
@@ -65,8 +65,8 @@ namespace NControl.Mvvm.Droid
 					_isScrolling = true;
 					_velocityTracker = VelocityTracker.Obtain();
 
-					Element.UpdateFromGestureRecognizer(
-						ev.GetX() / _displayDensity, -1, PanState.Started);
+					//Element.UpdateFromGestureRecognizer(
+					//	ev.GetX() / _displayDensity, -1, PanState.Started);
 					
 					return true;
 				}
@@ -91,8 +91,8 @@ namespace NControl.Mvvm.Droid
 					_velocityTracker.Recycle();
 					_velocityTracker = null;
 
-					Element.UpdateFromGestureRecognizer(
-						e.GetX() / _displayDensity, velX, PanState.Ended); 
+					//Element.UpdateFromGestureRecognizer(
+					//	e.GetX() / _displayDensity, velX, PanState.Ended); 
 					
 					return true;
 				}
@@ -103,8 +103,8 @@ namespace NControl.Mvvm.Droid
 					_velocityTracker.AddMovement(e);
 
 					// Update element
-					Element.UpdateFromGestureRecognizer(
-						e.GetX() / _displayDensity, -1, PanState.Moving);
+					//Element.UpdateFromGestureRecognizer(
+					//	e.GetX() / _displayDensity, -1, PanState.Moving);
 				}
 			}
 			
