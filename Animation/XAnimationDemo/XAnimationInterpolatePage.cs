@@ -67,7 +67,23 @@ namespace XAnimationDemo
 						}
 					},
 
-					slider
+					slider,
+
+					//new StackLayout{
+					//	Orientation = StackOrientation.Horizontal,
+					//	HorizontalOptions = LayoutOptions.FillAndExpand,
+					//	Children = {
+					//		new Button{
+					//			Text = "Back",
+					//			Command = new Command((obj) => animation.Run(()=> slider.Value = 0.0, slider.Value, 0.0))
+					//		},
+					//		new Button{
+					//			Text = "Forward",
+					//			HorizontalOptions = LayoutOptions.End,
+					//			Command = new Command((obj) => animation.Run(()=> slider.Value = 1.0, slider.Value, 1.0))
+					//		}
+					//	},
+					//}
 				},
 			};
 		}
