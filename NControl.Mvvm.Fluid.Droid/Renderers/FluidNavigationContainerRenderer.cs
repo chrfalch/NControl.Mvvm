@@ -8,7 +8,7 @@ using Android.App;
 using NControl.Mvvm;
 using NControl.Mvvm.Droid;
 
-[assembly: ExportRenderer(typeof(FluidNavigationContainer), typeof(FluidNavigationContainerRenderer))]
+// [assembly: ExportRenderer(typeof(FluidNavigationContainer), typeof(FluidNavigationContainerRenderer))]
 namespace NControl.Mvvm.Droid
 {
 	public class FluidNavigationContainerRenderer: ViewRenderer<FluidNavigationContainer, Android.Views.View>

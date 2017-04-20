@@ -40,11 +40,11 @@ namespace XAnimationDemo
 
 			// Set up animation
 			var animation = new XAnimationPackage(box, box2)
+				.Rotate(180)
+				.Animate()
 				.Opacity(0.2)
 				.Animate()
-				.Rotate(360)
-				.Animate()
-				.Opacity(1.0)
+				.Translate(50, 50)
 				.Animate();
 
 			slider.ValueChanged += (s, e)=>{

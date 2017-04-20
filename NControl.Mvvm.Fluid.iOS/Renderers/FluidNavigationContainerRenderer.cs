@@ -7,7 +7,7 @@ using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
-[assembly:ExportRenderer(typeof(FluidNavigationContainer), typeof(FluidNavigationContainerRenderer))]
+// [assembly:ExportRenderer(typeof(FluidNavigationContainer), typeof(FluidNavigationContainerRenderer))]
 namespace NControl.Mvvm.iOS
 {
 	public class FluidNavigationContainerRenderer: ViewRenderer<FluidNavigationContainer, UIView> 
