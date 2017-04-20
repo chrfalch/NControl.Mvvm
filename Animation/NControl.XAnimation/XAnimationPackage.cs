@@ -11,6 +11,15 @@ namespace NControl.XAnimation
 	/// </summary>
 	public class XAnimationPackage
 	{
+		#region Static Properties
+
+		/// <summary>
+		/// Set to true to speed down animations
+		/// </summary>
+		public static bool SlowAnimations { get; set; }
+
+		#endregion
+
 		#region Private Members
 
 		/// <summary>
@@ -231,11 +240,6 @@ namespace NControl.XAnimation
 		}
 
 		/// <summary>
-		/// Set to true to speed down animations
-		/// </summary>
-		public static bool SlowAnimations { get; set; }
-
-		/// <summary>
 		/// Runs this animation
 		/// </summary>
 		public void Run(Action completed = null)
@@ -248,19 +252,7 @@ namespace NControl.XAnimation
 
 			_runningState = true;
 
-			// Run the first animation in the list of animation objects
-			var animationInfo = _animationInfos.First();
-			RunAnimation(animationInfo, completed);
-		}
-
-		/// <summary>
-		/// Runs the animations async
-		/// </summary>
-		public Task RunAsync()
-		{
-			var tcs = new TaskCompletionSource<bool>();
-			Run(() => tcs.TrySetResult(true));
-			return tcs.Task;
+			RunAnimation(_animationInfos.First(), completed);
 		}
 
 		/// <summary>
@@ -272,29 +264,12 @@ namespace NControl.XAnimation
 			if (_interpolationStart == null)
 				_interpolationStart = GetCurrentStateAsDict(null);
 
-			var animationInfoStartTime = 0L;
+			// Total time
 			var animationTotalTime = _animationInfos.Sum((arg) => arg.Duration);
-			var animationStartTime = animationTotalTime * value;
 
-			// 1) Find start animation as a function of time
-			var animationInfo = _animationInfos.Last();
-			if (_animationInfos.Count > 1)
-			{				
-				var currentTime = 0L;
-
-				foreach (var info in _animationInfos)
-				{
-					if (animationStartTime >= currentTime &&
-						animationStartTime <= currentTime + info.Duration)
-					{
-						animationInfo = info;
-						animationInfoStartTime = currentTime;
-						break;
-					}
-
-					currentTime += info.Duration;
-				}
-			}
+			// 1) Find start animation as a function of time and start time
+			var animationInfo = GetAnimationInfoFromTime(value);
+			var animationInfoStartTime = GetStartTimeForAnimationInfo(animationInfo);
 
 			// 2) Find start/end on 0.0 -> 1.0 
 			var startValue = animationInfoStartTime * (1.0 / animationTotalTime);
@@ -358,10 +333,19 @@ namespace NControl.XAnimation
 		}
 
 		/// <summary>
+		/// Runs the animations async
+		/// </summary>
+		public Task RunAsync()
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			Run(() => tcs.TrySetResult(true));
+			return tcs.Task;
+		}
+
+		/// <summary>
 		/// Run multiple animations and return with completed action when all are done.
 		/// </summary>
-		public static void RunAll(IEnumerable<XAnimationPackage> animations, 
-			Action completed = null)
+		public static void RunAll(IEnumerable<XAnimationPackage> animations, Action completed = null)
 		{
 			if (animations == null || animations.Count() == 0)
 			{
@@ -449,44 +433,49 @@ namespace NControl.XAnimation
 		}
 
 		/// <summary>
-		/// Runs the animation.
+		/// Runs the animation from startAnimation to endAnimation
 		/// </summary>
-		/// <param name="animationInfo">Animation info.</param>
-		void RunAnimation(XAnimationInfo animationInfo, Action completed)
+		void RunAnimation(XAnimationInfo currentAnimation, Action completed)
 		{
-			Action HandleCompletedAction = () =>
-			{
-				// Start next
-				if (animationInfo != _animationInfos.Last() && _runningState)
-				{
-					var index = _animationInfos.IndexOf(animationInfo);
-					animationInfo = _animationInfos.ElementAt(index + 1);
-					RunAnimation(animationInfo, completed);
-				}
-				else
-				{
-					_runningState = false;
-					if (completed != null)
-						completed();
-				}
-			};
+			// Save state if no state is found
+			if (_interpolationStart == null)
+				_interpolationStart = GetCurrentStateAsDict(null);
 
-			if (animationInfo.OnlyTransform)
-			{
-				DoLog(()=> animationInfo.ToString());
-				Provider.Set(animationInfo);
-				HandleCompletedAction();
+			DoLog(() => currentAnimation.ToString());
+
+			if (currentAnimation.OnlyTransform)
+			{				
+				// Set transformation directly
+				Provider.Set(currentAnimation);
+				HandleRunCompleted(currentAnimation, completed);
 			}
 			else
 			{
-                DoLog(() => animationInfo.ToString());
+				// Run transformation
+                Provider.Animate(currentAnimation, ()=> 
+                	HandleRunCompleted(currentAnimation, completed));
+			}
+		}
 
-				// Tell the animation provider to animate
-				Provider.Animate(animationInfo, () =>
-				{
-					// DoLog("Animation Done Callback({0})", animationInfo);
-					HandleCompletedAction();
-				});
+		/// <summary>
+		/// Animation Run completed
+		/// </summary>
+		void HandleRunCompleted(XAnimationInfo currentAnimation, Action completed)
+		{
+			// Start next
+			if (currentAnimation != _animationInfos.Last() && 			    
+			    _runningState)
+			{
+				var index = _animationInfos.IndexOf(currentAnimation);
+				currentAnimation = _animationInfos.ElementAt(index + 1);
+				RunAnimation(currentAnimation, completed);
+			}
+			else
+			{
+				_runningState = false;
+
+				if (completed != null)
+					completed();
 			}
 		}
 
@@ -518,6 +507,59 @@ namespace NControl.XAnimation
 		#endregion
 
 		#region Helpers
+
+		/// <summary>
+		/// Returns the animation info from time (0.0 -> 1.0) 
+		/// </summary>
+		XAnimationInfo GetAnimationInfoFromTime(double time)
+		{
+			if (_animationInfos.Count > 1)
+			{
+				var currentTime = 0L;
+				var animationTotalTime = _animationInfos.Sum((arg) => arg.Duration);
+				var timeInMilliseconds = animationTotalTime * time;
+
+				foreach (var info in _animationInfos)
+				{
+					if (timeInMilliseconds >= currentTime &&
+						timeInMilliseconds <= currentTime + info.Duration)					
+						return info;
+
+					currentTime += info.Duration;
+				}
+			}
+			else
+			{
+				return _animationInfos.FirstOrDefault();
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Returns the starttime for a given animation info in the list of infos
+		/// </summary>
+		long GetStartTimeForAnimationInfo(XAnimationInfo animationInfo)
+		{
+			if (_animationInfos.Count > 1)
+			{
+				var currentTime = 0L;
+
+				foreach (var info in _animationInfos)
+				{
+					if (info == animationInfo)
+						return currentTime;
+					
+					currentTime += info.Duration;
+				}
+
+				return 0;
+			}
+			else
+			{
+				return 0;
+			}
+		}
 
 		/// <summary>
 		/// Create animation info from an element
