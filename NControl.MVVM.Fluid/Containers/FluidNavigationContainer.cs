@@ -28,7 +28,6 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Animation for the swipe movement back/forth
 		/// </summary>
-		IEnumerable<XAnimationPackage> _pushAnimationPackage;
 		IEnumerable<XAnimationPackage> _dismissAnimationPackage;
 
 		#endregion
@@ -371,39 +370,6 @@ namespace NControl.Mvvm
 
 					break;
 			}
-		}
-
-		void CheckTranslationAndSnap(double velocity, double interpolationValue, View toView, View fromView)
-		{
-			if (interpolationValue > 0.33)
-			{
-				// Perform Dismiss
-			}
-			else
-			{
-				// Cancel Dismissal
-			}
-
-			//var distance = toViewTranslationX - fromView.TranslationX;
-			//var duration = Math.Min(0.2, Math.Max(0.2, velocity.Equals(-1) ? 0.2f : distance / velocity));
-
-			//new XAnimationPackage(toView)
-			//	.Duration((long)(duration*1000))
-			//	.Translate(toViewTranslationX, 0)
-			//	.Animate()
-			//	.Run(() => {
-			//		if (fromViewTranslationX.Equals(0));
-			//		// TODO:
-			//		//MvvmApp.Current.Presenter.DismissViewModelAsync(
-			//		//	GetViewModel().PresentationMode, false, false);
-			//});
-
-			//if(toView != null)
-			//	new XAnimationPackage(fromView)
-			//		.Duration((long)(duration * 1000))
-			//		.Translate(fromViewTranslationX, 0)
-			//		.Animate()
-			//		.Run();			
 		}
 
 		void UpdateToolbarItems(View view)
