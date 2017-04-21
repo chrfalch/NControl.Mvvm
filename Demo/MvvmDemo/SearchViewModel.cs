@@ -53,10 +53,11 @@ namespace MvvmDemo
 		/// </summary>
 		/// <value>The query.</value>
 		public string Query {
-			get { return GetValue<string> (); }
+			get { return GetValue(()=>MvvmApp.Current.Load<string>(key:"SearchQuery")); }
 			set { 
-				SetValue (value); 
-
+				SetValue (value);
+				MvvmApp.Current.Save(value, key: "SearchQuery");
+				       
 				Employees.Clear();
 				if(string.IsNullOrEmpty(Query))
 					Employees.AddRange(Employee.EmployeeRepository);

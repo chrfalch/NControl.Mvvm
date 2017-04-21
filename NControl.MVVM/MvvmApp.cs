@@ -28,6 +28,11 @@ namespace NControl.Mvvm
 		/// </summary>
 		readonly Dictionary<string, object> _storage = new Dictionary<string, object>();
 
+		/// <summary>
+		/// The persistent storage provider.
+		/// </summary>
+		readonly IStorageProvider _persistentStorage;
+
 		#endregion
 
 		/// <summary>
@@ -62,28 +67,22 @@ namespace NControl.Mvvm
 			using (PerformanceTimer.Current.BeginTimer(this))
 			{
 				// Register container
-				using (PerformanceTimer.Current.BeginTimer(this, "Setting up container"))
-					Container.Initialize(CreateContainer());
+				Container.Initialize(CreateContainer());
 
 				// Create view container and presenter
-				using (PerformanceTimer.Current.BeginTimer(this, "Registering Views"))
-					RegisterViewContainer();
+				RegisterViewContainer();
 
-				using (PerformanceTimer.Current.BeginTimer(this, "Registering Presenter"))
-					RegisterPresenter();
+				RegisterPresenter();
 
 				// Sets up the messaging service
-				using (PerformanceTimer.Current.BeginTimer(this, "Registering Messaging Service"))
-					RegisterMessagingService();
+				RegisterMessagingService();
 
 				// Register providers
-				using (PerformanceTimer.Current.BeginTimer(this, "Registering Providers"))
-					RegisterProviders();
+				RegisterProviders();
 
 				// Set up services
-				using (PerformanceTimer.Current.BeginTimer(this, "Registering Services"))
-					RegisterServices();
-				
+				RegisterServices();
+
 				// Initialize platform app
 				using (PerformanceTimer.Current.BeginTimer(this, "Platform Initialize"))
 					platform.Initialize();
@@ -91,13 +90,6 @@ namespace NControl.Mvvm
 				// Set up views
 				using (PerformanceTimer.Current.BeginTimer(this, "Registering Views"))
 					RegisterViews();
-
-				// Set up colors and sizes
-				using (PerformanceTimer.Current.BeginTimer(this, "Settings up settings"))
-				{
-					SetupSizes();
-					SetupColors();
-				}
 
 				// Set main page
 				using (PerformanceTimer.Current.BeginTimer(this, "Setting Main Page"))
@@ -108,7 +100,37 @@ namespace NControl.Mvvm
 
 		#endregion
 
-		#region Properties
+		#region Storage
+
+		/// <summary>
+		/// Load the specified callback and key.
+		/// </summary>
+		public T Load<T>(Func<T> callback = null, [CallerMemberName] string key = null)
+		{
+			if (string.IsNullOrEmpty(key))
+				throw new ArgumentException("key");
+
+			if (!PersistentStorage.ContainsKey(key))
+			{
+				if (callback == null)
+					PersistentStorage.Set(key, default(T));
+				else
+					PersistentStorage.Set(key, callback());
+			}
+
+			return PersistentStorage.Get<T>(key);
+		}
+
+		/// <summary>
+		/// Set the specified key and value.
+		/// </summary>
+		public void Save<T>(T value, [CallerMemberName] string key = null)
+		{
+			if (string.IsNullOrEmpty(key))
+				throw new ArgumentException("key");
+
+			PersistentStorage.Set(key, value);
+		}
 
 		/// <summary>
 		/// Get the specified key and callback.
@@ -136,42 +158,46 @@ namespace NControl.Mvvm
 		{
 			if (string.IsNullOrEmpty(key))
 				throw new ArgumentException("key");
-			
+
 			if (!_storage.ContainsKey(key))
 				_storage.Add(key, value);
 			else
 				_storage[key] = value;
 		}
 
-		/// <summary>
-		/// Returns the presenter.
-		/// </summary>
-		/// <value>The presenter.</value>
-		public IPresenter Presenter { get { return Get(()=>Container.Resolve<IPresenter>()); } }
+		#endregion
+
+		#region Properties
 
 		/// <summary>
 		/// Returns the presenter.
 		/// </summary>
 		/// <value>The presenter.</value>
-		public IViewContainer ViewContainer { get { return Get(()=>Container.Resolve<IViewContainer>()); } }
+		public IPresenter Presenter { get { return Get(() => Container.Resolve<IPresenter>()); } }
+
+		/// <summary>
+		/// Returns the presenter.
+		/// </summary>
+		/// <value>The presenter.</value>
+		public IViewContainer ViewContainer { get { return Get(() => Container.Resolve<IViewContainer>()); } }
 
 		/// <summary>
 		/// Gets the activity indicator.
 		/// </summary>
 		/// <value>The view container.</value>
-		public IActivityIndicator ActivityIndicator { get { return Get(()=>Container.Resolve<IActivityIndicator>()); } }
+		public IActivityIndicator ActivityIndicator { get { return Get(() => Container.Resolve<IActivityIndicator>()); } }
 
 		/// <summary>
 		/// Gets the messaging service.
 		/// </summary>
 		/// <value>The messaging service.</value>
-		public IMessageHub MessageHub { get { return Get(()=>Container.Resolve<IMessageHub>()); } }
+		public IMessageHub MessageHub { get { return Get(() => Container.Resolve<IMessageHub>()); } }
 
 		/// <summary>
 		/// Returns the environment information
 		/// </summary>
 		/// <value>The environment.</value>
-        public IEnvironmentProvider Environment { get { return Get(()=>Container.Resolve<IEnvironmentProvider>()); } }
+		public IEnvironmentProvider Environment { get { return Get(() => Container.Resolve<IEnvironmentProvider>()); } }
 
 		#endregion
 
@@ -195,36 +221,20 @@ namespace NControl.Mvvm
 		}
 
 		/// <summary>
-		/// Set up default sizes
-		/// </summary>
-		protected virtual void SetupSizes()
-		{
-            
-		}
-
-		/// <summary>
-		/// Sets up colors.
-		/// </summary>
-		protected virtual void SetupColors()
-		{
-			
-            
-		}
-
-		/// <summary>
 		/// Registers the view container
 		/// </summary>
 		protected virtual void RegisterViewContainer()
 		{
-			using(PerformanceTimer.Current.BeginTimer(this))
-				Container.RegisterSingleton<IViewContainer, DefaultViewContainer>();			
+			using (PerformanceTimer.Current.BeginTimer(this))
+				Container.RegisterSingleton<IViewContainer, DefaultViewContainer>();
 		}
 
 		/// <summary>
 		/// Override to register providers
 		/// </summary>
 		protected virtual void RegisterProviders()
-		{ 
+		{
+			Container.RegisterSingleton<IStorageProvider, PersistentStorage>();
 		}
 
 		/// <summary>
@@ -232,7 +242,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		protected virtual void RegisterMessagingService()
 		{
-			Container.RegisterSingleton<IMessageHub, MessageHub> ();
+			Container.RegisterSingleton<IMessageHub, MessageHub>();
 		}
 
 		/// <summary>
@@ -245,7 +255,7 @@ namespace NControl.Mvvm
 		/// </summary>
 		protected virtual void RegisterServices()
 		{
-			
+
 		}
 
 		/// <summary>
@@ -256,6 +266,20 @@ namespace NControl.Mvvm
 
 		#endregion
 
+		#region Private Propeties
+
+		/// <summary>
+		/// Returns the persistent storage
+		/// </summary>
+		/// <value>The persistent storage.</value>
+		IStorageProvider PersistentStorage
+		{
+			get
+			{
+				return Get(() => Container.Resolve<IStorageProvider>());
+			}
+		}
+		#endregion
 	}
 }
 
