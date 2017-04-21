@@ -68,10 +68,15 @@ namespace NControl.Mvvm
 					mainView = Container.Resolve(mainViewType) as ContentView;
 
 				using (PerformanceTimer.Current.BeginTimer(this, "Presenting Main View"))
+				{
 					PresentView(mainView, PresentationMode.Default, (b) =>
 					{
 						throw new InvalidOperationException("Should not dismiss main view/viewmodel!");
 					});
+
+					// Notify view about view lifecycle events
+					(mainView as IView).OnAppearing();
+				}
 			}
 		}
 
@@ -207,14 +212,14 @@ namespace NControl.Mvvm
 			{
 				var animations = (navigationElement.Container as IXAnimatable).TransitionIn(
 					fromContainer, presentationMode);
-				
-				XAnimationPackage.RunAll(animations, () => {
 
-					// Notify appearing
-					view.OnAppearing();
+				XAnimationPackage.RunAll(animations, () => {
 
 					// Call navigation container
 					navigationElement.Container.OnNavigatedTo(navigationElement);
+
+					// Notify appearing
+					view.OnAppearing();
 
 					// End task
 					tcs.TrySetResult(true);
@@ -241,13 +246,12 @@ namespace NControl.Mvvm
 
 			// Add contents view to container's content area
 			container.SetContent(view);
+
+			// Add container base view to page
 			_contentPage.Container.Children.Add(container.GetBaseView(), 0, 0);
 
 			// Create navigation element
 			var navigationElement = new NavigationElement(view, container, _contentPage.Container, dismissedAction);
-
-			// Notify view about view lifecycle events
-			(view as IView).OnAppearing();
 
 			// Add to or create context depending on type of navigation
 			if (presentationMode == PresentationMode.Default && _contentPage.Contexts.Count > 0)

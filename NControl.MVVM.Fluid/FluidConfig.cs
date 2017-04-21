@@ -8,6 +8,7 @@ namespace NControl.Mvvm
 		public static int DefaultToolbarItemWidth { get { return MvvmApp.Current.Get(() => 30); } }
 		public static int DefaultNavigationBarHeight { get { return MvvmApp.Current.Get(() => Device.OnPlatform(46, 56, 46)); } }
 		public static int DefaultStatusbarHeight { get { return MvvmApp.Current.Get(() => Device.OnPlatform(22, 0, 22)); } }
+		public static bool NavigationBarHasShadow { get { return MvvmApp.Current.Get(() => false); } }
 
 		public static int DefaultPopupTitleHeight { get { return MvvmApp.Current.Get(() => 34); } }
 		public static Color DefaultPopupTitleBackgroundColor { get { return MvvmApp.Current.Get(() => Config.PrimaryColor); } }

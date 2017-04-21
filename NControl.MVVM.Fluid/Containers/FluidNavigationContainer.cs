@@ -68,17 +68,15 @@ namespace NControl.Mvvm
 					
 					new FluidShadowView{
 						VerticalOptions = LayoutOptions.End,
-						HasShadow = true,
 						ShadowRadius = 3,
 						ShadowOpacity = 0.4,
 						ShadowOffset = new Size(0, 1.0),
 						BackgroundColor = Color.Transparent,
 						Content = _navigationBar,
-					},
+						BindingContext = this,
+					}.BindTo(FluidShadowView.HasShadowProperty, nameof(HasNavigationBarShadow)),
 				},
 			};
-
-			_AddViewsToBottomOfStack(_layout);
 
 			// Add contents container
 			_layout.Children.Add(_container, () => GetContainerRectangle());
@@ -91,8 +89,6 @@ namespace NControl.Mvvm
 				VerticalOptions = LayoutOptions.Start,
 			}, () => new Rectangle(0, 0, _layout.Width, _statusbarHeight));
 
-			_AddViewsToTopOfStack(_layout);
-
 			// Bindings
 			this.BindTo(TitleProperty, nameof(IViewModel.Title));
 
@@ -102,28 +98,6 @@ namespace NControl.Mvvm
 		{
 			System.Diagnostics.Debug.WriteLine(this.GetType().Name + " Finalized.");
 		}
-
-		#region Protected Members
-
-		void _AddViewsToBottomOfStack(RelativeLayout layout)
-		{
-			AddViewsToBottomOfStack(layout);
-		}
-
-		void _AddViewsToTopOfStack(RelativeLayout layout)
-		{
-			AddViewsToTopOfStack(layout);
-		}
-
-		protected virtual void AddViewsToBottomOfStack(RelativeLayout layout)
-		{
-		}
-
-		protected virtual void AddViewsToTopOfStack(RelativeLayout layout)
-		{
-		}
-
-		#endregion
 
 		#region Properties
 
@@ -142,6 +116,22 @@ namespace NControl.Mvvm
 		{
 			get { return (string)GetValue(TitleProperty); }
 			set { SetValue(TitleProperty, value); }
+		}
+
+		/// <summary>
+		/// The HasNavigationBarShadow property.
+		/// </summary>
+		public static BindableProperty HasNavigationBarShadowProperty = BindableProperty.Create(
+			nameof(HasNavigationBarShadow), typeof(bool), typeof(FluidNavigationContainer), 
+			FluidConfig.NavigationBarHasShadow, BindingMode.OneWay);
+
+		/// <summary>
+		/// Gets or sets the HasNavigationBarShadow of the FluidNavigationContainer instance.
+		/// </summary>
+		public bool HasNavigationBarShadow
+		{
+			get { return (bool)GetValue(HasNavigationBarShadowProperty); }
+			set { SetValue(HasNavigationBarShadowProperty, value); }
 		}
 		#endregion
 
@@ -465,14 +455,14 @@ namespace NControl.Mvvm
 		{
 			var animations = new List<XAnimationPackage>();
 
-			if(includeSet)
+			if (includeSet)
 				animations.Add(new XAnimationPackage(this)
-						.Translate(Width, 0)
-						.Set()
-		               	.Translate(0, 0));
+					.Translate(Width, 0)
+					.Set()
+					.Translate(0, 0));
 			else
 				animations.Add(new XAnimationPackage(this)
-						.Translate(0, 0));
+					.Translate(0, 0));
 
 			// Move previous a litle bit out
 			animations.Add(new XAnimationPackage(fromContainer.GetBaseView())

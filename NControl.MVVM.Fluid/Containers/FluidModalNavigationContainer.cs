@@ -8,23 +8,23 @@ namespace NControl.Mvvm
 {
 	public class FluidModalNavigationContainer: FluidNavigationContainer
 	{
-		View _overlay;
+		// View _overlay;
 
-		protected override void AddViewsToBottomOfStack(RelativeLayout layout)
-		{
-			base.AddViewsToBottomOfStack(layout);
+		//protected override void AddViewsToBottomOfStack(RelativeLayout layout)
+		//{
+		//	base.AddViewsToBottomOfStack(layout);
 
-			_overlay = new BoxView
-			{
-				BackgroundColor = Config.ViewTransparentBackgroundColor,
-			};
+		//	_overlay = new BoxView
+		//	{
+		//		BackgroundColor = Config.ViewTransparentBackgroundColor,
+		//	};
 
-			layout.Children.Add(_overlay, () => layout.Bounds);
-		}
+		//	layout.Children.Add(_overlay, () => layout.Bounds);
+		//}
 
 		public override View GetOverlayView()
 		{
-			return _overlay;
+			return null; //_overlay;
 		}
 
 		//public override IEnumerable<XAnimationPackage> TransitionIn(
