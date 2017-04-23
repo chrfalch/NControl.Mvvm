@@ -21,13 +21,13 @@ namespace XAnimationDemo
 								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage2());
 							})
 						},
-						//new Button
-						//{
-						//	Text = "Second",
-						//	Command = new Command((obj) => {								
-						//		(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage3());
-						//	})
-						//},
+						new Button
+						{
+							Text = "Animate Layout",
+							Command = new Command((obj) => {								
+								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoAnimatableLayoutPage());
+							})
+						},
 						new Button
 						{
 							Text = "Third",

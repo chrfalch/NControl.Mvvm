@@ -16,11 +16,17 @@ namespace NControl.XAnimation
 	/// Contains information about an animation 
 	/// </summary>
 	public class XAnimationInfo
-	{
+	{		
 		static int Counter = 0;
 
+		long _duration = 0;
+
 		public long Delay { get; set; }
-		public long Duration { get; set; }
+		public long Duration
+		{
+			get { return OnlyTransform ? 0 : _duration; }
+			set { _duration = value; }
+		}
 		public int AnimationId { get; set; }
 
 		public double Scale { get; set; }
@@ -61,7 +67,8 @@ namespace NControl.XAnimation
 			Delay = 0;
 
 			// Duration should be inherited
-			Duration = prevAnimationInfo != null ? prevAnimationInfo.Duration : 250;
+			Duration = prevAnimationInfo != null && !prevAnimationInfo.OnlyTransform ? 
+				prevAnimationInfo.Duration : 250;
 
 			if (keepTransforms && prevAnimationInfo != null)
 			{
