@@ -13,6 +13,27 @@ namespace MvvmDemo
 			Title = "About";
 		}
 
+		public override async Task InitializeAsync()
+		{
+			await base.InitializeAsync();
+
+			MvvmApp.Current.MessageHub.Subscribe<MyMessage>(this, async message => {
+
+					IsRunningAsyncCommand = true;
+
+					for (var i = 0; i< 10; i++)
+					{
+						await Task.Delay(150);
+						NumberValue++;
+					}
+
+					//IsBusy = false;
+					IsRunningAsyncCommand = false;
+
+					await MvvmApp.Current.Presenter.ShowMessageAsync(Title, message.Message, "OK");
+			});
+		}
+
 		public Command ClickMeCommand
 		{
 			get
@@ -59,7 +80,7 @@ namespace MvvmDemo
 			set { SetValue(value); }
 		}
 
-		[OnMessage(typeof(MyMessage))]
+		//[OnMessage(typeof(MyMessage))]
 		public AsyncCommand<MyMessage> HandleMyMessage
 		{
 			get
