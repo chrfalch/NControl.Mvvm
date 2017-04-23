@@ -34,6 +34,19 @@ namespace NControl.XAnimation.iOS
 			_animation = animation;
 		}
 
+		public bool GetHasViewsToAnimate(XAnimationInfo animationinfo)
+		{
+			var numberofLiveViews = 0;
+			for (var i = 0; i < _animation.ElementCount; i++)
+			{
+				var element = _animation.GetElement(i);
+				var view = GetView(element);
+				if (view.Superview != null)
+					numberofLiveViews++;
+			}
+
+			return numberofLiveViews > 0;
+		}
 
 		public void Animate(XAnimationInfo animationInfo, Action completed)
 		{
@@ -45,8 +58,9 @@ namespace NControl.XAnimation.iOS
 
 			var viewAnimations = new Dictionary<UIView, IEnumerable<CAAnimation>>();
 
-			foreach (var element in _animation.Elements)
+			for (var i = 0; i < _animation.ElementCount; i++)
 			{
+				var element = _animation.GetElement(i);
 				var view = GetView(element);
 				var animations = GetAnimationsForElement(element, view, animationInfo);
 
@@ -97,8 +111,11 @@ namespace NControl.XAnimation.iOS
 
 		public void Set(XAnimationInfo animationInfo)
 		{
-			foreach (var element in _animation.Elements)
+			for (var i = 0; i < _animation.ElementCount; i++)
+			{
+				var element = _animation.GetElement(i);
 				SetElementFromAnimationInfo(element, animationInfo);
+			}
 		}
 
 		public void Set(VisualElement element, XAnimationInfo animationInfo)

@@ -31,6 +31,20 @@ namespace NControl.XAnimation.Droid
 				_displayDensity = metrics.Density;			
 		}
 
+		public bool GetHasViewsToAnimate(XAnimationInfo animationinfo)
+		{
+			var numberofLiveViews = 0;
+			for (var i = 0; i < _animation.ElementCount; i++)
+			{
+				var element = _animation.GetElement(i);
+				var viewGroup = GetViewGroup(element);
+				if (viewGroup.Parent != null)
+					numberofLiveViews++;
+			}
+
+			return numberofLiveViews > 0;
+		}
+
 		public void Animate(XAnimationInfo animationInfo, Action completed)
 		{
 			var animations = new List<object>();
@@ -46,8 +60,9 @@ namespace NControl.XAnimation.Droid
 				}
 			};
 
-			foreach (var element in _animation.Elements)
+			for (var i = 0; i<_animation.ElementCount; i++)
 			{
+				var element = _animation.GetElement(i);
 				var viewGroup = GetViewGroup(element);
 				var nativeAnimation = viewGroup.Animate();
 				nativeAnimation
@@ -133,8 +148,11 @@ namespace NControl.XAnimation.Droid
 
 		public void Set(XAnimationInfo animationInfo)
 		{
-			foreach (var element in _animation.Elements)
+			for (var i = 0; i < _animation.ElementCount; i++)
+			{
+				var element = _animation.GetElement(i);
 				Set(element, animationInfo);
+			}
 		}
 
 		#region Private Members

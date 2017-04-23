@@ -437,6 +437,11 @@ namespace NControl.XAnimation
 		/// </summary>
 		void RunAnimation(XAnimationInfo currentAnimation, Action completed)
 		{
+			// If no views are live we can just return without calling completed,
+			// user interface is no longer available
+			if (!Provider.GetHasViewsToAnimate(currentAnimation))
+				return;
+			
 			// Save state if no state is found
 			if (_interpolationStart == null)
 				_interpolationStart = GetCurrentStateAsDict(null);
@@ -660,21 +665,27 @@ namespace NControl.XAnimation
 		}
 
 		/// <summary>
-		/// Returns the elements that should be animated
+		/// Returns the number of elements
 		/// </summary>
-		public IEnumerable<VisualElement> Elements 
-		{ 
+		/// <value>The element count.</value>
+		public int ElementCount
+		{
 			get
 			{
-				return _elements.Select(el =>
-				{
-					VisualElement el2 = null;
-					if (el.TryGetTarget(out el2))
-						return el2;
+				return _elements.Count();
+			}
+		}
 
-					return null;
-				});
-			}				                       
+		/// <summary>
+		/// Returns the elements that should be animated
+		/// </summary>
+		public VisualElement GetElement(int index)
+		{ 
+			VisualElement el2 = null;
+			if (_elements.ElementAt(index).TryGetTarget(out el2))
+				return el2;
+
+			return null;
 		} 
 
 		#endregion
