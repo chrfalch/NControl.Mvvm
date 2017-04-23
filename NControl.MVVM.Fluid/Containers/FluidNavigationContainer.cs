@@ -8,7 +8,7 @@ using Xamarin.Forms;
 
 namespace NControl.Mvvm
 {
-	
+
 	public class FluidNavigationContainer : ContentView, INavigationContainer, IXAnimatable
 	{
 		#region Private Members
@@ -40,11 +40,19 @@ namespace NControl.Mvvm
 		{
 			Content = _layout = new RelativeLayout();
 
+			// Overlay?
+			if (IntGetOverlayView() != null)
+			{
+				var overlay = IntGetOverlayView();
+				_layout.Children.Add(overlay, () => _layout.Bounds);
+			}
+
 			_statusbarHeight = FluidConfig.DefaultStatusbarHeight;
 			_navigationBarHeight = FluidConfig.DefaultNavigationBarHeight;
 
-			_navigationBar = new FluidNavigationBar { 
-				BindingContext = this, 
+			_navigationBar = new FluidNavigationBar
+			{
+				BindingContext = this,
 			}
 			.BindTo(FluidNavigationBar.TitleProperty, nameof(Title))
 			.BindTo(FluidNavigationBar.BackButtonVisibleProperty, nameof(BackButtonVisible));
@@ -53,7 +61,7 @@ namespace NControl.Mvvm
 			_navigationBar.BackButtonCommand = new AsyncCommand(async _ =>
 			{
 				if (BackButtonVisible)
-					await MvvmApp.Current.Presenter.DismissViewModelAsync(						
+					await MvvmApp.Current.Presenter.DismissViewModelAsync(
 						(_container.Content as IView).GetViewModel().PresentationMode);
 			});
 
@@ -65,7 +73,7 @@ namespace NControl.Mvvm
 				RowSpacing = 0,
 				ColumnSpacing = 0,
 				Children = {
-					
+
 					new FluidShadowView{
 						VerticalOptions = LayoutOptions.End,
 						ShadowRadius = 3,
@@ -92,6 +100,10 @@ namespace NControl.Mvvm
 			// Bindings
 			this.BindTo(TitleProperty, nameof(IViewModel.Title));
 
+		}
+		View IntGetOverlayView()
+		{
+			return GetOverlayView();
 		}
 
 		~FluidNavigationContainer()
@@ -235,7 +247,7 @@ namespace NControl.Mvvm
 			else if (presentationMode == PresentationMode.Modal)
 			{
 				// Animate the new contents in
-				animations.Add(new XAnimationPackage(this)
+				animations.Add(new XAnimationPackage(GetContentsView(), GetChromeView())
 					.Translate(0, Height)
 					.Set()
 					.Duration(350)
@@ -276,7 +288,7 @@ namespace NControl.Mvvm
 			else if (presentationMode == PresentationMode.Modal)
 			{
 				// Animate
-				animations.Add(new XAnimationPackage(this)
+				animations.Add(new XAnimationPackage(GetContentsView(), GetChromeView())
 				    .Easing(EasingFunction.EaseIn)
 	                .Translate(0, Height));
 			}

@@ -42,6 +42,7 @@ namespace NControl.Mvvm.Droid
 				using (PerformanceTimer.Current.BeginTimer(this, "Default providers"))
 				{
 					Container.Register<IImageProvider, DroidImageProvider>();
+					Container.Register<ITaskProvider, DroidTaskProvider> ();
 					Container.Register<IGestureRecognizerProvider, DroidGestureRecognizerProvider>();
 					Container.RegisterSingleton<IEnvironmentProvider, DroidEnvironmentProvider>();
 				}

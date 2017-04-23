@@ -109,6 +109,7 @@
     <Compile Include="Platform\ExtendedButtonRenderer.cs" />
     <Compile Include="Platform\DroidEnvironmentProvider.cs" />
     <Compile Include="Platform\DroidGestureRecognizerProvider.cs" />
+    <Compile Include="Platform\DroidTaskProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
