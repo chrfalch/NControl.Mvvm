@@ -168,12 +168,17 @@ namespace NControl.XAnimation
 			return this;
 		}
 
-		//public XAnimationPackage Frame(Rectangle rect)
-		//{
-		//	GetCurrentAnimation().AnimateRectangle = true;
-		//	GetCurrentAnimation().Rectangle = rect;
-		//	return this;
-		//}
+		public XAnimationPackage Frame(Rectangle rect)
+		{
+			GetCurrentAnimation().AnimateRectangle = true;
+			GetCurrentAnimation().Rectangle = rect;
+			return this;
+		}
+
+		public XAnimationPackage Frame(double x, double y, double width, double height)
+		{
+			return Frame(new Rectangle(x, y, width, height));
+		}
 
 		/// <summary>
 		/// Creates a custom easing curve. See more here: http://cubic-bezier.com
@@ -265,7 +270,8 @@ namespace NControl.XAnimation
 				_interpolationStart = GetCurrentStateAsDict(null);
 
 			// Total time
-			var animationTotalTime = _animationInfos.Sum((arg) => arg.Duration);
+			var animationTotalTime = _animationInfos.Sum((arg) => arg.Duration) + 
+                                     _animationInfos.Sum((arg) => arg.Delay);
 
 			// 1) Find start animation as a function of time and start time
 			var animationInfo = GetAnimationInfoFromTime(value);
@@ -286,7 +292,6 @@ namespace NControl.XAnimation
 			//System.Diagnostics.Debug.WriteLine(
 			//	$"{curValue:F2} == ({value:F2} - {startValue:F2}) * ({animationInfo.Duration:F2} " +
 			//    $" / ({endValue:F2} - {startValue:F2})) / {animationInfo.Duration:F2} (index: {index})");
-
 
 			// 5) Enumerate and apply, start by getting previous animation
 			Dictionary<WeakReference<VisualElement>, XAnimationInfo> previousAnimations = _interpolationStart;
@@ -316,11 +321,18 @@ namespace NControl.XAnimation
 						if(previousAnimations != null)
 							startPoint = previousAnimations[elementRef];
 
-						// Get interpolated point
-						var interpolatedPoint = GetInterpolatedPoint(
-							startPoint, currentAnimation, curValue);
+						if (currentAnimation.OnlyTransform)
+						{
+							Provider.Set(element, currentAnimation);
+						}
+						else
+						{
+							// Get interpolated point
+							var interpolatedPoint = GetInterpolatedPoint(
+								startPoint, currentAnimation, curValue);
 
-						Provider.Set(element, interpolatedPoint);
+							Provider.Set(element, interpolatedPoint);
+						}
 					}
 
 					// Save current state 
@@ -521,7 +533,9 @@ namespace NControl.XAnimation
 			if (_animationInfos.Count > 1)
 			{
 				var currentTime = 0L;
-				var animationTotalTime = _animationInfos.Sum((arg) => arg.Duration);
+				var animationTotalTime = _animationInfos.Sum((arg) => arg.Duration) +
+                                         _animationInfos.Sum((arg) => arg.Delay);
+				
 				var timeInMilliseconds = animationTotalTime * time;
 
 				foreach (var info in _animationInfos)
@@ -530,7 +544,7 @@ namespace NControl.XAnimation
 						timeInMilliseconds <= currentTime + info.Duration)					
 						return info;
 
-					currentTime += info.Duration;
+					currentTime += info.Duration + info.Delay;
 				}
 			}
 			else
@@ -554,16 +568,14 @@ namespace NControl.XAnimation
 				{
 					if (info == animationInfo)
 						return currentTime;
-					
-					currentTime += info.Duration;
+
+					currentTime += info.Duration + info.Delay;
 				}
 
 				return 0;
 			}
-			else
-			{
-				return 0;
-			}
+
+			return 0;
 		}
 
 		/// <summary>
@@ -620,10 +632,15 @@ namespace NControl.XAnimation
 			if (fromAnimation == null)
 				return new XAnimationInfo
 				{
-					Rotate = toAnimation.Rotate* time,
+					Rotate = toAnimation.Rotate * time,
 					Opacity = toAnimation.Opacity * time,
 					TranslationX = toAnimation.TranslationX * time,
 					TranslationY = toAnimation.TranslationY * time,
+					Rectangle = new Rectangle(toAnimation.Rectangle.X * time,
+											  toAnimation.Rectangle.Y * time,
+											  toAnimation.Rectangle.Width * time,
+											  toAnimation.Rectangle.Height * time),
+					AnimateRectangle = toAnimation.AnimateRectangle,
 				};
 
 			return new XAnimationInfo
@@ -639,6 +656,23 @@ namespace NControl.XAnimation
 
 				TranslationY = fromAnimation.TranslationY +
 					 ((toAnimation.TranslationY - fromAnimation.TranslationY) * time),
+
+				Rectangle = fromAnimation.AnimateRectangle ?  
+                     new Rectangle(
+						fromAnimation.Rectangle.X + 
+						((toAnimation.Rectangle.X - fromAnimation.Rectangle.X) * time),
+						fromAnimation.Rectangle.Y + 
+						((toAnimation.Rectangle.Y - fromAnimation.Rectangle.Y) * time),
+						fromAnimation.Rectangle.Width + 
+						((toAnimation.Rectangle.Width - fromAnimation.Rectangle.Width) * time),
+						fromAnimation.Rectangle.Height + 
+						((toAnimation.Rectangle.Height - fromAnimation.Rectangle.Height) * time)) :
+                     new Rectangle(toAnimation.Rectangle.X* time,
+						  toAnimation.Rectangle.Y* time,
+						  toAnimation.Rectangle.Width* time,
+						  toAnimation.Rectangle.Height * time),
+
+				AnimateRectangle = toAnimation.AnimateRectangle,
 			};
 		}
 		#endregion
