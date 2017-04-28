@@ -18,11 +18,10 @@ namespace XAnimationDemo
 
 			var layout = new XAnimatableLayout { 
 				Margin = 24,	
+				BindingContext = slider,
 			};
 
-			slider.ValueChanged += (sender, e) => {
-				layout.Interpolation = slider.Value;
-			};
+			layout.SetBinding(XAnimatableLayout.InterpolationProperty, nameof(slider.Value));
 
 			var box1 = new BoxView { BackgroundColor = Color.Red };
 			var easing = new EasingFunctionBezier(.36, .83, .49, 1.03);

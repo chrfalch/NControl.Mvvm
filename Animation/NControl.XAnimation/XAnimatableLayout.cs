@@ -33,7 +33,21 @@ namespace NControl.XAnimation
 
 		public static BindableProperty InterpolationProperty = BindableProperty.Create(
 			nameof(Interpolation), typeof(double), typeof(XAnimatableLayout),
-			0.0, BindingMode.OneWay);
+			0.0, BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue) => {
+				var control = (XAnimatableLayout)bindable;
+
+				if (newValue == oldValue)
+					return;
+						
+				if ((double)newValue < 0.0)
+					control.Interpolation = 0.0;
+				else if ((double)newValue > 1.0)
+                    control.Interpolation = 1.0;
+				else
+					control.Interpolation = (double)newValue;
+
+				control.InvalidateLayout();
+			});
 
 
 		/// <summary>
@@ -42,16 +56,7 @@ namespace NControl.XAnimation
 		public double Interpolation
 		{
 			get { return (double)GetValue(InterpolationProperty); }
-			set {
-				if (value < 0.0)
-					SetValue(InterpolationProperty, 0.0);
-				else if (value > 1.0)
-                    SetValue(InterpolationProperty, 1.0);
-				else
-                    SetValue(InterpolationProperty, value);
-
-				InvalidateLayout();
-			}
+			set { SetValue(InterpolationProperty, value); }				
 		}
 
 		/// <summary>
@@ -59,7 +64,10 @@ namespace NControl.XAnimation
 		/// </summary>
 		public void Animate(Action completed = null)
 		{
-			XAnimationPackage.RunAll(_animations, completed);
+			XAnimationPackage.RunAll(_animations, () => {
+				completed?.Invoke();
+				Interpolation = 1.0;
+			});
 		}
 
 		/// <summary>
@@ -67,7 +75,10 @@ namespace NControl.XAnimation
 		/// </summary>
 		public void Reverse(Action completed = null)
 		{
-			XAnimationPackage.RunAll(_animations, completed, true);
+			XAnimationPackage.RunAll(_animations, () => {
+				completed?.Invoke();
+				Interpolation = 0.0;
+			}, true);
 		}
 
 		/// <summary>
@@ -94,22 +105,7 @@ namespace NControl.XAnimation
 		protected override void LayoutChildren(double x, double y, double width, double height)
 		{
 			foreach (var animation in _animations)
-				animation.Interpolate(Interpolation);
-			
-			//foreach (var childItem in _innerDict)
-			//{
-			//	// Interpolate
-			//	var start = childItem.Value.Item1(this);
-			//	var end = childItem.Value.Item2(this);
-
-			//	var currentBounds = new Rectangle(
-			//		start.X + ((end.X - start.X) * Interpolation),
-			//		start.Y + ((end.Y - start.Y) * Interpolation),
-			//		start.Width + ((end.Width - start.Width) * Interpolation),
-			//		start.Height + ((end.Height - start.Height) * Interpolation));
-				
-			//	childItem.Key.Layout(currentBounds);
-			//}
+				animation.Interpolate(Interpolation);			
 		}
 
 		/// <summary>
@@ -124,11 +120,10 @@ namespace NControl.XAnimation
 		void XAnimatableLayout_SizeChanged(object sender, EventArgs e)
 		{
 			_animations.Clear();
-			foreach (var animationCallback in _animationCallback)
-			{
-				_animations.Add(animationCallback(this));
-			}
 
+			foreach (var animationCallback in _animationCallback)
+				_animations.Add(animationCallback(this));
+			
 			InvalidateLayout();
 		}
 
@@ -233,8 +228,8 @@ namespace NControl.XAnimation
 	/// List interface
 	/// </summary>
 	public interface IElementList : IList<View>
-	{		
-		void Add(View view, Func<XAnimatableLayout, Rectangle> start, Func<XAnimatableLayout, Rectangle> end);
+	{
+		void Add(View view, Func<XAnimatableLayout, Rectangle> start, Func<XAnimatableLayout, Rectangle> end);	
 	}
-
 }
+	
