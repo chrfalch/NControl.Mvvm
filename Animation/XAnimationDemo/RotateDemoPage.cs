@@ -21,7 +21,8 @@ namespace XAnimationDemo
 			var label = new Label
 			{
 				HorizontalTextAlignment = TextAlignment.Center,
-				Text = "Welcome to Xamarin Forms!"
+				Text = "Welcome to Xamarin Forms!",
+				Rotation = 45,
 			};
 			var slider = new Slider
 			{
@@ -39,13 +40,10 @@ namespace XAnimationDemo
 
 			var checkbox = new Switch { HorizontalOptions = LayoutOptions.Center };
 			var animation = new XAnimationPackage(label)
-							.Rotate(0)
-							.Translate(0, 0)
-							.Set()
-							.Duration(1000)
-							.Rotate(slider.Value)
-							.Translate(0, -60)
-							.Animate();
+				.Duration(1000)
+				.Rotate(slider.Value)
+				.Translate(0, -60)
+				.Animate();
 
 			var animateButton = new Button
 			{

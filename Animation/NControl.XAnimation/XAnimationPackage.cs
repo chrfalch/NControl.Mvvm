@@ -485,14 +485,10 @@ namespace NControl.XAnimation
 				// the end of the currentAnimation object. Let's find the previous 
 				// animation and animate to it! Check if we are at the beginning,
 				// if so lets use the interpolation start instead.
-				XAnimationInfo nextAnimation;
 				if (currentAnimation != _animationInfos.First())
-					nextAnimation = _animationInfos.ElementAt(_animationInfos.IndexOf(currentAnimation) - 1);
-				else
-					nextAnimation = null;
-
-				if (nextAnimation != null)
 				{
+					var nextAnimation = _animationInfos.ElementAt(_animationInfos.IndexOf(currentAnimation) - 1);
+
 					if (currentAnimation.OnlyTransform)
 					{
 						Provider.Set(nextAnimation);
@@ -513,11 +509,41 @@ namespace NControl.XAnimation
 				}
 				else
 				{
-					// Handle last animation
-                    _runningState = false;
+					Action doneAction = () => { 
+						// Handle last animation
+	                    _runningState = false;
 
-					if (completed != null)
-						completed();
+						if (completed != null)
+	                        completed();
+					};
+
+					foreach (var elementRef in _elements)
+					{
+						VisualElement element = null;
+						if (elementRef.TryGetTarget(out element))
+						{
+							var animationInfo = _interpolationStart[elementRef];
+							if (currentAnimation.OnlyTransform)
+							{
+								Provider.Set(element, animationInfo);                        		
+							}
+							else
+							{
+								// Merge animation info from current animation
+								var clonedAnimation = XAnimationInfo.FromAnimationInfo(animationInfo);
+								clonedAnimation.OnlyTransform = currentAnimation.OnlyTransform;
+								clonedAnimation.Duration = currentAnimation.Duration;
+								clonedAnimation.Delay = currentAnimation.Delay;
+								clonedAnimation.AnimateColor = currentAnimation.AnimateColor;
+								clonedAnimation.AnimateRectangle = currentAnimation.AnimateRectangle;
+
+								Provider.Animate(clonedAnimation, doneAction);
+							}
+						}
+					}
+
+					if (currentAnimation.OnlyTransform)
+						doneAction();
 				}
 			}
 			else
