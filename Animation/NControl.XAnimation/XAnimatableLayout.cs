@@ -63,6 +63,14 @@ namespace NControl.XAnimation
 		}
 
 		/// <summary>
+		/// Runs the animations in this instance in reverse
+		/// </summary>
+		public void Reverse(Action completed = null)
+		{
+			XAnimationPackage.RunAll(_animations, completed, true);
+		}
+
+		/// <summary>
 		/// Returns the list of children
 		/// </summary>
 		public new IElementList Children { get { return _children; } }

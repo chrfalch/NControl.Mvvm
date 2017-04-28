@@ -247,7 +247,7 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// Runs this animation
 		/// </summary>
-		public void Run(Action completed = null)
+		public void Run(Action completed = null, bool reverse = false)
 		{
 			if (_runningState)
 				return;
@@ -257,7 +257,16 @@ namespace NControl.XAnimation
 
 			_runningState = true;
 
-			RunAnimation(_animationInfos.First(), completed);
+			RunAnimation(reverse ? _animationInfos.Last() : _animationInfos.First(), 
+            	completed, reverse);
+		}
+
+		/// <summary>
+		/// Runs the animation in reverse
+		/// </summary>
+		public void RunReverse(Action completed = null)
+		{
+			Run(completed, true);
 		}
 
 		/// <summary>
@@ -347,17 +356,17 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// Runs the animations async
 		/// </summary>
-		public Task RunAsync()
+		public Task RunAsync(bool reverse = false)
 		{
 			var tcs = new TaskCompletionSource<bool>();
-			Run(() => tcs.TrySetResult(true));
+			Run(() => tcs.TrySetResult(true), reverse);
 			return tcs.Task;
 		}
 
 		/// <summary>
 		/// Run multiple animations and return with completed action when all are done.
 		/// </summary>
-		public static void RunAll(IEnumerable<XAnimationPackage> animations, Action completed = null)
+		public static void RunAll(IEnumerable<XAnimationPackage> animations, Action completed = null, bool reverse = false)
 		{
 			if (animations == null || animations.Count() == 0)
 			{
@@ -375,17 +384,18 @@ namespace NControl.XAnimation
 					counter++;
 					if (counter == animations.Count() && completed != null)
 						completed();
-				});
+					
+				}, reverse);
 			}
 		}
 
 		/// <summary>
 		/// Run multiple animations async
 		/// </summary>
-		public static Task RunAllAsync(IEnumerable<XAnimationPackage> animations)
+		public static Task RunAllAsync(IEnumerable<XAnimationPackage> animations, bool reverse = false)
 		{
 			var tcs = new TaskCompletionSource<bool>();
-			RunAll(animations, () => tcs.TrySetResult(true));
+			RunAll(animations, () => tcs.TrySetResult(true), reverse);
 			return tcs.Task;
 		}
 
@@ -447,52 +457,126 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// Runs the animation from startAnimation to endAnimation
 		/// </summary>
-		void RunAnimation(XAnimationInfo currentAnimation, Action completed)
+		void RunAnimation(XAnimationInfo currentAnimation, Action completed, bool reverse)
 		{
 			// If no views are live we can just return without calling completed,
 			// user interface is no longer available
 			if (!Provider.GetHasViewsToAnimate(currentAnimation))
 				return;
-			
+
 			// Save state if no state is found
 			if (_interpolationStart == null)
+			{
+				// If we are reversing we should have called RunAnimation first which should
+				// again have set the starting point. If not, we can just return, we're at the
+				// beginning anyways.
+				if (reverse)
+					return;
+				
 				_interpolationStart = GetCurrentStateAsDict(null);
+			}
 
+			// Let's just write out the current animation to the log window
 			DoLog(() => currentAnimation.ToString());
 
-			if (currentAnimation.OnlyTransform)
-			{				
-				// Set transformation directly
-				Provider.Set(currentAnimation);
-				HandleRunCompleted(currentAnimation, completed);
+			if (reverse)
+			{
+				// We are working in reverse - this means the the state we're in is
+				// the end of the currentAnimation object. Let's find the previous 
+				// animation and animate to it! Check if we are at the beginning,
+				// if so lets use the interpolation start instead.
+				XAnimationInfo nextAnimation;
+				if (currentAnimation != _animationInfos.First())
+					nextAnimation = _animationInfos.ElementAt(_animationInfos.IndexOf(currentAnimation) - 1);
+				else
+					nextAnimation = null;
+
+				if (nextAnimation != null)
+				{
+					if (currentAnimation.OnlyTransform)
+					{
+						Provider.Set(nextAnimation);
+                        HandleRunCompleted(currentAnimation, completed, reverse);
+					}
+					else
+					{
+						// Merge animation info from current animation
+						var clonedAnimation = XAnimationInfo.FromAnimationInfo(nextAnimation);
+						clonedAnimation.OnlyTransform = currentAnimation.OnlyTransform;
+						clonedAnimation.Duration = currentAnimation.Duration;
+						clonedAnimation.Delay = currentAnimation.Delay;
+						clonedAnimation.AnimateColor = currentAnimation.AnimateColor;
+						clonedAnimation.AnimateRectangle = currentAnimation.AnimateRectangle;
+
+						Provider.Animate(clonedAnimation, () => HandleRunCompleted(currentAnimation, completed, reverse));
+					}
+				}
+				else
+				{
+					// Handle last animation
+                    _runningState = false;
+
+					if (completed != null)
+						completed();
+				}
 			}
 			else
 			{
-				// Run transformation
-                Provider.Animate(currentAnimation, ()=> 
-                	HandleRunCompleted(currentAnimation, completed));
+				if (currentAnimation.OnlyTransform)
+				{
+					// Set transformation directly
+					Provider.Set(currentAnimation);
+					HandleRunCompleted(currentAnimation, completed, reverse);
+				}
+				else
+				{
+					// Run transformation
+					Provider.Animate(currentAnimation, () =>
+						HandleRunCompleted(currentAnimation, completed, reverse));
+				}
 			}
 		}
 
 		/// <summary>
 		/// Animation Run completed
 		/// </summary>
-		void HandleRunCompleted(XAnimationInfo currentAnimation, Action completed)
+		void HandleRunCompleted(XAnimationInfo currentAnimation, Action completed, bool reverse)
 		{
-			// Start next
-			if (currentAnimation != _animationInfos.Last() && 			    
-			    _runningState)
+			if (reverse)
 			{
-				var index = _animationInfos.IndexOf(currentAnimation);
-				currentAnimation = _animationInfos.ElementAt(index + 1);
-				RunAnimation(currentAnimation, completed);
+				// Start previous
+				if (currentAnimation != _animationInfos.First() &&
+					_runningState)
+				{
+					var index = _animationInfos.IndexOf(currentAnimation);
+					currentAnimation = _animationInfos.ElementAt(index - 1);
+					RunAnimation(currentAnimation, completed, reverse);
+				}
+				else
+				{
+					_runningState = false;
+
+					if (completed != null)
+						completed();
+				}
 			}
 			else
 			{
-				_runningState = false;
+				// Start next
+				if (currentAnimation != _animationInfos.Last() &&
+					_runningState)
+				{
+					var index = _animationInfos.IndexOf(currentAnimation);
+					currentAnimation = _animationInfos.ElementAt(index + 1);
+					RunAnimation(currentAnimation, completed, reverse);
+				}
+				else
+				{
+					_runningState = false;
 
-				if (completed != null)
-					completed();
+					if (completed != null)
+						completed();
+				}
 			}
 		}
 

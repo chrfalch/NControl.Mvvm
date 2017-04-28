@@ -3,17 +3,17 @@ using NControl.XAnimation;
 using Xamarin.Forms;
 namespace XAnimationDemo
 {
-	public class XAnimationDemoPage2: ContentPage
+	public class RotateDemoPage: ContentPage
 	{
 		static int pageNumber = 1;
 		readonly int myPageNumber;
 
-		~XAnimationDemoPage2()
+		~RotateDemoPage()
 		{
 			System.Diagnostics.Debug.WriteLine("Demo2 " + myPageNumber + " finalizing");
 		}
 
-		public XAnimationDemoPage2()
+		public RotateDemoPage()
 		{
 			myPageNumber = pageNumber++;
 			System.Diagnostics.Debug.WriteLine("Demo2 " + myPageNumber + " starting");
@@ -28,7 +28,6 @@ namespace XAnimationDemo
 				Minimum = 0,
 				Maximum = 360,
 				Value = 180,
-
 			};
 
 			var slidervalue = new Label
@@ -39,37 +38,37 @@ namespace XAnimationDemo
 			slidervalue.SetBinding(Label.TextProperty, nameof(Slider.Value));
 
 			var checkbox = new Switch { HorizontalOptions = LayoutOptions.Center };
-
-			var button = new Button
-			{
-				Text = "Animate!",
-				Command = new Command(() =>
-				{
-
-					Action action = null;
-					action = () =>
-					{
-						new XAnimationPackage(label)
+			var animation = new XAnimationPackage(label)
 							.Rotate(0)
 							.Translate(0, 0)
 							.Set()
 							.Duration(1000)
-							//.Color(Color.Red)
-							//.Rotate(slider.Value)
-							//.Easing(.07, .62, .58, 1.51)
-							//.Animate()
-							//.Color(Color.Transparent)
 							.Rotate(slider.Value)
 							.Translate(0, -60)
-							.Animate()
-							.Run(() =>
-							{
-								if (checkbox.IsToggled) action();
-							});
+							.Animate();
+
+			var animateButton = new Button
+			{
+				Text = "Animate",
+				Command = new Command(() => {
+					Action action = null;
+					action = () =>
+					{
+						animation.Run(() =>
+						{
+							if (checkbox.IsToggled)
+								action();
+						});
 					};
 
-					action();
+                   	action();
 				}),
+			};
+
+			var reverseButton = new Button
+			{
+				Text = "Reverse",
+				Command = new Command(() => animation.RunReverse())
 			};
 
 			// The root page of your application
@@ -79,7 +78,11 @@ namespace XAnimationDemo
 				VerticalOptions = LayoutOptions.Center,
 				Children = {
 					label,
-					button,
+					new StackLayout { 
+						Orientation = StackOrientation.Horizontal, 
+						HorizontalOptions = LayoutOptions.Center,
+						Children =  {animateButton, reverseButton}
+					},
 					slider,
 					slidervalue,
 

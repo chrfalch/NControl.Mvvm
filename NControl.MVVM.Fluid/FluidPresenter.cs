@@ -251,7 +251,8 @@ namespace NControl.Mvvm
 			_contentPage.Container.Children.Add(container.GetBaseView(), 0, 0);
 
 			// Create navigation element
-			var navigationElement = new NavigationElement(view, container, _contentPage.Container, dismissedAction);
+			var navigationElement = new NavigationElement(view, presentationMode, container, 
+			                                              _contentPage.Container, dismissedAction);
 
 			// Add to or create context depending on type of navigation
 			if (presentationMode == PresentationMode.Default && _contentPage.Contexts.Count > 0)
@@ -272,7 +273,7 @@ namespace NControl.Mvvm
 		/// Pops the view model async.
 		/// </summary>
 		/// <returns>The view model async.</returns>
-		Task PopViewModelAsync(PresentationMode presentationMode, bool success, bool animate)
+		Task PopViewModelAsync(PresentationMode blahblah, bool success, bool animate)
 		{
 			var tcs = new TaskCompletionSource<bool>();
 
@@ -318,7 +319,7 @@ namespace NControl.Mvvm
 			if (animate && fromElement.Container is IXAnimatable)
 				XAnimationPackage.RunAll(
 					(fromElement.Container as IXAnimatable).TransitionOut(toElement.Container,
-					presentationMode), removeAction);
+					fromElement.PresentationMode), removeAction);
 			else
 				removeAction();		
 					
@@ -358,13 +359,16 @@ namespace NControl.Mvvm
 		public Action<bool> DismissedAction { get; private set; }
 		public INavigationContainer Container { get; private set; }
 		public View MainContainer { get; private set; }
+		public PresentationMode PresentationMode { get; private set; }
 
-		public NavigationElement(View view, INavigationContainer container, View mainContainer, Action<bool> dismissedAction)
+		public NavigationElement(View view, PresentationMode presentationMode, 
+			INavigationContainer container, View mainContainer, Action<bool> dismissedAction)
 		{
 			DismissedAction = dismissedAction;
 			Container = container;
 			View = view;
 			MainContainer = mainContainer;
+			PresentationMode = presentationMode;
 		}
 
 		~NavigationElement()

@@ -45,14 +45,11 @@
     <Compile Include="Resources\IImageProvider.cs" />
     <Compile Include="Presenters\IPresenter.cs" />
     <Compile Include="IMvvmPlatform.cs" />
-    <Compile Include="Presenters\DefaultPresenter.cs" />
     <Compile Include="Presenters\IViewContainer.cs" />
-    <Compile Include="Presenters\DefaultViewContainer.cs" />
     <Compile Include="Decorators\IActivityIndicator.cs" />
     <Compile Include="Controls\ListViewEx.cs" />
     <Compile Include="ViewModels\IViewModel.cs" />
     <Compile Include="Views\IView.cs" />
-    <Compile Include="Presenters\ModalNavigationPage.cs" />
     <Compile Include="IoC\IMessageHub.cs" />
     <Compile Include="Attributes\OnMessageAttribute.cs" />
     <Compile Include="Classes\AsyncCommand.cs" />
@@ -85,6 +82,9 @@
     <Compile Include="IoC\Implementation\TinyIOCContainer.cs" />
     <Compile Include="IoC\Implementation\Container.cs" />
     <Compile Include="Tasks\ITaskProvider.cs" />
+    <Compile Include="Presenters\Implementatino\DefaultPresenter.cs" />
+    <Compile Include="Presenters\Implementatino\DefaultViewContainer.cs" />
+    <Compile Include="Presenters\Implementatino\ModalNavigationPage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.0.1.6505\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.0.1.6505\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />
@@ -133,6 +133,7 @@
     <Folder Include="Gestures\" />
     <Folder Include="IoC\Implementation\" />
     <Folder Include="Tasks\" />
+    <Folder Include="Presenters\Implementatino\" />
   </ItemGroup>
   <Import Project="..\packages\Xamarin.Forms.2.3.4.231\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.3.4.231\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets')" />
 </Project>

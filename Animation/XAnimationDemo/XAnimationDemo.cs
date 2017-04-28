@@ -15,37 +15,31 @@ namespace XAnimationDemo
 					Children = {
 						new Button
 						{
-							Text = "First",
+							Text = "Animation",
 							Command = new Command((obj) => {
 								GC.Collect();
-								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage2());
+								(MainPage as NavigationPage).Navigation.PushAsync(new RotateDemoPage());
 							})
 						},
 						new Button
 						{
 							Text = "Animate Layout",
 							Command = new Command((obj) => {								
-								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoAnimatableLayoutPage());
+								(MainPage as NavigationPage).Navigation.PushAsync(new AnimatableLayoutPage());
 							})
 						},
-						new Button
-						{
-							Text = "Third",
-							Command = new Command((obj) => {								
-								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage4());
-							})
-						},
+
 						new Button{
-							Text = "Performance",
+							Text = "Compare",
 							Command = new Command(()=> {
-								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationDemoPage());
+								(MainPage as NavigationPage).Navigation.PushAsync(new CompareFormsXAnimationPage());
 							})
 						},
 
 						new Button{
 							Text = "Interpolate",
 							Command = new Command(() => {
-								(MainPage as NavigationPage).Navigation.PushAsync(new XAnimationInterpolatePage());
+								(MainPage as NavigationPage).Navigation.PushAsync(new InterpolatePage());
 							})
 						},
 

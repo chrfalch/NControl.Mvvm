@@ -5,9 +5,9 @@ using Xamarin.Forms;
 
 namespace XAnimationDemo
 {
-	public class XAnimationDemoPage: ContentPage
+	public class CompareFormsXAnimationPage: ContentPage
 	{
-		public XAnimationDemoPage()
+		public CompareFormsXAnimationPage()
 		{
 			var label = new Label
 			{

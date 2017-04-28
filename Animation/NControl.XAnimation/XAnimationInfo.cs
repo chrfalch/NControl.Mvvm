@@ -105,6 +105,31 @@ namespace NControl.XAnimation
 			                     " Rotate={5}, TranslationX={6}, TranslationY={7}, Opacity={8}, Color={9}, Easing={10}]", Delay, Duration, false, AnimationId, 
 			                     Scale, Rotate, TranslationX, TranslationY, Opacity, AnimateColor ? Color.ToString() : "NO", Easing);
 		}
+
+		/// <summary>
+		/// Clones an animation info object
+		/// </summary>
+		public static XAnimationInfo FromAnimationInfo(XAnimationInfo info)
+		{
+			return new XAnimationInfo
+			{
+				Duration = info.Duration,
+				AnimateColor = info.AnimateColor,
+				AnimationId = info.AnimationId,
+				AnimateRectangle = info.AnimateRectangle,
+				Color = info.Color,
+				Delay = info.Delay,
+				Easing = info.Easing,
+				EasingBezier = info.EasingBezier,
+				OnlyTransform = info.OnlyTransform,
+				Opacity = info.Opacity,
+				Rectangle = info.Rectangle,
+				Rotate = info.Rotate,
+				Scale = info.Scale,
+				TranslationX = info.TranslationX,
+				TranslationY = info.TranslationY,
+			};
+		}
 	}
 
 	public sealed class EasingFunctionBezier

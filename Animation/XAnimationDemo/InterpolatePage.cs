@@ -4,9 +4,9 @@ using Xamarin.Forms;
 
 namespace XAnimationDemo
 {
-	public class XAnimationInterpolatePage: ContentPage
+	public class InterpolatePage: ContentPage
 	{
-		public XAnimationInterpolatePage()
+		public InterpolatePage()
 		{
 			var box = new ContentView
 			{

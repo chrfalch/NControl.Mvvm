@@ -4,9 +4,9 @@ using Xamarin.Forms;
 
 namespace XAnimationDemo
 {
-	public class XAnimationDemoAnimatableLayoutPage: ContentPage
+	public class AnimatableLayoutPage: ContentPage
 	{
-		public XAnimationDemoAnimatableLayoutPage()
+		public AnimatableLayoutPage()
 		{
 			var slider = new Slider
 			{
@@ -69,11 +69,25 @@ namespace XAnimationDemo
 				Orientation = StackOrientation.Vertical,
 				Children = {
 					layout,
-					new Button{
-						Text = "Animate",
-						Command = new Command(async(obj) => {
-							layout.Animate();
-						}),
+					new StackLayout{
+						Orientation = StackOrientation.Horizontal,
+						HorizontalOptions = LayoutOptions.Center,
+						Children = {
+							new Button{
+								Text = "Animate",
+								Command = new Command((obj) => {
+									layout.Animate();
+								}),
+															
+							},
+
+							new Button{
+								Text = "Reverse",
+								Command = new Command((obj) => {
+									layout.Reverse();
+								}),
+							}
+						}
 					},
 					slider,
 				},
