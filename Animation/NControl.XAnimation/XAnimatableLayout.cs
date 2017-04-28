@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,6 +52,14 @@ namespace NControl.XAnimation
 
 				InvalidateLayout();
 			}
+		}
+
+		/// <summary>
+		/// Runs the animations in this instance
+		/// </summary>
+		public void Animate(Action completed = null)
+		{
+			XAnimationPackage.RunAll(_animations, completed);
 		}
 
 		/// <summary>

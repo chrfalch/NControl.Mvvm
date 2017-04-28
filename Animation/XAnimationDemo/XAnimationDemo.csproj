@@ -35,6 +35,7 @@
     <Compile Include="XAnimationDemoPage3.cs" />
     <Compile Include="XAnimationDemoPage4.cs" />
     <Compile Include="XAnimationInterpolatePage.cs" />
+    <Compile Include="XAnimationDemoAnimatableLayoutPage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.XAnimation\NControl.XAnimation.csproj">

@@ -641,6 +641,8 @@ namespace NControl.XAnimation
 											  toAnimation.Rectangle.Width * time,
 											  toAnimation.Rectangle.Height * time),
 					AnimateRectangle = toAnimation.AnimateRectangle,
+					Color = toAnimation.Color,
+					AnimateColor = toAnimation.AnimateColor
 				};
 
 			return new XAnimationInfo
@@ -673,6 +675,17 @@ namespace NControl.XAnimation
 						  toAnimation.Rectangle.Height * time),
 
 				AnimateRectangle = toAnimation.AnimateRectangle,
+
+				Color = Xamarin.Forms.Color.FromRgba(toAnimation.Color.R + 
+				                                     ((toAnimation.Color.R - fromAnimation.Color.R) * time),
+				                                     toAnimation.Color.G + 
+				                                     ((toAnimation.Color.G - fromAnimation.Color.G) * time),
+				                                     toAnimation.Color.B + 
+				                                     ((toAnimation.Color.B - fromAnimation.Color.B) * time),
+				                                     toAnimation.Color.A + 
+				                                     ((toAnimation.Color.A - fromAnimation.Color.A) * time)),
+				
+				AnimateColor = toAnimation.AnimateColor,
 			};
 		}
 		#endregion
