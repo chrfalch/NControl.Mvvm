@@ -18,6 +18,7 @@ namespace XAnimationDemo
 
 			var layout = new XAnimatableLayout { 
 				Margin = 24,	
+				BackgroundColor = Color.Yellow,
 				BindingContext = slider,
 			};
 
@@ -67,7 +68,9 @@ namespace XAnimationDemo
 			{
 				Orientation = StackOrientation.Vertical,
 				Children = {
+					new BoxView {VerticalOptions= LayoutOptions.FillAndExpand, BackgroundColor = Color.Lime},
 					layout,
+					new BoxView {VerticalOptions= LayoutOptions.FillAndExpand, BackgroundColor = Color.Aqua},
 					new StackLayout{
 						Orientation = StackOrientation.Horizontal,
 						HorizontalOptions = LayoutOptions.Center,
@@ -76,10 +79,9 @@ namespace XAnimationDemo
 								Text = "Animate",
 								Command = new Command((obj) => {
 									layout.Animate();
-								}),
-															
+								}),														
 							},
-
+							new BoxView{WidthRequest = 50},
 							new Button{
 								Text = "Reverse",
 								Command = new Command((obj) => {

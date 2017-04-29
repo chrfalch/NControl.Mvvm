@@ -100,12 +100,36 @@ namespace NControl.XAnimation
 		#endregion
 
 		/// <summary>
+		/// Measure size
+		/// </summary>
+		/// <returns>The measure.</returns>
+		/// <param name="widthConstraint">Width constraint.</param>
+		/// <param name="heightConstraint">Height constraint.</param>
+		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
+		{
+			var retVal = base.OnMeasure(widthConstraint, heightConstraint);
+
+			foreach (var animation in _animations)
+				animation.Interpolate(Interpolation);
+
+			var constraints = Rectangle.Zero;
+			foreach (var element in Children)
+			{
+				constraints.Width = Math.Max(constraints.Width, element.X + element.Width);
+				constraints.Height = Math.Max(constraints.Height, element.Y + element.Height);
+			}
+
+			retVal.Request = constraints.Size;
+			retVal.Minimum = constraints.Size;
+			return retVal;
+		}
+
+		/// <summary>
 		/// Layouts the children.
 		/// </summary>
 		protected override void LayoutChildren(double x, double y, double width, double height)
 		{
-			foreach (var animation in _animations)
-				animation.Interpolate(Interpolation);			
+			
 		}
 
 		/// <summary>
@@ -114,7 +138,7 @@ namespace NControl.XAnimation
 		void BaseAdd(View item)
 		{
 			base.Children.Add(item);
-            InvalidateLayout();
+			InvalidateMeasure();
 		}
 
 		void XAnimatableLayout_SizeChanged(object sender, EventArgs e)
