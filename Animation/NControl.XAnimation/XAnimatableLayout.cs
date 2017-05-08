@@ -6,26 +6,22 @@ using Xamarin.Forms;
 
 namespace NControl.XAnimation
 {
-	public class XAnimatableLayout: Layout<View>
+	public class XAnimatableLayout : Layout<View>
 	{
 		#region Private Members
 
 		readonly List<XAnimationPackage> _animations = new List<XAnimationPackage>();
-		readonly List<Func<XAnimatableLayout, XAnimationPackage>> _animationCallback = 
+		readonly List<Func<XAnimatableLayout, XAnimationPackage>> _animationCallback =
 			new List<Func<XAnimatableLayout, XAnimationPackage>>();
-		
-		readonly ViewCollection _children;
-		readonly Dictionary<View, Tuple<Func<XAnimatableLayout, Rectangle>, Func<XAnimatableLayout, Rectangle>>> _innerDict =
-					new Dictionary<View, Tuple<Func<XAnimatableLayout, Rectangle>, Func<XAnimatableLayout, Rectangle>>>();
+
 		#endregion
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		public XAnimatableLayout()
-		{			
-			VerticalOptions = HorizontalOptions = LayoutOptions.FillAndExpand;
-			_children = new ViewCollection(_innerDict, this);
+		{
+			//VerticalOptions = (base.HorizontalOptions = LayoutOptions.FillAndExpand);
 			SizeChanged += XAnimatableLayout_SizeChanged;
 		}
 
@@ -33,16 +29,17 @@ namespace NControl.XAnimation
 
 		public static BindableProperty InterpolationProperty = BindableProperty.Create(
 			nameof(Interpolation), typeof(double), typeof(XAnimatableLayout),
-			0.0, BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue) => {
+			0.0, BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue) =>
+			{
 				var control = (XAnimatableLayout)bindable;
 
 				if (newValue == oldValue)
 					return;
-						
+
 				if ((double)newValue < 0.0)
 					control.Interpolation = 0.0;
 				else if ((double)newValue > 1.0)
-                    control.Interpolation = 1.0;
+					control.Interpolation = 1.0;
 				else
 					control.Interpolation = (double)newValue;
 
@@ -56,7 +53,7 @@ namespace NControl.XAnimation
 		public double Interpolation
 		{
 			get { return (double)GetValue(InterpolationProperty); }
-			set { SetValue(InterpolationProperty, value); }				
+			set { SetValue(InterpolationProperty, value); }
 		}
 
 		/// <summary>
@@ -64,9 +61,13 @@ namespace NControl.XAnimation
 		/// </summary>
 		public void Animate(Action completed = null)
 		{
-			XAnimationPackage.RunAll(_animations, () => {
-				completed?.Invoke();
-				Interpolation = 1.0;
+			var start = Interpolation;
+			this.Animate("Animate", (d) =>
+			{
+				Interpolation = d;
+			}, start, 1.0, 16, 500, Easing.CubicInOut, (d, b) => {
+				if (d.Equals(1.0))
+					 completed?.Invoke();
 			});
 		}
 
@@ -75,16 +76,20 @@ namespace NControl.XAnimation
 		/// </summary>
 		public void Reverse(Action completed = null)
 		{
-			XAnimationPackage.RunAll(_animations, () => {
-				completed?.Invoke();
-				Interpolation = 0.0;
-			}, true);
-		}
+			var end = Interpolation;
+            this.Animate("Animate", (d) => {
+				Interpolation = d;
+			}, end, 0.0, 16, 500, Easing.CubicInOut, (d, b) => {
+				if (d.Equals(1.0))
+					completed?.Invoke();
+			});
 
-		/// <summary>
-		/// Returns the list of children
-		/// </summary>
-		public new IElementList Children { get { return _children; } }
+			//XAnimationPackage.RunAll(_animations, () =>
+			//{
+			//	completed?.Invoke();
+			//	Interpolation = 0.0;
+			//}, true);
+		}
 
 		/// <summary>
 		/// Adds an animation callback. 
@@ -114,13 +119,16 @@ namespace NControl.XAnimation
 
 			var constraints = Rectangle.Zero;
 			foreach (var element in Children)
-			{
+			{				
+				constraints.Left = Math.Min(constraints.Left, element.X);
+				constraints.Top = Math.Min(constraints.Top, element.Y);
 				constraints.Width = Math.Max(constraints.Width, element.X + element.Width);
 				constraints.Height = Math.Max(constraints.Height, element.Y + element.Height);
 			}
 
 			retVal.Request = constraints.Size;
 			retVal.Minimum = constraints.Size;
+
 			return retVal;
 		}
 
@@ -129,16 +137,7 @@ namespace NControl.XAnimation
 		/// </summary>
 		protected override void LayoutChildren(double x, double y, double width, double height)
 		{
-			
-		}
 
-		/// <summary>
-		/// Add to base child collection
-		/// </summary>
-		void BaseAdd(View item)
-		{
-			base.Children.Add(item);
-			InvalidateMeasure();
 		}
 
 		void XAnimatableLayout_SizeChanged(object sender, EventArgs e)
@@ -147,113 +146,9 @@ namespace NControl.XAnimation
 
 			foreach (var animationCallback in _animationCallback)
 				_animations.Add(animationCallback(this));
-			
+
 			InvalidateLayout();
 		}
-
-		/// <summary>
-		/// View collection with rect functions
-		/// </summary>
-		class ViewCollection : IElementList
-		{
-			readonly Dictionary<View, Tuple<Func<XAnimatableLayout, Rectangle>, Func<XAnimatableLayout, Rectangle>>> _innerDict;
-			readonly XAnimatableLayout _parent;
-
-			public ViewCollection(Dictionary<View, Tuple<Func<XAnimatableLayout, Rectangle>, Func<XAnimatableLayout, Rectangle>>> innerDict, XAnimatableLayout parent)
-			{
-				_innerDict = innerDict;
-				_parent = parent;
-			}
-
-			public View this[int index]
-			{
-				get { return _innerDict.Keys.ElementAt(index); }
-				set { throw new NotSupportedException(); }
-			}
-
-			public int Count { get { return _innerDict.Count(); } }
-
-			public bool IsReadOnly { get { return true; } }
-
-			public void Add(View item)
-			{
-				_parent.BaseAdd(item);
-			}
-
-			public void Add(View view, Func<XAnimatableLayout, Rectangle> start, Func<XAnimatableLayout, Rectangle> end)
-			{
-				if (start == null)
-					throw new ArgumentNullException(nameof(start));
-
-				if (end == null)
-					throw new ArgumentNullException(nameof(end));
-
-				_innerDict.Add(view, new Tuple<Func<XAnimatableLayout, Rectangle>, Func<XAnimatableLayout, Rectangle>>(start, end));
-
-				_parent.BaseAdd(view);
-			}
-
-			public void Clear()
-			{
-				throw new NotSupportedException();
-			}
-
-			public bool Contains(View item)
-			{
-				return _innerDict.ContainsKey(item);
-			}
-
-			public void CopyTo(View[] array, int arrayIndex)
-			{
-				if (array.Length - arrayIndex < Count)
-					throw new ArgumentException("Destination array was not long enough. " +
-												"Check destIndex and length, and the array's lower bounds.");
-
-				foreach (var item in this)
-				{
-					array[arrayIndex] = item;
-					arrayIndex++;
-				}
-			}
-
-			public IEnumerator<View> GetEnumerator()
-			{
-				return _innerDict.Keys.OfType<View>().GetEnumerator();
-			}
-
-			public int IndexOf(View item)
-			{
-				return _innerDict.Keys.ToList().IndexOf(item);
-			}
-
-			public void Insert(int index, View item)
-			{
-				throw new NotSupportedException();
-			}
-
-			public bool Remove(View item)
-			{
-				throw new NotSupportedException();
-			}
-
-			public void RemoveAt(int index)
-			{
-				throw new NotSupportedException();
-			}
-
-			IEnumerator IEnumerable.GetEnumerator()
-			{
-				return GetEnumerator();
-			}
-		}	
-	}
-
-	/// <summary>
-	/// List interface
-	/// </summary>
-	public interface IElementList : IList<View>
-	{
-		void Add(View view, Func<XAnimatableLayout, Rectangle> start, Func<XAnimatableLayout, Rectangle> end);	
 	}
 }
 	

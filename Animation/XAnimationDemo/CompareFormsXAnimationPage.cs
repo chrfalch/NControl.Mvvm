@@ -55,6 +55,42 @@ namespace XAnimationDemo
 				BackgroundColor = Color.Yellow,
 			};
 
+			var slider = new Slider
+			{
+				Maximum = 1.0,
+				Minimum = 0.0,
+			};
+
+			var animation = new XAnimationPackage(box, box2, box3, box4);
+			animation
+				.Duration(1250)
+			 	.Rotate(-45)
+		 	.Animate()
+			 	.Scale(1.5f)
+		 	.Animate()
+				 .Rotate(0)
+				 .Scale(1)
+		 	.Animate()
+			 	.Duration(200)
+			 	.Translate(0, 100)
+		 	.Animate()
+			 	.Translate(0, -100)
+		 	.Animate()
+			 	.Reset()
+		 	.Animate()
+		 	 	.Duration(1250)
+		 	 	.Opacity(0)
+			 .Animate()
+			 	.Reset()
+			 .Animate()
+				.Color(Color.Red)
+			 .Animate()
+				.Color(Color.Green)
+			 .Animate()
+				.Color(Color.Blue);
+
+			slider.ValueChanged += (s,e)=>animation.Interpolate(slider.Value);
+
 			Title = "Animations";
 
 			Content = new Grid()
@@ -76,7 +112,7 @@ namespace XAnimationDemo
 									box4
 								}
 							},
-
+							slider,
 							new StackLayout{
 								Spacing = 8,
 								Orientation = StackOrientation.Horizontal,
@@ -97,36 +133,6 @@ namespace XAnimationDemo
 									new Button{
 										Text = "X Animation",
 										Command = new Command ((obj) => {
-
-											var animation = new XAnimationPackage(box, box2, box3, box4);
-
-											animation
-													.Duration(1250)
-												 	.Rotate(-45)
-											 	.Animate()
-												 	.Scale(1.5f)
-											 	.Animate()
-													 .Rotate(0)
-													 .Scale(1)
-											 	.Animate()
-												 	.Duration(200)
-												 	.Translate(0, 100)
-											 	.Animate()
-												 	.Translate(0, -100)
-											 	.Animate()
-												 	.Reset()
-											 	.Animate()
-											 	 	.Duration(1250)
-											 	 	.Opacity(0)
-												 .Animate()
-												 	.Reset()
-												 .Animate()
-													.Color(Color.Red)
-												 .Animate()
-													.Color(Color.Green)
-												 .Animate()
-													.Color(Color.Blue);
-
 											animation.Run(()=> System.Diagnostics.Debug.WriteLine("Animation done"));
 										})
 									},

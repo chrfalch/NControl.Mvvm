@@ -24,7 +24,9 @@ namespace XAnimationDemo
 
 			layout.SetBinding(XAnimatableLayout.InterpolationProperty, nameof(slider.Value));
 
-			var box1 = new BoxView { BackgroundColor = Color.Red };
+			var box1 = new ContentView { BackgroundColor = Color.Gainsboro, Content = 
+				new BoxView { BackgroundColor = Color.Red, Margin=10 } };
+			
 			var easing = new EasingFunctionBezier(.36, .83, .49, 1.03);
 
 			layout.AddAnimation((l) => 
@@ -32,20 +34,27 @@ namespace XAnimationDemo
 	                    .Frame(0, 0, 60, 40)
 	                    .Set()      
 	                    .Duration(500)
-	                    .Frame(0, 0, l.Width - 10, 150)
+	                    .Frame(0, 0, l.Width, 150)
 	                    .Easing(easing)
 						.Animate());
 
 			layout.Children.Add(box1);
 
-			var box2 = new BoxView { BackgroundColor = Color.Silver };
+			var box2 = new ContentView { BackgroundColor = Color.Silver, 
+				Content = 
+					new Label { 
+					Text = "Hello world!", 
+					LineBreakMode = LineBreakMode.MiddleTruncation,
+					BackgroundColor = Color.Tan,
+				} 
+			};
 
 			layout.AddAnimation((l) => 
                   new XAnimationPackage(box2)
-	                    .Frame(70, 0, l.Width-80, 10)
+	                    .Frame(70, 0, l.Width-70, 20)
 	                    .Set()
 	                    .Duration(500)
-	                    .Frame(0, 160, l.Width-10, 40)	
+	                    .Frame(0, 160, l.Width, 60)	
 	                    .Easing(easing)
 						.Animate());
 
@@ -55,9 +64,9 @@ namespace XAnimationDemo
 
 			layout.AddAnimation((l) => 
                   new XAnimationPackage(box3)
-						.Frame(70, 20, l.Width-80, 10)
+						.Frame(70, 30, l.Width-70, 10)
 	                    .Set()
-	                    .Frame(0, 210, l.Width-10, 10)
+	                    .Frame(0, 210, l.Width, 0)
 	                    .Duration(500)
 	                    .Easing(EasingFunction.EaseOut)
 						.Animate());
