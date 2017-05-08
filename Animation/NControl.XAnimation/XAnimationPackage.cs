@@ -9,7 +9,7 @@ namespace NControl.XAnimation
 	/// <summary>
 	/// Implements the abstract part of a native animation
 	/// </summary>
-	public class XAnimationPackage
+	public class XAnimationPackage: IAnimatable
 	{
 		#region Static Properties
 
@@ -298,10 +298,6 @@ namespace NControl.XAnimation
 			// 4) Save index of animation for ease of lookup
 			var index = _animationInfos.IndexOf(animationInfo);
 
-			//System.Diagnostics.Debug.WriteLine(
-			//	$"{curValue:F2} == ({value:F2} - {startValue:F2}) * ({animationInfo.Duration:F2} " +
-			//    $" / ({endValue:F2} - {startValue:F2})) / {animationInfo.Duration:F2} (index: {index})");
-
 			// 5) Enumerate and apply, start by getting previous animation
 			Dictionary<WeakReference<VisualElement>, XAnimationInfo> previousAnimations = _interpolationStart;
 
@@ -398,12 +394,6 @@ namespace NControl.XAnimation
 			RunAll(animations, () => tcs.TrySetResult(true), reverse);
 			return tcs.Task;
 		}
-
-		/// <summary>
-		/// Gets or sets the tag.
-		/// </summary>
-		/// <value>The tag.</value>
-		public int Tag { get; set; }
 
 		/// <summary>
 		/// Returns the animation info list
@@ -744,6 +734,7 @@ namespace NControl.XAnimation
 				{
 					Rotate = toAnimation.Rotate * time,
 					Opacity = toAnimation.Opacity * time,
+					Scale = toAnimation.Scale * time,
 					TranslationX = toAnimation.TranslationX * time,
 					TranslationY = toAnimation.TranslationY * time,
 					Rectangle = new Rectangle(toAnimation.Rectangle.X * time,
@@ -769,6 +760,9 @@ namespace NControl.XAnimation
 				TranslationY = fromAnimation.TranslationY +
 					 ((toAnimation.TranslationY - fromAnimation.TranslationY) * time),
 
+				Scale = fromAnimation.Scale + 
+                     ((toAnimation.Scale - fromAnimation.Scale)* time),
+
 				Rectangle = fromAnimation.AnimateRectangle ?  
                      new Rectangle(
 						fromAnimation.Rectangle.X + 
@@ -787,13 +781,13 @@ namespace NControl.XAnimation
 				AnimateRectangle = toAnimation.AnimateRectangle,
 
 				Color = Xamarin.Forms.Color.FromRgba(toAnimation.Color.R + 
-				                                     ((toAnimation.Color.R - fromAnimation.Color.R) * time),
-				                                     toAnimation.Color.G + 
-				                                     ((toAnimation.Color.G - fromAnimation.Color.G) * time),
-				                                     toAnimation.Color.B + 
-				                                     ((toAnimation.Color.B - fromAnimation.Color.B) * time),
-				                                     toAnimation.Color.A + 
-				                                     ((toAnimation.Color.A - fromAnimation.Color.A) * time)),
+		             ((toAnimation.Color.R - fromAnimation.Color.R) * time),
+		             toAnimation.Color.G + 
+		             ((toAnimation.Color.G - fromAnimation.Color.G) * time),
+		             toAnimation.Color.B + 
+		             ((toAnimation.Color.B - fromAnimation.Color.B) * time),
+		             toAnimation.Color.A + 
+		             ((toAnimation.Color.A - fromAnimation.Color.A) * time)),
 				
 				AnimateColor = toAnimation.AnimateColor,
 			};
@@ -843,7 +837,17 @@ namespace NControl.XAnimation
 				return el2;
 
 			return null;
-		} 
+		}
+
+		public void BatchBegin()
+		{
+			
+		}
+
+		public void BatchCommit()
+		{
+			
+		}
 
 		#endregion
 	}
