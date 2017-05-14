@@ -9,7 +9,7 @@ namespace NControl.XAnimation
 	/// <summary>
 	/// Implements the abstract part of a native animation
 	/// </summary>
-	public class XAnimationPackage: IAnimatable
+    public class XAnimationPackage
 	{
 		#region Static Properties
 
@@ -23,7 +23,7 @@ namespace NControl.XAnimation
 		#region Private Members
 
 		/// <summary>
-		/// List of elements we are animating
+        /// List of elements we are animating
 		/// </summary>
 		readonly List<WeakReference<VisualElement>> _elements = new List<WeakReference<VisualElement>>();
 
@@ -832,16 +832,6 @@ namespace NControl.XAnimation
 				return el2;
 
 			return null;
-		}
-
-		public void BatchBegin()
-		{
-			
-		}
-
-		public void BatchCommit()
-		{
-			
 		}
 
 		#endregion
