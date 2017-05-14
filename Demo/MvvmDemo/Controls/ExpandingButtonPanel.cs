@@ -106,7 +106,7 @@ namespace MvvmDemo
 				.Easing(easing)
 				.Rotate(animateOut ? 180 : 0.0)
 				.Translate(0, animateOut ? -(circleSize - 8) : 0)
-				.Animate()
+				.Then()
 				.Run();
 
 			new XAnimationPackage(_circleControl)

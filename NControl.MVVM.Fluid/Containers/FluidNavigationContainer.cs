@@ -406,7 +406,7 @@ namespace NControl.Mvvm
 			if (animated)
 				return new[]{new XAnimationPackage(_navigationContainer)
 				   		.Translate(0, -(_navigationBarHeight))
-						.Animate()
+						.Then()
 						.Opacity(0.0)
 						.Set()};
 			
@@ -422,7 +422,7 @@ namespace NControl.Mvvm
 						.Opacity(1.0)
 						.Set()
 				   		.Translate(0, 0)
-						.Animate()};
+						.Then()};
 
 			_navigationContainer.TranslationY = -(_navigationBarHeight);
 			return new XAnimationPackage[0];
@@ -452,7 +452,7 @@ namespace NControl.Mvvm
 
 			animations.Add(new XAnimationPackage(this)
 				.Translate(Width, 0)
-				.Animate());
+				.Then());
 
 			// Move previous a litle bit out
 			animations.Add(new XAnimationPackage(toContainer.GetBaseView()).Translate(0, 0));

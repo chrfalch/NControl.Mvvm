@@ -41,11 +41,10 @@ namespace XAnimationDemo
 			// Set up animation
 			var animation = new XAnimationPackage(box, box2)
 				.Rotate(180)
-				.Animate()
+				.Then()
 				.Opacity(0.2)
-				.Animate()
-				.Translate(50, 50)
-				.Animate();
+				.Then()
+				.Translate(50, 50);
 
 			slider.ValueChanged += (s, e)=>{
 				animation.Interpolate(slider.Value);

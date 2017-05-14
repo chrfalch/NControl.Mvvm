@@ -317,7 +317,7 @@ namespace NControl.Mvvm
 				new XAnimationPackage(element)
 					.Duration(150)
 					.Opacity(1.0)
-					.Animate()
+					.Then()
 					.Run(callback);
 			}
 			else if (!setVisibleTo)
@@ -325,7 +325,7 @@ namespace NControl.Mvvm
 				new XAnimationPackage(element)
 					.Duration(150)
 					.Opacity(0.0)
-					.Animate()
+					.Then()
 					.Run(callback);
 			}
 		}

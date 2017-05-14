@@ -135,17 +135,17 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Get the specified key and callback.
 		/// </summary>
-		public T Get<T>(Func<T> callback = null, [CallerMemberName] string key = null)
+        public T Get<T>(Func<T> getDefaultFunc = null, [CallerMemberName] string key = null)
 		{
 			if (string.IsNullOrEmpty(key))
 				throw new ArgumentException("key");
 
 			if (!_storage.ContainsKey(key))
 			{
-				if (callback == null)
+				if (getDefaultFunc == null)
 					_storage.Add(key, default(T));
 				else
-					_storage.Add(key, callback());
+					_storage.Add(key, getDefaultFunc());
 			}
 
 			return (T)_storage[key];
