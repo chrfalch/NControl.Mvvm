@@ -29,7 +29,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XAnimationPackage.cs" />
+    <Compile Include="XPackage.cs" />
     <Compile Include="IXAnimationProvider.cs" />
     <Compile Include="XAnimationInfo.cs" />
     <Compile Include="XAnimatableLayout.cs" />

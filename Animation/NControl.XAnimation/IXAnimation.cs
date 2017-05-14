@@ -4,6 +4,12 @@ using Xamarin.Forms;
 
 namespace NControl.XAnimation
 {
+    public interface IXPackage
+    {
+        int ElementCount { get; }
+        VisualElement GetElement(int index);
+    }
+
     public interface IXTransformation<TReturnType> where TReturnType : class
     {
 		/// <summary>
@@ -70,27 +76,32 @@ namespace NControl.XAnimation
 		TReturnType Duration(long milliseconds);
     }
 
-    public interface IXAnimation: IXTimeable<IXAnimation>
+    public interface IXTimeable: IXTimeable<IXTimeable>
+    {
+        
+    }
+
+    public interface IXAnimation<TReturnType>: IXTimeable<TReturnType> where TReturnType : class
     {
         /// <summary>
         /// Sets the easing function 
         /// </summary>
-        IXAnimation Easing(EasingFunction easing);
+        TReturnType Easing(EasingFunction easing);
 
         /// <summary>
         /// Creates a custom easing curve. See more here: http://cubic-bezier.com
         /// </summary>
-        IXAnimation Easing(Point start, Point end);
+        TReturnType Easing(Point start, Point end);
 
         /// <summary>
         /// Creates a custom easing curve. See more here: http://cubic-bezier.com
         /// </summary>
-        IXAnimation Easing(double startX, double startY, double endX, double endY);
+        TReturnType Easing(double startX, double startY, double endX, double endY);
 
         /// <summary>
         /// Creates a custom easing curve. See more here: http://cubic-bezier.com
         /// </summary>
-        IXAnimation Easing(EasingFunctionBezier easingFunction);
+        TReturnType Easing(EasingFunctionBezier easingFunction);
 
         /// <summary>
         /// Saves state for the current animation 
@@ -116,5 +127,9 @@ namespace NControl.XAnimation
         /// Runs the animation async
         /// </summary>
         Task RunAsync(bool reverse = false);
+    }
+
+    public interface IXAnimation: IXAnimation<IXAnimation>
+    {        
     }
 }

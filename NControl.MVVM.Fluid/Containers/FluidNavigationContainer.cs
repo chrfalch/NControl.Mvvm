@@ -412,7 +412,7 @@ namespace NControl.Mvvm
 			
 
 			_navigationContainer.TranslationY = -(_navigationBarHeight);
-			return new XAnimationPackage[0];
+            return new IXAnimation[0];
 		}
 
 		protected IEnumerable<IXAnimation> ShowNavigationBar(bool animated)
@@ -425,7 +425,7 @@ namespace NControl.Mvvm
 						.Then()};
 
 			_navigationContainer.TranslationY = -(_navigationBarHeight);
-			return new XAnimationPackage[0];
+			return new IXAnimation[0];
 		}
 
 		Rectangle GetNavigationBarRectangle()

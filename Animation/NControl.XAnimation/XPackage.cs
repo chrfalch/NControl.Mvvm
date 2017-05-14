@@ -9,7 +9,7 @@ namespace NControl.XAnimation
     /// <summary>
     /// Implements the abstract part of a native animation
     /// </summary>
-    public class XAnimationPackage: IXAnimation
+    public abstract class XPackage<TReturnType>: IXPackage, IXAnimation<TReturnType> where TReturnType : class
     {
         #region Static Properties
 
@@ -39,15 +39,15 @@ namespace NControl.XAnimation
             new Stack<Dictionary<WeakReference<VisualElement>, XAnimationInfo>>();
 
         /// <summary>
-        /// Platform specific animation provider
-        /// </summary>
-        IXAnimationProvider _animationProvider;
-
-        /// <summary>
         /// The current info.
         /// </summary>
         XAnimationInfo _currentInfo;
         XAnimationInfo _previousInfo;
+
+		/// <summary>
+		/// Platform specific animation provider
+		/// </summary>
+		IXAnimationProvider _animationProvider;
 
         /// <summary>
         /// State of running/not running.
@@ -66,35 +66,29 @@ namespace NControl.XAnimation
         /// <summary>
         /// Constructs a new xanimation instance
         /// </summary>
-        public XAnimationPackage(params VisualElement[] elements)
+        public XPackage(params VisualElement[] elements)
         {
             _elements.AddRange(elements.Select(el => new WeakReference<VisualElement>(el)));
         }
         #endregion
-
-        /// <summary>
-        /// Rotates the view around the z axis
-        /// </summary>
-        public IXAnimation Rotate(double rotation)
-        {
-            GetCurrentAnimation().Rotate = rotation;
-            return this as IXAnimation;
-        }
-
-        public IXAnimation Easing(EasingFunction easing)
-        {
-            GetCurrentAnimation().Easing = easing;
-            return this as IXAnimation;
-        }
+               
+		/// <summary>
+		/// Rotates the view around the z axis
+		/// </summary>
+		public TReturnType Rotate(double rotation)
+		{
+			GetCurrentAnimation().Rotate = rotation;
+			return this as TReturnType;
+		}
 
         /// <summary>
         /// Fade to the specified opacity (between 0.0 -> 1.0 where 1.0 is non-transparent).
         /// </summary>
         /// <param name="opacity">Opacity.</param>
-        public IXAnimation Opacity(double opacity)
+        public TReturnType Opacity(double opacity)
         {
             GetCurrentAnimation().Opacity = opacity;
-            return this as IXAnimation;
+            return this as TReturnType;
         }
 
         /// <summary>
@@ -102,10 +96,10 @@ namespace NControl.XAnimation
         /// </summary>
         /// <returns>The scale.</returns>
         /// <param name="scale">Scale.</param>
-        public IXAnimation Scale(double scale)
+        public TReturnType Scale(double scale)
         {
             GetCurrentAnimation().Scale = scale;
-            return this as IXAnimation;
+            return this as TReturnType;
         }
 
         /// <summary>
@@ -113,69 +107,75 @@ namespace NControl.XAnimation
         /// </summary>
         /// <param name="x">The x coordinate.</param>
         /// <param name="y">The y coordinate.</param>
-        public IXAnimation Translate(double x, double y)
+        public TReturnType Translate(double x, double y)
         {
             GetCurrentAnimation().TranslationX = x;
             GetCurrentAnimation().TranslationY = y;
-            return this as IXAnimation;
+            return this as TReturnType;
         }
 
         /// <summary>
         /// Duration the specified milliseconds.
         /// </summary>
         /// <param name="milliseconds">Milliseconds.</param>
-        public IXAnimation Duration(long milliseconds)
+        public TReturnType Duration(long milliseconds)
         {
             GetCurrentAnimation().Duration = milliseconds;
-            return this as IXAnimation;
+            return this as TReturnType;
         }
 
         /// <summary>
         /// Resets the transformation
         /// </summary>
-        public IXAnimation Reset()
+        public TReturnType Reset()
         {
             _previousInfo = null;
             _currentInfo = null;
             GetCurrentAnimation().Reset();
-            return this as IXAnimation;
+            return this as TReturnType;
         }
 
         /// <summary>
         /// Transform according to the animation
         /// </summary>
-        public IXAnimation Set()
+        public TReturnType Set()
         {
             _previousInfo = _animationInfos.LastOrDefault();
             _currentInfo = null;
             if (_previousInfo != null)
                 _previousInfo.OnlyTransform = true;
 
-            return this as IXAnimation;
+            return this as TReturnType;
         }
 
-        public IXAnimation Then()
+        public TReturnType Then()
         {
             _previousInfo = _animationInfos.LastOrDefault();
             _currentInfo = null;
-            return this as IXAnimation;
+            return this as TReturnType;
         }
 
-        public IXAnimation Color(Color color)
+		public TReturnType Easing(EasingFunction easing)
+		{
+			GetCurrentAnimation().Easing = easing;
+			return this as TReturnType;
+		}
+
+        public TReturnType Color(Color color)
         {
             GetCurrentAnimation().AnimateColor = true;
             GetCurrentAnimation().Color = color;
-            return this as IXAnimation;
+            return this as TReturnType;
         }
 
-        public IXAnimation Frame(Rectangle rect)
+        public TReturnType Frame(Rectangle rect)
         {
             GetCurrentAnimation().AnimateRectangle = true;
             GetCurrentAnimation().Rectangle = rect;
-            return this as IXAnimation;
+            return this as TReturnType;
         }
 
-        public IXAnimation Frame(double x, double y, double width, double height)
+        public TReturnType Frame(double x, double y, double width, double height)
         {
             return Frame(new Rectangle(x, y, width, height));
         }
@@ -183,17 +183,17 @@ namespace NControl.XAnimation
         /// <summary>
         /// Creates a custom easing curve. See more here: http://cubic-bezier.com
         /// </summary>
-        public IXAnimation Easing(Point start, Point end)
+        public TReturnType Easing(Point start, Point end)
         {
             GetCurrentAnimation().Easing = EasingFunction.Custom;
             GetCurrentAnimation().EasingBezier = new EasingFunctionBezier(start, end);
-            return this as IXAnimation;
+            return this as TReturnType;
         }
 
         /// <summary>
         /// Creates a custom easing curve. See more here: http://cubic-bezier.com
         /// </summary>
-        public IXAnimation Easing(double startX, double startY, double endX, double endY)
+        public TReturnType Easing(double startX, double startY, double endX, double endY)
         {
             return Easing(new Point(startX, startY), new Point(endX, endY));
         }
@@ -201,7 +201,7 @@ namespace NControl.XAnimation
         /// <summary>
         /// Creates a custom easing curve. See more here: http://cubic-bezier.com
         /// </summary>
-        public IXAnimation Easing(EasingFunctionBezier easingFunction)
+        public TReturnType Easing(EasingFunctionBezier easingFunction)
         {
             return Easing(easingFunction.Start, easingFunction.End);
         }
@@ -383,7 +383,7 @@ namespace NControl.XAnimation
         /// <summary>
         /// Run multiple animations async
         /// </summary>
-        public static Task RunAllAsync(IEnumerable<XAnimationPackage> animations, bool reverse = false)
+        public static Task RunAllAsync(IEnumerable<IXAnimation> animations, bool reverse = false)
         {
             var tcs = new TaskCompletionSource<bool>();
             RunAll(animations, () => tcs.TrySetResult(true), reverse);
@@ -788,28 +788,28 @@ namespace NControl.XAnimation
                 AnimateColor = toAnimation.AnimateColor,
             };
         }
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        /// <summary>
-        /// Returns the initialized animation provider
-        /// </summary>
-        IXAnimationProvider Provider
-        {
-            get
-            {
-                if (_animationProvider == null)
-                {
-                    _animationProvider = DependencyService.Get<IXAnimationProvider>(
-                        DependencyFetchTarget.NewInstance);
+		/// <summary>
+		/// Returns the initialized animation provider
+		/// </summary>
+		protected IXAnimationProvider Provider
+		{
+			get
+			{
+				if (_animationProvider == null)
+				{
+					_animationProvider = DependencyService.Get<IXAnimationProvider>(
+						DependencyFetchTarget.NewInstance);
 
-                    _animationProvider.Initialize(this);
-                }
+					_animationProvider.Initialize(this);
+				}
 
-                return _animationProvider;
-            }
-        }
+				return _animationProvider;
+			}
+		}
 
         /// <summary>
         /// Returns the number of elements
@@ -836,5 +836,26 @@ namespace NControl.XAnimation
         }
 
         #endregion
+    }
+
+	public class XTranslationPackage : XPackage<IXAnimation>
+	{
+		public XTranslationPackage(params VisualElement[] elements) : base(elements)
+		{
+		}
+	}
+
+    public class XTimedTranslationPackage : XPackage<IXTimeable>
+	{
+		public XTimedTranslationPackage(params VisualElement[] elements) : base(elements)
+		{
+		}
+	}
+
+    public class XAnimationPackage: XPackage<IXAnimation>
+    {
+		public XAnimationPackage(params VisualElement[] elements): base(elements)
+        {            
+        }
     }
 }

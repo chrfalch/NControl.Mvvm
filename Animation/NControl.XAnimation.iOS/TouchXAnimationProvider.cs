@@ -25,11 +25,11 @@ namespace NControl.XAnimation.iOS
 		/// <summary>
 		/// Parent animation
 		/// </summary>
-		XAnimationPackage _animation;
+        IXPackage _animation;
 
 		#endregion
 
-		public void Initialize(XAnimationPackage animation)
+		public void Initialize(IXPackage animation)
 		{
 			_animation = animation;
 		}

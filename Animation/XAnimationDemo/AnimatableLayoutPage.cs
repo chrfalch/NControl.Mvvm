@@ -33,8 +33,7 @@ namespace XAnimationDemo
                 animation.Frame(0, 0, 60, 40)
 					.Set()      
 					.Duration(500)
-					.Frame(0, 0, l.Width, 150)
-					.Easing(easing));
+					.Frame(0, 0, l.Width, 150));
 
 			var box2 = new ContentView { BackgroundColor = Color.Silver, 
 				Content = 
@@ -49,8 +48,7 @@ namespace XAnimationDemo
 	                    animation.Frame(70, 0, l.Width-70, 20)
 	                    .Set()
 	                    .Duration(500)
-	                    .Frame(0, 160, l.Width, 60)	
-	                    .Easing(easing));
+	                    .Frame(0, 160, l.Width, 60));
 
 			var box3 = new BoxView { BackgroundColor = Color.Silver };
 
@@ -59,8 +57,7 @@ namespace XAnimationDemo
 						.Frame(70, 30, l.Width-70, 10)
 	                    .Set()
 	                    .Frame(0, 210, l.Width, 0)
-	                    .Duration(500)
-	                    .Easing(EasingFunction.EaseOut));                                		
+	                    .Duration(500));                                		
 
 			Content = new StackLayout
 			{
