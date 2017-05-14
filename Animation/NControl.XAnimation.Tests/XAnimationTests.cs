@@ -15,7 +15,7 @@ namespace NControl.XAnimation.Tests
 			var animation = new XAnimationPackage();
 
 			// Act
-			animation.Animate();
+			animation.Then();
 
 			// Assert
 			Assert.AreEqual(0, animation.AnimationInfos.Count());
@@ -28,7 +28,7 @@ namespace NControl.XAnimation.Tests
 			var animation = new XAnimationPackage();
 
 			// Act
-			animation.Duration(100).Animate();
+			animation.Duration(100).Then();
 
 			// Assert
 			Assert.AreEqual(1, animation.AnimationInfos.Count());
@@ -41,7 +41,7 @@ namespace NControl.XAnimation.Tests
 			var animation = new XAnimationPackage();
 
 			// Act
-			animation.Duration(100).Scale(0.5).Animate();
+			animation.Duration(100).Scale(0.5).Then();
 
 			// Assert
 			Assert.AreEqual(1, animation.AnimationInfos.Count());
@@ -54,7 +54,7 @@ namespace NControl.XAnimation.Tests
 			var animation = new XAnimationPackage();
 
 			// Act
-			animation.Duration(100).Scale(0.5).Translate(10, 10).Animate();
+			animation.Duration(100).Scale(0.5).Translate(10, 10).Then();
 
 			// Assert
 			Assert.AreEqual(1, animation.AnimationInfos.Count());
@@ -67,7 +67,7 @@ namespace NControl.XAnimation.Tests
 			var animation = new XAnimationPackage();
 
 			// Act
-			animation.Rotate(90).Set().Scale(0.5).Translate(10, 10).Animate();
+			animation.Rotate(90).Set().Scale(0.5).Translate(10, 10).Then();
 
 			// Assert
 			Assert.AreEqual(2, animation.AnimationInfos.Count());
@@ -82,10 +82,10 @@ namespace NControl.XAnimation.Tests
 			// Act
 			animation
 				.Duration(1250)
-				.Animate()
-				.Animate()
-				.Animate()
-				.Animate();
+				.Then()
+				.Then()
+				.Then()
+				.Then();
 
 			// Assert
 			Assert.AreEqual(1, animation.AnimationInfos.Count());
@@ -119,9 +119,9 @@ namespace NControl.XAnimation.Tests
 			animation
 				.Duration(1250)
 				.Opacity(0)
-				.Animate()
+				.Then()
 				.Reset()
-				.Animate();
+				.Then();
 
 			// Assert
 			Assert.AreEqual(2, animation.AnimationInfos.Count());

@@ -88,7 +88,7 @@ namespace NControl.Mvvm
 					.Set()
 					.Translate(0, 0)
 					.Rotate(0)
-					.Animate(),
+					.Then(),
 
 				new XAnimationPackage(_headerView, _footerView)
 					.Translate(-Width, 0)
@@ -96,7 +96,7 @@ namespace NControl.Mvvm
 					.Set()
 					.Translate(0, 0)
 					.Opacity(1.0)
-					.Animate(),
+					.Then(),
 			};
 		}
 
@@ -108,12 +108,12 @@ namespace NControl.Mvvm
 				new XAnimationPackage(_contentView)
 					.Translate(-Width, 0)
 					.Rotate(-15)
-					.Animate(),
+					.Then(),
 
 				new XAnimationPackage(_headerView, _footerView)
 					.Translate(-Width, 0)
 					.Opacity(0.0)
-					.Animate(),
+					.Then(),
 			};
 		}
 		#endregion

@@ -31,7 +31,7 @@ namespace NControl.Mvvm
 			           .Opacity(0.0)
 			           .Set()
 			           .Opacity(1.0)
-			           .Animate());
+			           .Then());
 			
 			return retVal;
 		}
@@ -42,7 +42,7 @@ namespace NControl.Mvvm
 			var retVal = new List<XAnimationPackage>(base.TransitionOut(toContainer, presentationMode));
 			retVal.Add(new XAnimationPackage(_overlay)
 			           .Opacity(0.0)
-			           .Animate());
+			           .Then());
 			
 			return retVal;
 		}

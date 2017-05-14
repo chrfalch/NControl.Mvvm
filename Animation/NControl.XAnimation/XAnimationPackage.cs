@@ -154,7 +154,7 @@ namespace NControl.XAnimation
 			return this;
 		}
 
-		public XAnimationPackage Animate()
+		public XAnimationPackage Then()
 		{
 			_previousInfo = _animationInfos.LastOrDefault();
 			_currentInfo = null;
@@ -204,11 +204,6 @@ namespace NControl.XAnimation
 		public XAnimationPackage Easing(EasingFunctionBezier easingFunction)
 		{
 			return Easing(easingFunction.Start, easingFunction.End);
-		}
-
-		public XAnimationPackage Then()
-		{
-			return this;
 		}
 
 		/// <summary>

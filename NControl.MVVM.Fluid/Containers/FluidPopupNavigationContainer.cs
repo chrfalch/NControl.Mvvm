@@ -74,7 +74,7 @@ namespace NControl.Mvvm
 					.Duration(150)
 					.Easing(EasingFunction.EaseIn)
 					.Opacity(1.0)
-					.Animate(),
+					.Then(),
 
 				new XAnimationPackage(_containerBorders)
 					.Scale(1.3)
@@ -84,7 +84,7 @@ namespace NControl.Mvvm
 					.Easing(EasingFunction.EaseIn)
 					.Opacity(1.0)
 					.Scale(1.0)
-					.Animate()
+					.Then()
 			};
 
 			if (GetContentsView() is IXViewAnimatable)
@@ -102,14 +102,14 @@ namespace NControl.Mvvm
 					.Opacity(0.0)
 					.Duration(Duration)
 					.Easing(EasingFunction.EaseOut)
-					.Animate(),
+					.Then(),
 
 				new XAnimationPackage(_containerBorders)
 					.Scale(1.3)
 					.Opacity(0.0)
 					.Duration(Duration)
 					.Easing(EasingFunction.EaseOut)
-					.Animate()
+					.Then()
 			};
 
 			if (GetContentsView() is IXViewAnimatable)

@@ -42,8 +42,7 @@ namespace XAnimationDemo
 			var animation = new XAnimationPackage(label)
 				.Duration(1000)
 				.Rotate(slider.Value)
-				.Translate(0, -60)
-				.Animate();
+				.Translate(0, -60);
 
 			var animateButton = new Button
 			{

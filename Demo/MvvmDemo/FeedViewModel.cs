@@ -27,7 +27,7 @@ namespace MvvmDemo
 		{
 			get
 			{
-				return GetOrCreateCommandAsync<FeedItem>(async (arg) => {
+				return GetOrCreateCommand<FeedItem>((feedItem) => {
 					// await MvvmApp.Current.Presenter.ShowViewModelAsync<AboutViewModel>();
 				});
 			}

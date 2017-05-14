@@ -53,14 +53,14 @@ namespace NControl.Mvvm
 
 					new XAnimationPackage(ctrl)
 						.Opacity(1.0)
-						.Animate()
+						.Then()
 						.Run();
 				}
 				else
 				{
 					new XAnimationPackage(ctrl)
 						.Opacity(0.0)
-						.Animate()
+						.Then()
 						.Run(() => ctrl.IsVisible = false);
 				}
 			});
@@ -120,7 +120,7 @@ namespace NControl.Mvvm
 					.Duration(DurationMilliseconds)
 					.Easing(EasingFunction.Linear)
 					.Rotate(resetAngle)
-					.Animate()
+					.Then()
 					.Run(animationAction);				
 			};
 

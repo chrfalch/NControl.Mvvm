@@ -156,12 +156,12 @@ namespace NControl.Mvvm
 				if((bool)newValue)
 					new XAnimationPackage(ctrl._backButton)
 					  .Opacity(1.0)
-		              .Animate()
+		              .Then()
 		              .Run();
 				else
 					new XAnimationPackage(ctrl._backButton)
 					  .Opacity(0.0)
-					  .Animate()
+					  .Then()
 		              .Run();
 			}
 		});

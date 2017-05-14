@@ -36,7 +36,7 @@ namespace XAnimationDemo
 	                    .Duration(500)
 	                    .Frame(0, 0, l.Width, 150)
 	                    .Easing(easing)
-						.Animate());
+						.Then());
 
 			layout.Children.Add(box1);
 
@@ -56,7 +56,7 @@ namespace XAnimationDemo
 	                    .Duration(500)
 	                    .Frame(0, 160, l.Width, 60)	
 	                    .Easing(easing)
-						.Animate());
+						.Then());
 
 			layout.Children.Add(box2);
 
@@ -69,7 +69,7 @@ namespace XAnimationDemo
 	                    .Frame(0, 210, l.Width, 0)
 	                    .Duration(500)
 	                    .Easing(EasingFunction.EaseOut)
-						.Animate());
+						.Then());
 
 			layout.Children.Add(box3);
 
