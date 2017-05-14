@@ -29,16 +29,12 @@ namespace XAnimationDemo
 			
 			var easing = new EasingFunctionBezier(.36, .83, .49, 1.03);
 
-			layout.AddAnimation((l) => 
-                  new XAnimationPackage(box1)						
-	                    .Frame(0, 0, 60, 40)
-	                    .Set()      
-	                    .Duration(500)
-	                    .Frame(0, 0, l.Width, 150)
-	                    .Easing(easing)
-						.Then());
-
-			layout.Children.Add(box1);
+            layout.Children.Add(box1, (animation, l) => 
+                animation.Frame(0, 0, 60, 40)
+					.Set()      
+					.Duration(500)
+					.Frame(0, 0, l.Width, 150)
+					.Easing(easing));
 
 			var box2 = new ContentView { BackgroundColor = Color.Silver, 
 				Content = 
@@ -49,29 +45,22 @@ namespace XAnimationDemo
 				} 
 			};
 
-			layout.AddAnimation((l) => 
-                  new XAnimationPackage(box2)
-	                    .Frame(70, 0, l.Width-70, 20)
+			layout.Children.Add(box2, (animation, l) =>				  
+	                    animation.Frame(70, 0, l.Width-70, 20)
 	                    .Set()
 	                    .Duration(500)
 	                    .Frame(0, 160, l.Width, 60)	
-	                    .Easing(easing)
-						.Then());
-
-			layout.Children.Add(box2);
+	                    .Easing(easing));
 
 			var box3 = new BoxView { BackgroundColor = Color.Silver };
 
-			layout.AddAnimation((l) => 
-                  new XAnimationPackage(box3)
+			layout.Children.Add(box3, (animation, l) =>
+				animation
 						.Frame(70, 30, l.Width-70, 10)
 	                    .Set()
 	                    .Frame(0, 210, l.Width, 0)
 	                    .Duration(500)
-	                    .Easing(EasingFunction.EaseOut)
-						.Then());
-
-			layout.Children.Add(box3);
+	                    .Easing(EasingFunction.EaseOut));                                		
 
 			Content = new StackLayout
 			{
@@ -87,14 +76,14 @@ namespace XAnimationDemo
 							new Button{
 								Text = "Animate",
 								Command = new Command((obj) => {
-									layout.Animate();
+                                    layout.Animate();
 								}),														
 							},
 							new BoxView{WidthRequest = 50},
 							new Button{
 								Text = "Reverse",
 								Command = new Command((obj) => {
-									layout.Reverse();
+                                    layout.Reverse();
 								}),
 							}
 						}
