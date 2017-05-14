@@ -28,8 +28,8 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Animation for the swipe movement back/forth
 		/// </summary>
-		IEnumerable<XAnimationPackage> _dismissAnimationPackage;
-		IEnumerable<XAnimationPackage> _pushAnimationPackage;
+		IEnumerable<IXAnimation> _dismissAnimationPackage;
+		IEnumerable<IXAnimation> _pushAnimationPackage;
 
 		#endregion
 
@@ -234,10 +234,10 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Transition a new view in 
 		/// </summary>
-		public virtual IEnumerable<XAnimationPackage> TransitionIn(
+		public virtual IEnumerable<IXAnimation> TransitionIn(
 			INavigationContainer fromContainer, PresentationMode presentationMode)
 		{
-			var animations = new List<XAnimationPackage>();
+			var animations = new List<IXAnimation>();
 
 			if (presentationMode == PresentationMode.Default)
 			{
@@ -252,7 +252,7 @@ namespace NControl.Mvvm
 					.Set()
 					.Duration(350)
 					.Easing(EasingFunction.EaseIn)
-            		.Translate(0, 0));
+                    .Translate(0, 0));
 			}
 			else if (presentationMode == PresentationMode.Popup)
 			{
@@ -275,10 +275,10 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Transitions out.
 		/// </summary>
-		public virtual IEnumerable<XAnimationPackage> TransitionOut(INavigationContainer toContainer, 
+		public virtual IEnumerable<IXAnimation> TransitionOut(INavigationContainer toContainer, 
         	PresentationMode presentationMode)
 		{
-			var animations = new List<XAnimationPackage>();
+			var animations = new List<IXAnimation>();
 
 			if (presentationMode == PresentationMode.Default)
 			{
@@ -401,7 +401,7 @@ namespace NControl.Mvvm
 			return view == null || (bool)view.GetValue(NavigationPage.HasNavigationBarProperty);
 		}
 
-		protected IEnumerable<XAnimationPackage> HideNavigationbar(bool animated)
+		protected IEnumerable<IXAnimation> HideNavigationbar(bool animated)
 		{
 			if (animated)
 				return new[]{new XAnimationPackage(_navigationContainer)
@@ -415,7 +415,7 @@ namespace NControl.Mvvm
 			return new XAnimationPackage[0];
 		}
 
-		protected IEnumerable<XAnimationPackage> ShowNavigationBar(bool animated)
+		protected IEnumerable<IXAnimation> ShowNavigationBar(bool animated)
 		{
 			if (animated)
 				return new[]{new XAnimationPackage(_navigationContainer)
@@ -446,9 +446,9 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Creates the animations for dismissing the current element
 		/// </summary>
-		IEnumerable<XAnimationPackage> CreateTransitionOutAnimation(INavigationContainer toContainer)
+		IEnumerable<IXAnimation> CreateTransitionOutAnimation(INavigationContainer toContainer)
 		{
-			var animations = new List<XAnimationPackage>();
+			var animations = new List<IXAnimation>();
 
 			animations.Add(new XAnimationPackage(this)
 				.Translate(Width, 0)
@@ -463,9 +463,9 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Create the animations for pushing a new element
 		/// </summary>
-		IEnumerable<XAnimationPackage> CreateTransitionInAnimation(INavigationContainer fromContainer, bool includeSet = true)
+		IEnumerable<IXAnimation> CreateTransitionInAnimation(INavigationContainer fromContainer, bool includeSet = true)
 		{
-			var animations = new List<XAnimationPackage>();
+			var animations = new List<IXAnimation>();
 
 			if (includeSet)
 				animations.Add(new XAnimationPackage(this)

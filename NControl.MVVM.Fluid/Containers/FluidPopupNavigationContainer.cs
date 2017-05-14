@@ -65,7 +65,7 @@ namespace NControl.Mvvm
 
 		#region Transitions
 
-		public IEnumerable<XAnimationPackage> TransitionIn(INavigationContainer fromContainer, PresentationMode presentationMode)
+		public IEnumerable<IXAnimation> TransitionIn(INavigationContainer fromContainer, PresentationMode presentationMode)
 		{
 			var retVal = new[] {
 				new XAnimationPackage(_overlay)
@@ -94,7 +94,7 @@ namespace NControl.Mvvm
 			return retVal;
 		}
 
-		public IEnumerable<XAnimationPackage> TransitionOut(
+		public IEnumerable<IXAnimation> TransitionOut(
 			INavigationContainer toContainer, PresentationMode presentationMode)
 		{
 			var retVal = new[] {

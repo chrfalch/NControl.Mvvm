@@ -76,8 +76,8 @@ namespace NControl.Mvvm
 
 		#region Transition
 
-		protected override IEnumerable<XAnimationPackage> ModalTransitionIn(
-			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		protected override IEnumerable<IXAnimation> ModalTransitionIn(
+			INavigationContainer container, IEnumerable<IXAnimation> animations)
 		{
 			return new[] {
 
@@ -100,8 +100,8 @@ namespace NControl.Mvvm
 			};
 		}
 
-		protected override IEnumerable<XAnimationPackage> ModalTransitionOut(
-			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		protected override IEnumerable<IXAnimation> ModalTransitionOut(
+			INavigationContainer container, IEnumerable<IXAnimation> animations)
 		{
 			return new[] 
 			{

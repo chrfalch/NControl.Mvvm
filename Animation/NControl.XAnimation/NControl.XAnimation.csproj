@@ -33,6 +33,7 @@
     <Compile Include="IXAnimationProvider.cs" />
     <Compile Include="XAnimationInfo.cs" />
     <Compile Include="XAnimatableLayout.cs" />
+    <Compile Include="IXAnimation.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">
