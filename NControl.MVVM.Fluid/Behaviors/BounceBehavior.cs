@@ -24,7 +24,6 @@ namespace NControl.Mvvm
 		protected override void OnAttachedTo(View bindable)
 		{
 			base.OnAttachedTo(bindable);
-			return;
 			_behavior.AttachTo(bindable);
 			_behavior.Touched += (sender, e) => {
 
@@ -36,7 +35,7 @@ namespace NControl.Mvvm
 						animation
 							.Duration(70)
 							.Scale(_scaleTo)
-							.Animate()
+							.Then()
 							.Run();
 						break;
 					case TouchType.Ended:
@@ -44,14 +43,14 @@ namespace NControl.Mvvm
 						animation
 							.Duration(70)
 							.Scale(1.0)
-							.Animate()
+							.Then()
 							.Run();
 						break;
 					case TouchType.Cancelled:
 						animation
 							.Duration(70)
 							.Scale(1.0)
-							.Animate()
+							.Then()
 							.Run();
 						break;						
 				}
@@ -60,8 +59,7 @@ namespace NControl.Mvvm
 
 		protected override void OnDetachingFrom(View bindable)
 		{
-			base.OnDetachingFrom(bindable);
-			return;
+			base.OnDetachingFrom(bindable);			
 			_behavior.DetachingFrom(bindable);
 		}
 	}
