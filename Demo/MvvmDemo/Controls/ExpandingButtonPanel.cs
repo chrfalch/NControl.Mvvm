@@ -104,7 +104,7 @@ namespace MvvmDemo
 
 			new XAnimationPackage(_button)
 				.Easing(easing)
-				.Rotate(animateOut ? 180 : 0.0)
+				.Rotation(animateOut ? 180 : 0.0)
 				.Translate(0, animateOut ? -(circleSize - 8) : 0)
 				.Then()
 				.Run();

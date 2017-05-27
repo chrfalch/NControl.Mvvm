@@ -23,10 +23,10 @@ namespace NControl.Mvvm
 			return _overlay;
 		}
 
-		public override IEnumerable<IXAnimation> TransitionIn(
+		public override IEnumerable<XTransform> TransitionIn(
 			INavigationContainer fromContainer, PresentationMode presentationMode)
 		{
-			var retVal = new List<IXAnimation>(base.TransitionIn(fromContainer, presentationMode));
+			var retVal = new List<XTransform>(base.TransitionIn(fromContainer, presentationMode));
 			retVal.Add(new XAnimationPackage(_overlay)
 			           .Opacity(0.0)
 			           .Set()
@@ -36,10 +36,10 @@ namespace NControl.Mvvm
 			return retVal;
 		}
 
-		public override IEnumerable<IXAnimation> TransitionOut(
+		public override IEnumerable<XTransform> TransitionOut(
 			INavigationContainer toContainer, PresentationMode presentationMode)
 		{
-			var retVal = new List<IXAnimation>(base.TransitionOut(toContainer, presentationMode));
+			var retVal = new List<XTransform>(base.TransitionOut(toContainer, presentationMode));
 			retVal.Add(new XAnimationPackage(_overlay)
 			           .Opacity(0.0)
 			           .Then());

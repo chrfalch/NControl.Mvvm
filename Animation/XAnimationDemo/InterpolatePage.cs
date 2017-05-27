@@ -38,13 +38,11 @@ namespace XAnimationDemo
 				Minimum = 0.0,
 			};
 
-			// Set up animation
-			var animation = new XAnimationPackage(box, box2)
-				.Rotate(180)
-				.Then()
-				.Opacity(0.2)
-				.Then()
-				.Translate(50, 50);
+            // Set up animation
+            var animation = new XInterpolationPackage(box, box2);
+			animation.Add((l)=> l.SetRotation(180));
+            animation.Add((l)=> l.SetOpacity(0.2));
+            animation.Add((l)=> l.SetTranslation(50, 50));
 
 			slider.ValueChanged += (s, e)=>{
 				animation.Interpolate(slider.Value);

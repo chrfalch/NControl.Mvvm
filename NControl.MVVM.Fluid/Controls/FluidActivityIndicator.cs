@@ -115,11 +115,11 @@ namespace NControl.Mvvm
 
 				// Animate running
 				new XAnimationPackage(this)
-					.Rotate(firstAngle)
+					.Rotation(firstAngle)
 					.Set()
 					.Duration(DurationMilliseconds)
 					.Easing(EasingFunction.Linear)
-					.Rotate(resetAngle)
+					.Rotation(resetAngle)
 					.Then()
 					.Run(animationAction);				
 			};

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NControl.XAnimation;
 using Xamarin.Forms;
 
@@ -76,18 +77,18 @@ namespace NControl.Mvvm
 
 		#region Transition
 
-		protected override IEnumerable<IXAnimation> ModalTransitionIn(
-			INavigationContainer container, IEnumerable<IXAnimation> animations)
+		protected override IEnumerable<XTransform> ModalTransitionIn(
+			INavigationContainer container, IEnumerable<XTransform> animations)
 		{
 			return new[] {
 
 				// Slide in
 				new XAnimationPackage(_contentView)
 					.Translate(-Width, 0)
-					.Rotate(-15)
+					.Rotation(-15)
 					.Set()
 					.Translate(0, 0)
-					.Rotate(0)
+					.Rotation(0)
 					.Then(),
 
 				new XAnimationPackage(_headerView, _footerView)
@@ -97,17 +98,17 @@ namespace NControl.Mvvm
 					.Translate(0, 0)
 					.Opacity(1.0)
 					.Then(),
-			};
+            };
 		}
 
-		protected override IEnumerable<IXAnimation> ModalTransitionOut(
-			INavigationContainer container, IEnumerable<IXAnimation> animations)
+		protected override IEnumerable<XTransform> ModalTransitionOut(
+			INavigationContainer container, IEnumerable<XTransform> animations)
 		{
 			return new[] 
 			{
 				new XAnimationPackage(_contentView)
 					.Translate(-Width, 0)
-					.Rotate(-15)
+					.Rotation(-15)
 					.Then(),
 
 				new XAnimationPackage(_headerView, _footerView)

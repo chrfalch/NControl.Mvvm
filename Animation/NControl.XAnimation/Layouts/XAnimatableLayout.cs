@@ -10,9 +10,9 @@ namespace NControl.XAnimation
     {
         #region Private Members
 
-        readonly List<IXTimeable> _animations = new List<IXTimeable>();
+        readonly List<XInterpolationPackage> _animations = new List<XInterpolationPackage>();
 
-        readonly Dictionary<View, Action<IXTimeable, XAnimatableLayout>> _innerDict;
+        readonly Dictionary<View, Action<XInterpolationPackage, XAnimatableLayout>> _innerDict;
         readonly ViewCollection _children;
 
         #endregion
@@ -22,7 +22,7 @@ namespace NControl.XAnimation
         /// </summary>
         public XAnimatableLayout()
         {
-            _innerDict = new Dictionary<View, Action<IXTimeable, XAnimatableLayout>>();
+            _innerDict = new Dictionary<View, Action<XInterpolationPackage, XAnimatableLayout>>();
             _children = new ViewCollection(_innerDict, this);
             SizeChanged += XAnimatableLayout_SizeChanged;
         }
@@ -157,9 +157,9 @@ namespace NControl.XAnimation
             foreach (var key in _innerDict.Keys)
             {
                 var animationCallback = _innerDict[key];
-                var animation = new XTimedTranslationPackage(key);
-                animationCallback(animation as IXTimeable, this);
-                _animations.Add(animation as IXTimeable);
+                var animation = new XInterpolationPackage(key);
+                animationCallback(animation, this);
+                _animations.Add(animation);
             }				
 
 			InvalidateLayout();
@@ -171,10 +171,10 @@ namespace NControl.XAnimation
 	/// </summary>
 	class ViewCollection : IElementList
 	{
-		readonly Dictionary<View, Action<IXTimeable, XAnimatableLayout>> _innerDict;
+		readonly Dictionary<View, Action<XInterpolationPackage, XAnimatableLayout>> _innerDict;
 		readonly XAnimatableLayout _parent;
 
-		public ViewCollection(Dictionary<View, Action<IXTimeable, XAnimatableLayout>> innerDict, XAnimatableLayout parent)
+		public ViewCollection(Dictionary<View, Action<XInterpolationPackage, XAnimatableLayout>> innerDict, XAnimatableLayout parent)
 		{
 			_innerDict = innerDict;
 			_parent = parent;
@@ -195,7 +195,7 @@ namespace NControl.XAnimation
 			_parent.BaseAdd(item);
 		}
 
-		public void Add(View view, Action<IXTimeable, XAnimatableLayout> animation)
+		public void Add(View view, Action<XInterpolationPackage, XAnimatableLayout> animation)
 		{
 			if (animation == null)
 				throw new ArgumentNullException(nameof(animation));
@@ -263,7 +263,7 @@ namespace NControl.XAnimation
 	/// </summary>
 	public interface IElementList : IList<View>
 	{
-        void Add(View view, Action<IXTimeable, XAnimatableLayout> animation);
+        void Add(View view, Action<XInterpolationPackage, XAnimatableLayout> transformPackage);
 	}
 
 }

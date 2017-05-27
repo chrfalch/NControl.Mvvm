@@ -9,7 +9,7 @@ using Xamarin.Forms;
 namespace NControl.Mvvm
 {
 
-	public class FluidNavigationContainer : ContentView, INavigationContainer, IXAnimatable
+	public class FluidNavigationContainer : ContentView, INavigationContainer
 	{
 		#region Private Members
 
@@ -28,8 +28,8 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Animation for the swipe movement back/forth
 		/// </summary>
-		IEnumerable<IXAnimation> _dismissAnimationPackage;
-		IEnumerable<IXAnimation> _pushAnimationPackage;
+		IEnumerable<XTransform> _dismissAnimationPackage;
+		IEnumerable<XTransform> _pushAnimationPackage;
 
 		#endregion
 
@@ -234,10 +234,10 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Transition a new view in 
 		/// </summary>
-		public virtual IEnumerable<IXAnimation> TransitionIn(
+		public virtual IEnumerable<XTransform> TransitionIn(
 			INavigationContainer fromContainer, PresentationMode presentationMode)
 		{
-			var animations = new List<IXAnimation>();
+			var animations = new List<XTransform>();
 
 			if (presentationMode == PresentationMode.Default)
 			{
@@ -275,10 +275,10 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Transitions out.
 		/// </summary>
-		public virtual IEnumerable<IXAnimation> TransitionOut(INavigationContainer toContainer, 
+		public virtual IEnumerable<XTransform> TransitionOut(INavigationContainer toContainer, 
         	PresentationMode presentationMode)
 		{
-			var animations = new List<IXAnimation>();
+			var animations = new List<XTransform>();
 
 			if (presentationMode == PresentationMode.Default)
 			{
@@ -401,7 +401,7 @@ namespace NControl.Mvvm
 			return view == null || (bool)view.GetValue(NavigationPage.HasNavigationBarProperty);
 		}
 
-		protected IEnumerable<IXAnimation> HideNavigationbar(bool animated)
+		protected IEnumerable<XTransform> HideNavigationbar(bool animated)
 		{
 			if (animated)
 				return new[]{new XAnimationPackage(_navigationContainer)
@@ -412,10 +412,10 @@ namespace NControl.Mvvm
 			
 
 			_navigationContainer.TranslationY = -(_navigationBarHeight);
-            return new IXAnimation[0];
+            return new XTransform[0];
 		}
 
-		protected IEnumerable<IXAnimation> ShowNavigationBar(bool animated)
+		protected IEnumerable<XTransform> ShowNavigationBar(bool animated)
 		{
 			if (animated)
 				return new[]{new XAnimationPackage(_navigationContainer)
@@ -425,7 +425,7 @@ namespace NControl.Mvvm
 						.Then()};
 
 			_navigationContainer.TranslationY = -(_navigationBarHeight);
-			return new IXAnimation[0];
+			return new XTransform[0];
 		}
 
 		Rectangle GetNavigationBarRectangle()
@@ -446,9 +446,9 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Creates the animations for dismissing the current element
 		/// </summary>
-		IEnumerable<IXAnimation> CreateTransitionOutAnimation(INavigationContainer toContainer)
+		IEnumerable<XTransform> CreateTransitionOutAnimation(INavigationContainer toContainer)
 		{
-			var animations = new List<IXAnimation>();
+			var animations = new List<XTransform>();
 
 			animations.Add(new XAnimationPackage(this)
 				.Translate(Width, 0)
@@ -463,9 +463,9 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Create the animations for pushing a new element
 		/// </summary>
-		IEnumerable<IXAnimation> CreateTransitionInAnimation(INavigationContainer fromContainer, bool includeSet = true)
+		IEnumerable<XTransform> CreateTransitionInAnimation(INavigationContainer fromContainer, bool includeSet = true)
 		{
-			var animations = new List<IXAnimation>();
+			var animations = new List<XTransform>();
 
 			if (includeSet)
 				animations.Add(new XAnimationPackage(this)

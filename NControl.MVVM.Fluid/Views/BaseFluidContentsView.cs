@@ -239,9 +239,9 @@ namespace NControl.Mvvm
 
 		#region IXViewAnimatable
 
-		public IEnumerable<IXAnimation> TransitionIn(
+		public IEnumerable<XTransform> TransitionIn(
 			INavigationContainer fromContainer, INavigationContainer toContainer, 
-			IEnumerable<IXAnimation> animations, PresentationMode presentationMode)
+			IEnumerable<XTransform> animations, PresentationMode presentationMode)
 		{
 			switch (presentationMode)
 			{
@@ -256,9 +256,9 @@ namespace NControl.Mvvm
 			}
 		}
 
-		public IEnumerable<IXAnimation> TransitionOut(
+		public IEnumerable<XTransform> TransitionOut(
 			INavigationContainer toContainer, INavigationContainer fromContainer, 
-			IEnumerable<IXAnimation> animations,PresentationMode presentationMode)
+			IEnumerable<XTransform> animations,PresentationMode presentationMode)
 		{
 			switch (presentationMode)
 			{
@@ -276,8 +276,8 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Override to provide custom default transition code for the view or its container
 		/// </summary>
-		protected virtual IEnumerable<IXAnimation> DefaultTransitionIn(
-			INavigationContainer container, IEnumerable<IXAnimation> animations)
+		protected virtual IEnumerable<XTransform> DefaultTransitionIn(
+			INavigationContainer container, IEnumerable<XTransform> animations)
 		{
 			return animations;
 		}
@@ -285,8 +285,8 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Override to provide custom modal transition code for the view or its container
 		/// </summary>
-		protected virtual IEnumerable<IXAnimation> ModalTransitionIn(
-			INavigationContainer container, IEnumerable<IXAnimation> animations)
+		protected virtual IEnumerable<XTransform> ModalTransitionIn(
+			INavigationContainer container, IEnumerable<XTransform> animations)
 		{
 			return animations;
 		}
@@ -294,8 +294,8 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Override to provide custom popup transition code for the view or its container
 		/// </summary>
-		protected virtual IEnumerable<IXAnimation> PopupTransitionIn(
-			INavigationContainer container, IEnumerable<IXAnimation> animations)
+		protected virtual IEnumerable<XTransform> PopupTransitionIn(
+			INavigationContainer container, IEnumerable<XTransform> animations)
 		{
 			return animations;
 		}
@@ -303,8 +303,8 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Override to provide custom default transition code for the view or its container
 		/// </summary>
-		protected virtual IEnumerable<IXAnimation> DefaultTransitionOut(
-			INavigationContainer container, IEnumerable<IXAnimation> animations)
+		protected virtual IEnumerable<XTransform> DefaultTransitionOut(
+			INavigationContainer container, IEnumerable<XTransform> animations)
 		{
 			return animations;
 		}
@@ -312,8 +312,8 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Override to provide custom modal transition code for the view or its container
 		/// </summary>
-		protected virtual IEnumerable<IXAnimation> ModalTransitionOut(
-			INavigationContainer container, IEnumerable<IXAnimation> animations)
+		protected virtual IEnumerable<XTransform> ModalTransitionOut(
+			INavigationContainer container, IEnumerable<XTransform> animations)
 		{
 			return animations;
 		}
@@ -321,8 +321,8 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Override to provide custom popup transition code for the view or its container
 		/// </summary>
-		protected virtual IEnumerable<IXAnimation> PopupTransitionOut(
-			INavigationContainer container, IEnumerable<IXAnimation> animations)
+		protected virtual IEnumerable<XTransform> PopupTransitionOut(
+			INavigationContainer container, IEnumerable<XTransform> animations)
 		{
 			return animations;
 		}

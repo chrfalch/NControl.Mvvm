@@ -67,7 +67,7 @@ namespace NControl.XAnimation.Tests
 			var animation = new XAnimationPackage();
 
 			// Act
-			animation.Rotate(90).Set().Scale(0.5).Translate(10, 10).Then();
+			animation.Rotation(90).Set().Scale(0.5).Translate(10, 10).Then();
 
 			// Assert
 			Assert.AreEqual(2, animation.AnimationInfos.Count());

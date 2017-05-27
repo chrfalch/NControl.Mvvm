@@ -31,7 +31,7 @@ namespace NControl.XAnimation.Droid
 				_displayDensity = metrics.Density;			
 		}
 
-		public bool GetHasViewsToAnimate(XAnimationInfo animationinfo)
+		public bool GetHasViewsToAnimate(XTransform animationinfo)
 		{
 			var numberofLiveViews = 0;
 			for (var i = 0; i < _animation.ElementCount; i++)
@@ -45,7 +45,7 @@ namespace NControl.XAnimation.Droid
 			return numberofLiveViews > 0;
 		}
 
-		public void Animate(XAnimationInfo animationInfo, Action completed)
+		public void Animate(XTransform animationInfo, Action completed)
 		{
 			var animations = new List<object>();
 			var animationCount = 0;
@@ -72,7 +72,7 @@ namespace NControl.XAnimation.Droid
 					.SetListener(new AnimatorListener(null, animationFinishedAction, null, null));
 
 				nativeAnimation.Alpha((float)animationInfo.Opacity);
-				nativeAnimation.Rotation((float)animationInfo.Rotate);
+				nativeAnimation.Rotation((float)animationInfo.Rotation);
 				nativeAnimation.ScaleX((float)animationInfo.Scale);
 				nativeAnimation.ScaleY((float)animationInfo.Scale);
 				nativeAnimation.TranslationX((float)animationInfo.TranslationX * _displayDensity);
@@ -131,10 +131,10 @@ namespace NControl.XAnimation.Droid
 			}
 		}
 
-		public void Set(VisualElement element, XAnimationInfo animationInfo)
+		public void Set(VisualElement element, XTransform animationInfo)
 		{
 			element.Opacity = (float)animationInfo.Opacity;
-			element.Rotation = (float)animationInfo.Rotate;
+			element.Rotation = (float)animationInfo.Rotation;
 			element.Scale = (float)animationInfo.Scale;
 			element.TranslationX = (float)animationInfo.TranslationX;
 			element.TranslationY = (float)animationInfo.TranslationY;
@@ -146,7 +146,7 @@ namespace NControl.XAnimation.Droid
 				element.BackgroundColor = animationInfo.Color;
 		}
 
-		public void Set(XAnimationInfo animationInfo)
+		public void Set(XTransform animationInfo)
 		{
 			for (var i = 0; i < _animation.ElementCount; i++)
 			{
@@ -157,7 +157,7 @@ namespace NControl.XAnimation.Droid
 
 		#region Private Members
 
-		Animator GetRectangleAnimation(VisualElement element, ViewGroup viewGroup, XAnimationInfo animationInfo, Action<Animator> animationFinishedAction)
+		Animator GetRectangleAnimation(VisualElement element, ViewGroup viewGroup, XTransform animationInfo, Action<Animator> animationFinishedAction)
 		{
 			var originalSize = new Rectangle(viewGroup.Left, viewGroup.Top, viewGroup.Width, viewGroup.Height);
 			var newSize = new Rectangle(animationInfo.Rectangle.Left * _displayDensity,
@@ -193,9 +193,9 @@ namespace NControl.XAnimation.Droid
 			return resizeAnimation;
 		}
 
-		Dictionary<VisualElement, XAnimationInfo> GetChildHierarchyInfoInt(VisualElement element, XAnimationInfo animationInfo)
+		Dictionary<VisualElement, XTransform> GetChildHierarchyInfoInt(VisualElement element, XTransform animationInfo)
 		{
-			var retVal = new Dictionary<VisualElement, XAnimationInfo>();
+			var retVal = new Dictionary<VisualElement, XTransform>();
 
 			if (element is ContentView)
 			{
@@ -226,7 +226,7 @@ namespace NControl.XAnimation.Droid
 			return retVal;
 		}
 
-		Dictionary<VisualElement, XAnimationInfo> GetChildHierarchyInfo(VisualElement element, XAnimationInfo animationInfo)
+		Dictionary<VisualElement, XTransform> GetChildHierarchyInfo(VisualElement element, XTransform animationInfo)
 		{
 			var originalState = GetAnimationInfoFromElement(element, animationInfo);
 
@@ -237,16 +237,16 @@ namespace NControl.XAnimation.Droid
 			return toValues;
 		}
 
-		XAnimationInfo GetAnimationInfoFromElement(VisualElement element, XAnimationInfo animationInfo)
+		XTransform GetAnimationInfoFromElement(VisualElement element, XTransform animationInfo)
 		{
-			return new XAnimationInfo
+			return new XTransform
 			{
 				Duration = animationInfo.Duration,
 				Delay = animationInfo.Delay,
 				Easing = animationInfo.Easing,
 				EasingBezier = animationInfo.EasingBezier,
 				OnlyTransform = animationInfo.OnlyTransform,
-				Rotate = element.Rotation,
+				Rotation = element.Rotation,
 				TranslationX = element.TranslationX,
 				TranslationY = element.TranslationY,
 				Scale = element.Scale,
@@ -276,7 +276,7 @@ namespace NControl.XAnimation.Droid
 		}
 		#endregion
 
-		IInterpolator GetInterpolator(XAnimationInfo animationInfo)
+		IInterpolator GetInterpolator(XTransform animationInfo)
 		{
 			switch (animationInfo.Easing)
 			{

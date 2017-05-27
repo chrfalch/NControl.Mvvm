@@ -63,31 +63,40 @@ namespace XAnimationDemo
 
 			var animation = new XAnimationPackage(box, box2, box3, box4);
 			animation
-				.Duration(1250)
-			 	.Rotate(-45)
-		 	.Then()
-			 	.Scale(1.5f)
-		 	.Then()
-				 .Rotate(0)
-				 .Scale(1)
-		 	.Then()
-			 	.Duration(200)
-			 	.Translate(0, 100)
-		 	.Then()
-			 	.Translate(0, -100)
-		 	.Then()
-			 	.Reset()
-		 	.Then()
-		 	 	.Duration(1250)
-		 	 	.Opacity(0)
-			 .Then()
-			 	.Reset()
-			 .Then()
-				.Color(Color.Red)
-			 .Then()
-				.Color(Color.Green)
-			 .Then()
-				.Color(Color.Blue);
+				.Add((l)=> l
+					.SetDuration(1250)
+				  	.SetRotation(-45))
+
+				.Add((l)=> l
+					 .SetScale(1.5f))
+
+				.Add((l)=> l
+					.SetRotation(0)
+					 .SetScale(1))
+
+				.Add((l)=> l
+					.SetDuration(200)
+					 .SetTranslation(0, 100))
+
+				.Add((l)=> l
+					.SetTranslation(0, -100))
+
+				.Reset()
+
+				.Add((l)=> l
+					 .SetDuration(1250)
+					 .SetOpacity(0))
+
+				.Reset()
+
+				.Add((l)=> l
+					 .SetColor(Color.Red))
+
+				.Add((l)=> l
+					 .SetColor(Color.Green))
+
+				.Add((l)=> l
+					 .SetColor(Color.Blue));
 
 			slider.ValueChanged += (s,e)=>animation.Interpolate(slider.Value);
 
@@ -133,7 +142,7 @@ namespace XAnimationDemo
 									new Button{
 										Text = "X Animation",
 										Command = new Command ((obj) => {
-											animation.Run(()=> System.Diagnostics.Debug.WriteLine("Animation done"));
+											animation.Animate(()=> System.Diagnostics.Debug.WriteLine("Animation done"));
 										})
 									},
 								}
