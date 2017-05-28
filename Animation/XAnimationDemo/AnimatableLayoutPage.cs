@@ -30,10 +30,10 @@ namespace XAnimationDemo
 				Content =
 				new BoxView { BackgroundColor = Color.Red, Margin = 10 }
 				
-			}, (transformPackage, l) =>
+			}, (transformPackage, initialTransform, theLayout) =>
             {
-				transformPackage.Set((transform)=> transform.SetRectangle(0, 0, 60, 40));
-                transformPackage.Add((transform)=> transform.SetRectangle(0, 0, l.Width, 150));
+				initialTransform.SetRectangle(0, 0, 60, 40);
+				transformPackage.Add().SetRectangle(0, 0, theLayout.Width, 150);
             });
 
 			layout.Children.Add(new ContentView
@@ -47,19 +47,19 @@ namespace XAnimationDemo
 						BackgroundColor = Color.Tan,
 					}
 
-			}, (transformPackage, l) =>
+			}, (transformPackage, initialTransform, theLayout) =>
             {
-				transformPackage.Set((transform)=> transform.SetRectangle(70, 0, l.Width - 70, 20));
-                transformPackage.Add((transform)=> transform.SetRectangle(0, 160, l.Width, 60));
+				initialTransform.SetRectangle(70, 0, theLayout.Width - 70, 20);
+				transformPackage.Add().SetRectangle(0, 160, theLayout.Width, 60);
             });
 
 			layout.Children.Add(
 				new BoxView { BackgroundColor = Color.Silver }, 
-				(transformPackage, l) =>
+				(transformPackage, initialTransform, theLayout) =>
             {
-				transformPackage.Set((transform)=> transform.SetRectangle(70, 30, l.Width - 70, 10));
-                transformPackage.Add((transform)=> transform.SetRectangle(0, 210, l.Width, 0));
-            });                                		
+				initialTransform.SetRectangle(70, 30, theLayout.Width - 70, 10);
+				transformPackage.Add().SetRectangle(0, 210, theLayout.Width, 0);
+            });
 
 			Content = new StackLayout
 			{
@@ -74,16 +74,12 @@ namespace XAnimationDemo
 						Children = {
 							new Button{
 								Text = "Animate",
-								Command = new Command((obj) => {
-                                    layout.Animate();
-								}),														
+								Command = new Command(_=> layout.Animate()),
 							},
 							new BoxView{WidthRequest = 50},
 							new Button{
 								Text = "Reverse",
-								Command = new Command((obj) => {
-                                    layout.Reverse();
-								}),
+								Command = new Command(_=> layout.Reverse()),
 							}
 						}
 					},

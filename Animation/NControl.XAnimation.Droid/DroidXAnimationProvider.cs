@@ -19,12 +19,12 @@ namespace NControl.XAnimation.Droid
 	{
 		#region Private Members
 		float _displayDensity = 1.0f;
-		IXPackage _animation;
+		XTransformationContainer _container;
 		#endregion
 
-		public void Initialize(IXPackage animation)
+		public void Initialize(XTransformationContainer container)
 		{
-			_animation = animation;
+			_container = container;
 
 			// Get display density to fix pixel scaling
 			using (var metrics = Xamarin.Forms.Forms.Context.Resources.DisplayMetrics)
@@ -34,9 +34,9 @@ namespace NControl.XAnimation.Droid
 		public bool GetHasViewsToAnimate(XTransform animationinfo)
 		{
 			var numberofLiveViews = 0;
-			for (var i = 0; i < _animation.ElementCount; i++)
+			for (var i = 0; i < _container.ElementCount; i++)
 			{
-				var element = _animation.GetElement(i);
+				var element = _container.GetElement(i);
 				var viewGroup = GetViewGroup(element);
 				if (viewGroup.Parent != null)
 					numberofLiveViews++;
@@ -60,9 +60,9 @@ namespace NControl.XAnimation.Droid
 				}
 			};
 
-			for (var i = 0; i<_animation.ElementCount; i++)
+			for (var i = 0; i<_container.ElementCount; i++)
 			{
-				var element = _animation.GetElement(i);
+				var element = _container.GetElement(i);
 				var viewGroup = GetViewGroup(element);
 				var nativeAnimation = viewGroup.Animate();
 				nativeAnimation
@@ -148,9 +148,9 @@ namespace NControl.XAnimation.Droid
 
 		public void Set(XTransform animationInfo)
 		{
-			for (var i = 0; i < _animation.ElementCount; i++)
+			for (var i = 0; i < _container.ElementCount; i++)
 			{
-				var element = _animation.GetElement(i);
+				var element = _container.GetElement(i);
 				Set(element, animationInfo);
 			}
 		}
@@ -239,23 +239,7 @@ namespace NControl.XAnimation.Droid
 
 		XTransform GetAnimationInfoFromElement(VisualElement element, XTransform animationInfo)
 		{
-			return new XTransform
-			{
-				Duration = animationInfo.Duration,
-				Delay = animationInfo.Delay,
-				Easing = animationInfo.Easing,
-				EasingBezier = animationInfo.EasingBezier,
-				OnlyTransform = animationInfo.OnlyTransform,
-				Rotation = element.Rotation,
-				TranslationX = element.TranslationX,
-				TranslationY = element.TranslationY,
-				Scale = element.Scale,
-				Opacity = element.Opacity,
-				AnimateColor = animationInfo.AnimateColor,
-				Color = element.BackgroundColor,
-				AnimateRectangle = animationInfo.AnimateRectangle,
-				Rectangle = new Xamarin.Forms.Rectangle(element.X, element.Y, element.Width, element.Height),
-			};
+			return XTransform.FromAnimationInfoAndElement(element, animationInfo);
 		}
 
 		/// <summary>
@@ -278,25 +262,26 @@ namespace NControl.XAnimation.Droid
 
 		IInterpolator GetInterpolator(XTransform animationInfo)
 		{
-			switch (animationInfo.Easing)
-			{
-				case EasingFunction.EaseIn:
-					return new AccelerateInterpolator();					
+			return new LinearInterpolator();
+			//switch (animationInfo.Easing)
+			//{
+			//	case EasingFunction.EaseIn:
+			//		return new AccelerateInterpolator();					
 					
-				case EasingFunction.EaseOut:
-					return new DecelerateInterpolator();					
+			//	case EasingFunction.EaseOut:
+			//		return new DecelerateInterpolator();					
 					
-				case EasingFunction.EaseInOut:
-					return new AccelerateDecelerateInterpolator();
+			//	case EasingFunction.EaseInOut:
+			//		return new AccelerateDecelerateInterpolator();
 					
-				case EasingFunction.Custom:
-					return new DroidBezierInterpolator(
-					(float)animationInfo.EasingBezier.Start.X, (float)animationInfo.EasingBezier.Start.Y,
-					(float)animationInfo.EasingBezier.End.X, (float)animationInfo.EasingBezier.End.Y);
+			//	case EasingFunction.Custom:
+			//		return new DroidBezierInterpolator(
+			//		(float)animationInfo.EasingBezier.Start.X, (float)animationInfo.EasingBezier.Start.Y,
+			//		(float)animationInfo.EasingBezier.End.X, (float)animationInfo.EasingBezier.End.Y);
 
-				default:
-					return new LinearInterpolator();
-			}
+			//	default:
+			//		return new LinearInterpolator();
+			//}
 		}
 
 		long GetTime(long time)
