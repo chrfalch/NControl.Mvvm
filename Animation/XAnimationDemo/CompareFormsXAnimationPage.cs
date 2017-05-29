@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using NControl.XAnimation;
 using Xamarin.Forms;
@@ -142,7 +143,8 @@ namespace XAnimationDemo
 									new Button{
 										Text = "X Animation",
 										Command = new Command ((obj) => {
-											animation.Animate(()=> System.Diagnostics.Debug.WriteLine("Animation done"));
+											animation.Animate(easing: EasingFunctions.EaseInOut, duration:2000,
+						                  	completed:()=> Debug.WriteLine("Animation done"));
 										})
 									},
 								}

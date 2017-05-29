@@ -20,6 +20,10 @@ namespace NControl.XAnimation
 		/// </summary>
 		Dictionary<WeakReference<VisualElement>, XTransform> _interpolationStart;
 
+		/// <summary>
+		/// Platform specific animation provider
+		/// </summary>
+		IXAnimationProvider _animationProvider;
 
 		#endregion
 
@@ -71,7 +75,7 @@ namespace NControl.XAnimation
             for (var i = 0; i <= index && i < _animationInfos.Count; i++)
             {
                 var nextPreviousList = new Dictionary<WeakReference<VisualElement>, XTransform>();
-                var currentAnimation = _animationInfos.ElementAt(i);
+                var currentTransform = _animationInfos.ElementAt(i);
 
                 // Get starting point
                 EnumerateElements((elementRef) =>
@@ -84,7 +88,7 @@ namespace NControl.XAnimation
                     // Set animation values
                     if (i < index)
                     {
-                        Provider.Set(element, currentAnimation);
+                        Provider.Set(element, currentTransform);
                     }
                     else
                     {
@@ -93,15 +97,16 @@ namespace NControl.XAnimation
                         if (previousAnimations != null)
                             startPoint = previousAnimations[elementRef];
 
-                        if (currentAnimation.OnlyTransform)
+                        if (currentTransform.OnlyTransform)
                         {
-                            Provider.Set(element, currentAnimation);
+							// Just set transform
+							Provider.Set(element, currentTransform);
                         }
                         else
                         {
                             // Get interpolated point
                             var interpolatedPoint = GetInterpolatedPoint(
-                                startPoint, currentAnimation, curValue);
+                                startPoint, currentTransform, curValue);
 
                             Provider.Set(element, interpolatedPoint);
                         }
@@ -152,7 +157,24 @@ namespace NControl.XAnimation
 
 		#region Protected Members
 
-		#region Protected Members
+		/// <summary>
+		/// Returns the initialized animation provider
+		/// </summary>
+		protected IXAnimationProvider Provider
+		{
+			get
+			{
+				if (_animationProvider == null)
+				{
+					_animationProvider = DependencyService.Get<IXAnimationProvider>(
+						DependencyFetchTarget.NewInstance);
+
+					_animationProvider.Initialize(this);
+				}
+
+				return _animationProvider;
+			}
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether this XTranslationPackage has
@@ -176,7 +198,45 @@ namespace NControl.XAnimation
 			return _interpolationStart;
 		}
 
-		#endregion
+		/// <summary>
+		/// Returns the total animation time
+		/// </summary>
+		/// <returns>The total animation time.</returns>
+		protected long GetTotalAnimationTime()
+		{
+			return _animationInfos.Sum((arg) => arg.Duration) +
+				_animationInfos.Sum((arg) => arg.Delay);
+		}
+
+		/// <summary>
+		/// Returns the animation info from time (0.0 -> 1.0) 
+		/// </summary>
+		protected XTransform GetAnimationInfoFromTime(double time)
+		{
+			if (_animationInfos.Count > 1)
+			{
+				var currentTime = 0L;
+				var animationTotalTime = GetTotalAnimationTime();
+
+				var timeInMilliseconds = animationTotalTime * time;
+
+				foreach (var info in _animationInfos)
+				{
+					if (timeInMilliseconds >= currentTime &&
+						timeInMilliseconds <= currentTime + info.Duration)
+						return info;
+
+					currentTime += info.Duration + info.Delay;
+				}
+			}
+			else
+			{
+				return _animationInfos.FirstOrDefault();
+			}
+
+			return null;
+		}
+
 		#endregion
 
 		#region Private Members
@@ -273,39 +333,9 @@ namespace NControl.XAnimation
 		}
 
 		/// <summary>
-		/// Returns the animation info from time (0.0 -> 1.0) 
-		/// </summary>
-		XTransform GetAnimationInfoFromTime(double time)
-		{
-			if (_animationInfos.Count > 1)
-			{
-				var currentTime = 0L;
-				var animationTotalTime = _animationInfos.Sum((arg) => arg.Duration) +
-										 _animationInfos.Sum((arg) => arg.Delay);
-
-				var timeInMilliseconds = animationTotalTime * time;
-
-				foreach (var info in _animationInfos)
-				{
-					if (timeInMilliseconds >= currentTime &&
-						timeInMilliseconds <= currentTime + info.Duration)
-						return info;
-
-					currentTime += info.Duration + info.Delay;
-				}
-			}
-			else
-			{
-				return _animationInfos.FirstOrDefault();
-			}
-
-			return null;
-		}
-
-		/// <summary>
 		/// Returns the starttime for a given animation info in the list of infos
 		/// </summary>
-		long GetStartTimeForAnimationInfo(XTransform animationInfo)
+		protected long GetStartTimeForAnimationInfo(XTransform animationInfo)
 		{
 			if (_animationInfos.Count > 1)
 			{

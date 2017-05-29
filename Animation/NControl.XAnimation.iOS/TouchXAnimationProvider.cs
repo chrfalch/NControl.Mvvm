@@ -48,7 +48,8 @@ namespace NControl.XAnimation.iOS
 			return numberofLiveViews > 0;
 		}
 
-		public void Animate(XTransform animationInfo, Action completed)
+		public void Animate(XTransform animationInfo, Action completed, long duration,
+		                    EasingFunctionBezier easingFunction)
 		{
 			if (animationInfo.OnlyTransform)
 			{
@@ -93,8 +94,8 @@ namespace NControl.XAnimation.iOS
 			// Start animation with transaction
 			CATransaction.Begin();
 			CATransaction.DisableActions = true;
-			CATransaction.AnimationTimingFunction = GetTimingFunctionFromAnimationInfo(animationInfo);
-			CATransaction.AnimationDuration = GetTime(animationInfo.Duration);
+			CATransaction.AnimationTimingFunction = GetTimingFunction(easingFunction);
+			CATransaction.AnimationDuration = GetTime(duration);
 			CATransaction.CompletionBlock = completed;
 
 			// Add animations
@@ -169,40 +170,16 @@ namespace NControl.XAnimation.iOS
 			return toValues;
 		}
 
-		CAAnimationGroup GetAnimationGroup(IEnumerable<CAAnimation> animations, XTransform animationInfo)
+		CAMediaTimingFunction GetTimingFunction(EasingFunctionBezier easingFunction)
 		{
-			// Create group of animations
-			var group = new CAAnimationGroup();
-			group.Duration = GetTime(animationInfo.Duration);
-			group.BeginTime = CAAnimation.CurrentMediaTime() + (GetTime(animationInfo.Delay));
-			group.Animations = animations.ToArray();
-			group.TimingFunction = GetTimingFunctionFromAnimationInfo(animationInfo);
-			return group;
-		}
-
-		CAMediaTimingFunction GetTimingFunctionFromAnimationInfo(XTransform animationInfo)
-		{
-            return CAMediaTimingFunction.FromName(CAMediaTimingFunction.Linear);
-			//switch (animationInfo.Easing)
-			//{
-			//	case EasingFunction.EaseIn:
-			//		return CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseIn);					
-			//	case EasingFunction.EaseOut:
-			//		return CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseOut);					
-			//	case EasingFunction.EaseInOut:
-			//		return CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseInEaseOut);					
-			//	case EasingFunction.Custom:
-			//		return CAMediaTimingFunction.FromControlPoints(
-			//			(float)animationInfo.EasingBezier.Start.X, (float)animationInfo.EasingBezier.Start.Y,
-			//			(float)animationInfo.EasingBezier.End.X, (float)animationInfo.EasingBezier.End.Y);
-			//	default:
-			//		return CAMediaTimingFunction.FromName(CAMediaTimingFunction.Linear);					
-			//}
+			return CAMediaTimingFunction.FromControlPoints(
+						(float)easingFunction.Start.X, (float)easingFunction.Start.Y,
+						(float)easingFunction.End.X, (float)easingFunction.End.Y);			           
 		}
 
 		float GetTime(long time)
 		{
-			return (float)(time * (XAnimationPackage.SlowAnimations ? 5 : 1) / 1000.0);
+			return (float)(time * (XElementContainer.SlowAnimations ? 5 : 1) / 1000.0);
 		}
 
 		List<CAAnimation> GetAnimationsForElement(VisualElement element, UIView view, XTransform animationInfo)

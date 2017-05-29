@@ -45,7 +45,7 @@ namespace NControl.XAnimation.Droid
 			return numberofLiveViews > 0;
 		}
 
-		public void Animate(XTransform animationInfo, Action completed)
+		public void Animate(XTransform animationInfo, Action completed, EasingFunctionBezier easing)
 		{
 			var animations = new List<object>();
 			var animationCount = 0;
@@ -68,7 +68,7 @@ namespace NControl.XAnimation.Droid
 				nativeAnimation
 					.SetDuration(GetTime(animationInfo.Duration))
 					.SetStartDelay(GetTime(animationInfo.Delay))
-					.SetInterpolator(GetInterpolator(animationInfo))
+					.SetInterpolator(GetInterpolator(easing))
 					.SetListener(new AnimatorListener(null, animationFinishedAction, null, null));
 
 				nativeAnimation.Alpha((float)animationInfo.Opacity);
@@ -89,7 +89,7 @@ namespace NControl.XAnimation.Droid
 					colorAnimator.SetTarget(viewGroup);
 					colorAnimator.SetEvaluator(new ArgbEvaluator());
 					colorAnimator.SetDuration(GetTime(animationInfo.Duration));
-					colorAnimator.SetInterpolator(GetInterpolator(animationInfo));
+					colorAnimator.SetInterpolator(GetInterpolator(easing));
 					colorAnimator.StartDelay = GetTime(animationInfo.Delay);
 					colorAnimator.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
 
@@ -98,7 +98,8 @@ namespace NControl.XAnimation.Droid
 
 				if (animationInfo.AnimateRectangle)
 				{
-					animations.Add(GetRectangleAnimation(element, viewGroup, animationInfo, animationFinishedAction));
+					animations.Add(GetRectangleAnimation(element, viewGroup, animationInfo, 
+					                                     animationFinishedAction, easing));
 				}
 
 				// Get children
@@ -112,7 +113,7 @@ namespace NControl.XAnimation.Droid
 						// Get child details
 						var childView = GetViewGroup(childElement);
 						var childAnimation = GetRectangleAnimation(
-							childElement, childView, childHierarchyInfo[childElement], animationFinishedAction);
+							childElement, childView, childHierarchyInfo[childElement], animationFinishedAction, easing);
 
 						// Add animations
 						animations.Add(childAnimation);
@@ -157,7 +158,8 @@ namespace NControl.XAnimation.Droid
 
 		#region Private Members
 
-		Animator GetRectangleAnimation(VisualElement element, ViewGroup viewGroup, XTransform animationInfo, Action<Animator> animationFinishedAction)
+		Animator GetRectangleAnimation(VisualElement element, ViewGroup viewGroup, XTransform animationInfo, 
+		                               Action<Animator> animationFinishedAction, EasingFunctionBezier easing)
 		{
 			var originalSize = new Rectangle(viewGroup.Left, viewGroup.Top, viewGroup.Width, viewGroup.Height);
 			var newSize = new Rectangle(animationInfo.Rectangle.Left * _displayDensity,
@@ -168,7 +170,7 @@ namespace NControl.XAnimation.Droid
 			var resizeAnimation = ValueAnimator.OfFloat(0.0f, 1.0f);
 
 			resizeAnimation.SetDuration(GetTime(animationInfo.Duration));
-			resizeAnimation.SetInterpolator(GetInterpolator(animationInfo));
+			resizeAnimation.SetInterpolator(GetInterpolator(easing));
 			resizeAnimation.StartDelay = GetTime(animationInfo.Delay);
 			resizeAnimation.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
 			resizeAnimation.AddUpdateListener(new UpdateListener((obj) =>
@@ -260,28 +262,11 @@ namespace NControl.XAnimation.Droid
 		}
 		#endregion
 
-		IInterpolator GetInterpolator(XTransform animationInfo)
+		IInterpolator GetInterpolator(EasingFunctionBezier easing)
 		{
-			return new LinearInterpolator();
-			//switch (animationInfo.Easing)
-			//{
-			//	case EasingFunction.EaseIn:
-			//		return new AccelerateInterpolator();					
-					
-			//	case EasingFunction.EaseOut:
-			//		return new DecelerateInterpolator();					
-					
-			//	case EasingFunction.EaseInOut:
-			//		return new AccelerateDecelerateInterpolator();
-					
-			//	case EasingFunction.Custom:
-			//		return new DroidBezierInterpolator(
-			//		(float)animationInfo.EasingBezier.Start.X, (float)animationInfo.EasingBezier.Start.Y,
-			//		(float)animationInfo.EasingBezier.End.X, (float)animationInfo.EasingBezier.End.Y);
-
-			//	default:
-			//		return new LinearInterpolator();
-			//}
+			return new DroidBezierInterpolator(
+					(float)easing.Start.X, (float)easing.Start.Y,
+					(float)easing.End.X, (float)easing.End.Y);			
 		}
 
 		long GetTime(long time)

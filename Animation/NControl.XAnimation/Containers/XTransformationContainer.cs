@@ -14,11 +14,7 @@ namespace NControl.XAnimation
         /// </summary>
         protected readonly List<XTransform> _animationInfos = new List<XTransform>();
 
-        /// <summary>
-        /// Platform specific animation provider
-        /// </summary>
-        IXAnimationProvider _animationProvider;
-
+        
         #endregion
 
         public XTransformationContainer(params VisualElement[] elements) : base(elements)
@@ -113,32 +109,7 @@ namespace NControl.XAnimation
 
 			return this;
 		}
-
-        
-        #endregion
-
-        #region Protected Members
-
-        /// <summary>
-        /// Returns the initialized animation provider
-        /// </summary>
-        protected IXAnimationProvider Provider
-        {
-            get
-            {
-                if (_animationProvider == null)
-                {
-                    _animationProvider = DependencyService.Get<IXAnimationProvider>(
-                        DependencyFetchTarget.NewInstance);
-
-                    _animationProvider.Initialize(this);
-                }
-
-                return _animationProvider;
-            }
-        }
 		        
-		#endregion
-				      
+        #endregion
     }
 }
