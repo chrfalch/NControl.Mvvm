@@ -9,7 +9,14 @@ namespace NControl.XAnimation
     public class XAnimationPackage : XInterpolationPackage
     {
         #region Private Members
-        bool _runningState;
+        
+		bool _runningState;
+
+		/// <summary>
+		/// Platform specific animation provider
+		/// </summary>
+		IXAnimationProvider _animationProvider;
+
         #endregion
 
         #region Constructors
@@ -73,6 +80,29 @@ namespace NControl.XAnimation
 			
             RunAnimation(_animationInfos.Last(), true, completed, duration, easing);
         }
+
+		#endregion
+
+		#region Protected Members
+
+		/// <summary>
+		/// Returns the initialized animation provider
+		/// </summary>
+		protected IXAnimationProvider Provider
+		{
+			get
+			{
+				if (_animationProvider == null)
+				{
+					_animationProvider = DependencyService.Get<IXAnimationProvider>(
+						DependencyFetchTarget.NewInstance);
+
+					_animationProvider.Initialize(this);
+				}
+
+				return _animationProvider;
+			}
+		}
 
 		#endregion
 

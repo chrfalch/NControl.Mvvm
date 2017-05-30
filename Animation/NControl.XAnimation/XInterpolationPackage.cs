@@ -20,11 +20,6 @@ namespace NControl.XAnimation
 		/// </summary>
 		Dictionary<WeakReference<VisualElement>, XTransform> _interpolationStart;
 
-		/// <summary>
-		/// Platform specific animation provider
-		/// </summary>
-		IXAnimationProvider _animationProvider;
-
 		#endregion
 
         #region Constructors
@@ -88,7 +83,7 @@ namespace NControl.XAnimation
                     // Set animation values
                     if (i < index)
                     {
-                        Provider.Set(element, currentTransform);
+                        SetTranslation(element, currentTransform);
                     }
                     else
                     {
@@ -100,7 +95,7 @@ namespace NControl.XAnimation
                         if (currentTransform.OnlyTransform)
                         {
 							// Just set transform
-							Provider.Set(element, currentTransform);
+							SetTranslation(element, currentTransform);
                         }
                         else
                         {
@@ -108,7 +103,7 @@ namespace NControl.XAnimation
                             var interpolatedPoint = GetInterpolatedPoint(
                                 startPoint, currentTransform, curValue);
 
-                            Provider.Set(element, interpolatedPoint);
+                            SetTranslation(element, interpolatedPoint);
                         }
                     }
 
@@ -156,25 +151,6 @@ namespace NControl.XAnimation
 		#endregion
 
 		#region Protected Members
-
-		/// <summary>
-		/// Returns the initialized animation provider
-		/// </summary>
-		protected IXAnimationProvider Provider
-		{
-			get
-			{
-				if (_animationProvider == null)
-				{
-					_animationProvider = DependencyService.Get<IXAnimationProvider>(
-						DependencyFetchTarget.NewInstance);
-
-					_animationProvider.Initialize(this);
-				}
-
-				return _animationProvider;
-			}
-		}
 
 		/// <summary>
 		/// Gets a value indicating whether this XTranslationPackage has
@@ -235,6 +211,24 @@ namespace NControl.XAnimation
 			}
 
 			return null;
+		}
+
+		/// <summary>
+		/// Sets the translation on a given element
+		/// </summary>
+		protected void SetTranslation(VisualElement element, XTransform transform)
+		{
+			element.Rotation = transform.Rotation;
+			element.TranslationX = transform.TranslationX;
+			element.TranslationY = transform.TranslationY;
+			element.Scale = transform.Scale;
+			element.Opacity = transform.Opacity;
+
+			if (transform.AnimateRectangle)
+				element.Layout(transform.Rectangle);
+
+			if (transform.AnimateColor)
+				element.BackgroundColor = transform.Color;
 		}
 
 		#endregion
