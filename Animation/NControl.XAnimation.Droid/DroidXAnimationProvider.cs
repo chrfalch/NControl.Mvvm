@@ -45,7 +45,7 @@ namespace NControl.XAnimation.Droid
 			return numberofLiveViews > 0;
 		}
 
-		public void Animate(XTransform animationInfo, Action completed, EasingFunctionBezier easing)
+		public void Animate(XTransform transform, Action completed, long duration)
 		{
 			var animations = new List<object>();
 			var animationCount = 0;
@@ -55,7 +55,7 @@ namespace NControl.XAnimation.Droid
 				animationCount--;
 				if (animationCount == 0)
 				{
-					Set(animationInfo);
+					Set(transform);
 					completed?.Invoke();
 				}
 			};
@@ -66,54 +66,55 @@ namespace NControl.XAnimation.Droid
 				var viewGroup = GetViewGroup(element);
 				var nativeAnimation = viewGroup.Animate();
 				nativeAnimation
-					.SetDuration(GetTime(animationInfo.Duration))
-					.SetStartDelay(GetTime(animationInfo.Delay))
-					.SetInterpolator(GetInterpolator(easing))
+					.SetDuration(GetTime(transform.Duration))
+					.SetStartDelay(GetTime(transform.Delay))
+					.SetInterpolator(GetInterpolator(transform.Easing))
 					.SetListener(new AnimatorListener(null, animationFinishedAction, null, null));
 
-				nativeAnimation.Alpha((float)animationInfo.Opacity);
-				nativeAnimation.Rotation((float)animationInfo.Rotation);
-				nativeAnimation.ScaleX((float)animationInfo.Scale);
-				nativeAnimation.ScaleY((float)animationInfo.Scale);
-				nativeAnimation.TranslationX((float)animationInfo.TranslationX * _displayDensity);
-				nativeAnimation.TranslationY((float)animationInfo.TranslationY * _displayDensity);
+				nativeAnimation.Alpha((float)transform.Opacity);
+				nativeAnimation.Rotation((float)transform.Rotation);
+				nativeAnimation.ScaleX((float)transform.Scale);
+				nativeAnimation.ScaleY((float)transform.Scale);
+				nativeAnimation.TranslationX((float)transform.TranslationX * _displayDensity);
+				nativeAnimation.TranslationY((float)transform.TranslationY * _displayDensity);
 
 				animations.Add(nativeAnimation);
 
-				if (animationInfo.AnimateColor)
+				if (transform.AnimateColor)
 				{
 					var fromColor = element.BackgroundColor.ToAndroid();
-					var toColor = animationInfo.Color.ToAndroid();
+					var toColor = transform.Color.ToAndroid();
 
 					var colorAnimator = ObjectAnimator.OfInt(viewGroup, "backgroundColor", fromColor, toColor);
 					colorAnimator.SetTarget(viewGroup);
 					colorAnimator.SetEvaluator(new ArgbEvaluator());
-					colorAnimator.SetDuration(GetTime(animationInfo.Duration));
-					colorAnimator.SetInterpolator(GetInterpolator(easing));
-					colorAnimator.StartDelay = GetTime(animationInfo.Delay);
+					colorAnimator.SetDuration(GetTime(transform.Duration));
+					colorAnimator.SetInterpolator(GetInterpolator(transform.Easing));
+					colorAnimator.StartDelay = GetTime(transform.Delay);
 					colorAnimator.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
 
 					animations.Add(colorAnimator);
 				}
 
-				if (animationInfo.AnimateRectangle)
+				if (transform.AnimateRectangle)
 				{
-					animations.Add(GetRectangleAnimation(element, viewGroup, animationInfo, 
-					                                     animationFinishedAction, easing));
+					animations.Add(GetRectangleAnimation(element, viewGroup, transform, 
+					                                     animationFinishedAction, transform.Easing));
 				}
 
 				// Get children
-				if (animationInfo.AnimateRectangle)
+				if (transform.AnimateRectangle)
 				{
 					// Get animation info for target after layout has been updated
-					var childHierarchyInfo = GetChildHierarchyInfo(element, animationInfo);
+					var childHierarchyInfo = GetChildHierarchyInfo(element, transform);
 
 					foreach (var childElement in childHierarchyInfo.Keys)
 					{
 						// Get child details
 						var childView = GetViewGroup(childElement);
 						var childAnimation = GetRectangleAnimation(
-							childElement, childView, childHierarchyInfo[childElement], animationFinishedAction, easing);
+							childElement, childView, 
+							childHierarchyInfo[childElement], animationFinishedAction, transform.Easing);
 
 						// Add animations
 						animations.Add(childAnimation);

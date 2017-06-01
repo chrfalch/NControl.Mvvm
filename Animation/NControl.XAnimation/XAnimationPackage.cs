@@ -35,8 +35,7 @@ namespace NControl.XAnimation
         /// <summary>
         /// Animates the contained transformations on the list of visual elements 
         /// </summary>
-        public void Animate(Action completed = null, long duration = 250, 
-			EasingFunctionBezier easing = null)
+        public void Animate(Action completed = null, long duration = 250)
         {
             if (_runningState)
                 return;
@@ -46,26 +45,23 @@ namespace NControl.XAnimation
 
             _runningState = true;
 
-			if (easing == null)
-				easing = EasingFunctions.Linear;
-
-            RunAnimation(_animationInfos.First(), false, completed, duration, easing);
+			RunAnimation(_animationInfos.First(), false, completed, duration);
         }
 
         /// <summary>
         /// Runs the animations async
         /// </summary>
-        public Task AnimateAsync(long duration = 250, EasingFunctionBezier easing = null)
+        public Task AnimateAsync(long duration = 250)
         {
             var tcs = new TaskCompletionSource<bool>();
-            Animate(() => tcs.TrySetResult(true), duration, easing);
+            Animate(() => tcs.TrySetResult(true), duration);
             return tcs.Task;
         }
 
         /// <summary>
         /// Runs the animation in reverse
         /// </summary>
-        public void AnimateReverse(Action completed = null, long duration = 250, EasingFunctionBezier easing = null)
+        public void AnimateReverse(Action completed = null, long duration = 250)
         {
             if (_runningState)
                 return;
@@ -75,10 +71,7 @@ namespace NControl.XAnimation
 
             _runningState = true;
 
-			if (easing == null)
-				easing = EasingFunctions.Linear;
-			
-            RunAnimation(_animationInfos.Last(), true, completed, duration, easing);
+			RunAnimation(_animationInfos.Last(), true, completed, duration);
         }
 
 		#endregion
@@ -106,13 +99,20 @@ namespace NControl.XAnimation
 
 		#endregion
 
+		#region Static Members
+
+		public static void RunAll()
+		{
+		}
+		#endregion
+
 		#region Private Members
 
 		/// <summary>
 		/// Runs the animation from startAnimation to endAnimation
 		/// </summary>
         void RunAnimation(XTransform currentTransform, bool reverse, 
-      		Action completed, long duration, EasingFunctionBezier easing)
+      		Action completed, long duration)
 		{
 			// If no views are live we can just return without calling completed,
 			// user interface is no longer available
@@ -137,9 +137,6 @@ namespace NControl.XAnimation
 			// Find calculated duration
 			var calculatedDuration = GetCalculatedDuration(currentTransform, duration);
 
-			// Find part of easing function
-			var easingFunction = GetEasingFunction(currentTransform, easing, duration, calculatedDuration);
-
 			if (reverse)
 			{
 				// We are working in reverse - this means the the state we're in is
@@ -153,7 +150,7 @@ namespace NControl.XAnimation
 					if (currentTransform.OnlyTransform)
 					{
 						Provider.Set(nextAnimation);
-						HandleRunCompleted(currentTransform, reverse, completed, duration, easing);
+						HandleRunCompleted(currentTransform, reverse, completed, duration);
 					}
 					else
 					{
@@ -166,7 +163,7 @@ namespace NControl.XAnimation
 						clonedAnimation.AnimateRectangle = currentTransform.AnimateRectangle;
 
 						Provider.Animate(clonedAnimation, () => HandleRunCompleted(currentTransform, reverse, 
-                       		completed, duration, easing), calculatedDuration, easingFunction);
+                       		completed, duration), calculatedDuration);
 					}
 				}
 				else
@@ -200,7 +197,7 @@ namespace NControl.XAnimation
 								clonedAnimation.AnimateColor = currentTransform.AnimateColor;
 								clonedAnimation.AnimateRectangle = currentTransform.AnimateRectangle;
 
-								Provider.Animate(clonedAnimation, doneAction, calculatedDuration, easingFunction);
+								Provider.Animate(clonedAnimation, doneAction, calculatedDuration);
 							}
 						}
 					});
@@ -215,14 +212,14 @@ namespace NControl.XAnimation
 				{
 					// Set transformation directly
 					Provider.Set(currentTransform);
-					HandleRunCompleted(currentTransform, reverse, completed, duration, easing);
+					HandleRunCompleted(currentTransform, reverse, completed, duration);
 				}
 				else
 				{
 					// Run transformation
 					Provider.Animate(currentTransform, () =>
-						HandleRunCompleted(currentTransform, reverse, completed, duration, easing),
-		                calculatedDuration, easingFunction);
+						HandleRunCompleted(currentTransform, reverse, completed, duration),
+		                calculatedDuration);
 				}
 			}
 		}
@@ -231,7 +228,7 @@ namespace NControl.XAnimation
 		/// Animation Run completed
 		/// </summary>
 		void HandleRunCompleted(XTransform currentAnimation, bool reverse, 
-        	Action completed, long duration, EasingFunctionBezier easing)
+        	Action completed, long duration)
 		{
 			if (reverse)
 			{
@@ -241,7 +238,7 @@ namespace NControl.XAnimation
 				{
 					var index = _animationInfos.IndexOf(currentAnimation);
 					currentAnimation = _animationInfos.ElementAt(index - 1);
-					RunAnimation(currentAnimation, reverse, completed, duration, easing);
+					RunAnimation(currentAnimation, reverse, completed, duration);
 				}
 				else
 				{
@@ -259,7 +256,7 @@ namespace NControl.XAnimation
 				{
 					var index = _animationInfos.IndexOf(currentAnimation);
 					currentAnimation = _animationInfos.ElementAt(index + 1);
-					RunAnimation(currentAnimation, reverse, completed, duration, easing);
+					RunAnimation(currentAnimation, reverse, completed, duration);
 				}
 				else
 				{
@@ -269,30 +266,6 @@ namespace NControl.XAnimation
 						completed();
 				}
 			}
-		}
-
-		Point GetNormalizedPoint(Point p, double min, double max)
-		{
-			return new Point(Normalize(p.X, min, max), Normalize(p.Y, min, max));
-		}
-
-		EasingFunctionBezier GetEasingFunction(XTransform currentTransform, EasingFunctionBezier easing, 
-       		long totalDuration, long calculatedTransformDuration)
-		{
-			var factor = totalDuration / calculatedTransformDuration;
-			var animationInfoStartTime = GetStartTimeForAnimationInfo(currentTransform) * factor;
-
-			var startValue = animationInfoStartTime * (1.0 / totalDuration);
-			var endValue = (animationInfoStartTime + calculatedTransformDuration) * (1.0 / totalDuration);
-
-			var easingStart = easing.Interpolate(startValue);
-			var easingEnd = easing.Interpolate(endValue);
-
-			var min = easingStart.X > easingStart.Y ? easingStart.Y : easingStart.X;
-			var max = easingEnd.X > easingEnd.Y ? easingEnd.X : easingEnd.Y;
-
-			return new EasingFunctionBezier(GetNormalizedPoint(easingStart, min, max),
-		  		GetNormalizedPoint(easingEnd, min, max));
 		}
 
 		long GetCalculatedDuration(XTransform currentTransform, long duration)

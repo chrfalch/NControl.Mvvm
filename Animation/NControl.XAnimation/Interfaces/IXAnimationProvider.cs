@@ -9,7 +9,7 @@ namespace NControl.XAnimation
 	{
         void Initialize(XTransformationContainer transformationContainer);
 		bool GetHasViewsToAnimate(XTransform animationinfo);
-		void Animate(XTransform animationInfo, Action completed, long duration, EasingFunctionBezier easing);
+		void Animate(XTransform animationInfo, Action completed, long duration);
 		void Set(XTransform animationInfo);
 		void Set(VisualElement element, XTransform animationInfo);
 	}

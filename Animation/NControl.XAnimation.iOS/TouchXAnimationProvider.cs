@@ -48,12 +48,11 @@ namespace NControl.XAnimation.iOS
 			return numberofLiveViews > 0;
 		}
 
-		public void Animate(XTransform animationInfo, Action completed, long duration,
-		                    EasingFunctionBezier easingFunction)
+		public void Animate(XTransform transform, Action completed, long duration)
 		{
-			if (animationInfo.OnlyTransform)
+			if (transform.OnlyTransform)
 			{
-				Set(animationInfo);
+				Set(transform);
 				return;
 			}
 
@@ -63,20 +62,20 @@ namespace NControl.XAnimation.iOS
 			{
 				var element = _container.GetElement(i);
 				var view = GetView(element);
-				var animations = GetAnimationsForElement(element, view, animationInfo);
+				var animations = GetAnimationsForElement(element, view, transform);
 
 				if (animations.Any())
 				{
 					// Update platform values for presentation model
 					viewAnimations.Add(view, animations);
 
-					if (animationInfo.AnimateRectangle)
+					if (transform.AnimateRectangle)
 					{
 						// Get animation info for target after layout has been updated
-						var childHierarchyInfo = GetChildHierarchyInfo(element, animationInfo);
+						var childHierarchyInfo = GetChildHierarchyInfo(element, transform);
 
 						// Update platform values for presentation model
-						SetPlatformElementFromAnimationInfo(element, animationInfo);
+						SetPlatformElementFromAnimationInfo(element, transform);
 
 						// Add animations for all
 						foreach (var childElement in childHierarchyInfo.Keys)
@@ -94,7 +93,7 @@ namespace NControl.XAnimation.iOS
 			// Start animation with transaction
 			CATransaction.Begin();
 			CATransaction.DisableActions = true;
-			CATransaction.AnimationTimingFunction = GetTimingFunction(easingFunction);
+			CATransaction.AnimationTimingFunction = GetTimingFunction(transform.Easing);
 			CATransaction.AnimationDuration = GetTime(duration);
 			CATransaction.CompletionBlock = completed;
 
@@ -104,7 +103,7 @@ namespace NControl.XAnimation.iOS
 					view.Layer.AddAnimation(viewAnimations[view].ElementAt(i), "animinfo-anims-" + i.ToString());
 
 			// Set end values
-			Set(animationInfo);
+			Set(transform);
 
 			// Commit transaction
 			CATransaction.Commit();

@@ -88,8 +88,7 @@ namespace NControl.XAnimation
 		public bool AnimateRectangle { get; internal set; }
 		public Rectangle Rectangle { get; internal set; }
 
-		//public EasingFunction Easing { get; internal set; }
-		//public EasingFunctionBezier EasingBezier { get; internal set; }
+		public EasingFunctionBezier Easing { get; internal set; }
 
 		/// <summary>
 		/// Set to true to indicate that we should not run this as an animation, just
@@ -112,8 +111,7 @@ namespace NControl.XAnimation
 			TranslationY = 0;
 			Opacity = 1;
 			AnimateColor = false;
-			//Easing = EasingFunction.Linear;
-			//EasingBezier = new EasingFunctionBezier(new Point(0, 0), new Point(1.0, 1.0));
+			Easing = EasingFunctions.Linear;
 			Rectangle = Rectangle.Zero;
 			AnimateRectangle = false;
 		}
@@ -134,6 +132,15 @@ namespace NControl.XAnimation
 		public XTransform SetOpacity(double opacity)
 		{
 			Opacity = opacity;
+			return this;
+		}
+
+		/// <summary>
+		/// Sets the easing.
+		/// </summary>
+		public XTransform SetEasing(EasingFunctionBezier easing)
+		{
+			Easing = easing;
 			return this;
 		}
 

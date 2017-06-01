@@ -49,10 +49,12 @@ namespace XAnimationDemo
 					{
 						animation = new XAnimationPackage(label);
 						animation.Add()
+					        .SetEasing(EasingFunctions.EaseOut)
 							.SetDuration(1000)
 							.SetRotation(slider.Value);
 
 						animation.Add()
+					        .SetEasing(EasingFunctions.EaseIn)
 							.SetDuration(1000)							
 							.SetTranslation(0, -60);
 						
@@ -61,7 +63,7 @@ namespace XAnimationDemo
 							if (checkbox.IsToggled)
 								action();
 							
-						}, duration:800, easing: EasingFunctions.EaseInOut); //Custom(.02, .97, .95, .07));
+						}, 2000);
 					};
 
                    	action();
@@ -74,7 +76,7 @@ namespace XAnimationDemo
 				Command = new Command(() =>
 				{
 					if (animation != null)
-						animation.AnimateReverse();
+						animation.AnimateReverse(duration:2000);
 				})
 			};
 

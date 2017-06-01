@@ -143,7 +143,7 @@ namespace XAnimationDemo
 									new Button{
 										Text = "X Animation",
 										Command = new Command ((obj) => {
-											animation.Animate(easing: EasingFunctions.EaseInOut, duration:2000,
+											animation.Animate(duration:2000,
 						                  	completed:()=> Debug.WriteLine("Animation done"));
 										})
 									},
