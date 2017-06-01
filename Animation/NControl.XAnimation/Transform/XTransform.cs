@@ -22,7 +22,6 @@ namespace NControl.XAnimation
         /// </summary>
 		public XTransform(): this(null)
 		{
-			
 		}
 
         /// <summary>
@@ -36,9 +35,9 @@ namespace NControl.XAnimation
         /// <summary>
         /// Constructor from previous info
         /// </summary>
-        /// <param name="prevAnimationInfo">Previous animation info.</param>
+        /// <param name="prevTransform">Previous animation info.</param>
         /// <param name="keepTransforms">If set to <c>true</c> keep transforms.</param>
-		public XTransform(XTransform prevAnimationInfo, bool keepTransforms)
+		public XTransform(XTransform prevTransform, bool keepTransforms)
 		{
 			AnimationId = Counter++;
 
@@ -46,17 +45,18 @@ namespace NControl.XAnimation
 			Delay = 0;
 
 			// Duration should be inherited
-			Duration = prevAnimationInfo != null && !prevAnimationInfo.OnlyTransform ?
-				prevAnimationInfo.Duration : 250;
+			Duration = prevTransform != null && !prevTransform.OnlyTransform ?
+				prevTransform.Duration : 250;
 
-			if (keepTransforms && prevAnimationInfo != null)
+			if (keepTransforms && prevTransform != null)
 			{
-				Scale = prevAnimationInfo.Scale;
-				Rotation = prevAnimationInfo.Rotation;
-				TranslationX = prevAnimationInfo.TranslationX;
-				TranslationY = prevAnimationInfo.TranslationY;
-				Opacity = prevAnimationInfo.Opacity;
-				Color = prevAnimationInfo.Color;
+				Scale = prevTransform.Scale;
+				Rotation = prevTransform.Rotation;
+				TranslationX = prevTransform.TranslationX;
+				TranslationY = prevTransform.TranslationY;
+				Opacity = prevTransform.Opacity;
+				Color = prevTransform.Color;
+				Easing = prevTransform.Easing;
 			}
 			else
 			{
@@ -265,8 +265,7 @@ namespace NControl.XAnimation
 			{
 				Duration = animationInfo.Duration,
 				Delay = animationInfo.Delay,
-				//Easing = animationInfo.Easing,
-				//EasingBezier = animationInfo.EasingBezier,
+				Easing = animationInfo.Easing,
 				OnlyTransform = animationInfo.OnlyTransform,
 				Rotation = element.Rotation,
 				TranslationX = element.TranslationX,

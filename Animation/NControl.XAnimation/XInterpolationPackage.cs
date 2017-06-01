@@ -384,8 +384,7 @@ namespace NControl.XAnimation
 			{
 				Duration = animationInfo != null ? animationInfo.Duration : 0,
 				Delay = animationInfo != null ? animationInfo.Delay : 0,
-				//Easing = animationInfo != null ? animationInfo.Easing : EasingFunction.Linear,
-				//EasingBezier = animationInfo != null ? animationInfo.EasingBezier : null,
+				Easing = animationInfo != null ? animationInfo.Easing : EasingFunctions.Linear,
 				OnlyTransform = animationInfo != null ? animationInfo.OnlyTransform : true,
 				Rotation = element.Rotation,
 				TranslationX = element.TranslationX,
