@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UIKit;
 using CoreGraphics;
 using Xamarin.Forms.Platform.iOS;
@@ -173,8 +173,8 @@ namespace NControl.XAnimation.iOS
 		CAMediaTimingFunction GetTimingFunction(EasingFunctionBezier easingFunction)
 		{
 			return CAMediaTimingFunction.FromControlPoints(
-						(float)easingFunction.Start.X, (float)easingFunction.Start.Y,
-						(float)easingFunction.End.X, (float)easingFunction.End.Y);			           
+						(float)easingFunction.P1.X, (float)easingFunction.P1.Y,
+						(float)easingFunction.P2.X, (float)easingFunction.P2.Y);			           
 		}
 
 		float GetTime(long time)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 
 namespace NControl.XAnimation.Tests
@@ -7,31 +7,59 @@ namespace NControl.XAnimation.Tests
 	public class XTransformTests
 	{
 		[Test]
-		public void Test_Split_Simple_Bezier_In_Two_Returns_Correct_Point()
+public void Test_Slice_Simple_Bezier_Returns_Correct_Point_1()
 		{
 			// Arrange
 			var bezier = new EasingFunctionBezier(0, 0, 1, 1);
 
 			// Act
-			var split = bezier.Interpolate(0.5);
+			var split = bezier.Split(0.5);
 
 			// Assert
-			Assert.AreEqual(1.0, split.X, "X");
-			Assert.AreEqual(1.0, split.Y, "Y");
+			Assert.AreEqual(0.5, split.Item1.P2.X, "X");
+			Assert.AreEqual(0.5, split.Item1.P2.Y, "Y");
 		}
 
 		[Test]
-		public void Test_Split_Simple_Bezier_In_Three_Returns_Correct_Point()
+		public void Test_Slice_Simple_Bezier_Returns_Correct_Point_2()
 		{
 			// Arrange
 			var bezier = new EasingFunctionBezier(0, 0, 1, 1);
 
 			// Act
-			var split = bezier.Interpolate(0.75);
+			var split = bezier.Split(0.75);
 
 			// Assert
-			Assert.AreEqual(1.0, split.X, "X");
-			Assert.AreEqual(1.0, split.Y, "Y");
+			Assert.AreEqual(0.66666666666666663d, split.Item1.P2.X, "X");
+			Assert.AreEqual(0.66666666666666663d, split.Item1.P2.Y, "Y");
+		}
+
+		[Test]
+		public void Test_Slice_Simple_Bezier_Returns_Correct_Point_3()
+		{
+			// Arrange
+			var bezier = new EasingFunctionBezier(0, 1, 0, 1);
+
+			// Act
+			var split = bezier.Split(0.5);
+
+			// Assert
+			Assert.AreEqual(0.0, split.Item1.P2.X, "X");
+			Assert.AreEqual(0.8571428571428571d, split.Item1.P2.Y, "Y");
+		}
+
+		[Test]
+		public void Test_Slice_Simple_Bezier_Returns_Correct_Point_4()
+		{
+			// Arrange
+			var bezier = new EasingFunctionBezier(1, 0, 1, 0);
+
+			// Act
+			var split = bezier.Split(0.5);
+
+			// Assert
+			Assert.AreEqual(0.8571428571428571d, split.Item1.P2.X, "X");
+			Assert.AreEqual(0.0, split.Item1.P2.Y, "Y");
 		}
 	}
 }

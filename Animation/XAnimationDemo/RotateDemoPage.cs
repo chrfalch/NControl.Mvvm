@@ -22,7 +22,7 @@ namespace XAnimationDemo
 			{
 				HorizontalTextAlignment = TextAlignment.Center,
 				Text = "Welcome to Xamarin Forms!",
-				Rotation = 45,
+				// Rotation = 45,
 			};
 			var slider = new Slider
 			{
@@ -50,18 +50,18 @@ namespace XAnimationDemo
 						animation = new XAnimationPackage(label);
 						animation.Add()
 							.SetDuration(1000)
-							.SetRotation(slider.Value);
+							.SetTranslation(0, 50);
 
 						animation.Add()
 							.SetDuration(1000)							
-							.SetTranslation(0, -60);
+							.SetTranslation(0, 100);
 						
 						animation.Animate(() =>
 						{
 							if (checkbox.IsToggled)
 								action();
 							
-						}, duration:800, easing: EasingFunctions.EaseInOut); //Custom(.02, .97, .95, .07));
+						}, 4000, EasingFunctions.Custom(1, 0, 1, 0));
 					};
 
                    	action();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Xamarin.Forms;
 using System.Linq;
@@ -50,7 +50,7 @@ namespace NControl.XAnimation
 
             // 1) Find start animation as a function of time and start time
             var animationInfo = GetAnimationInfoFromTime(value);
-            var animationInfoStartTime = GetStartTimeForAnimationInfo(animationInfo);
+            var animationInfoStartTime = GetStartTimeForTranslation(animationInfo);
 
             // 2) Find start/end on 0.0 -> 1.0 
             var startValue = animationInfoStartTime * (1.0 / animationTotalTime);
@@ -329,7 +329,7 @@ namespace NControl.XAnimation
 		/// <summary>
 		/// Returns the starttime for a given animation info in the list of infos
 		/// </summary>
-		protected long GetStartTimeForAnimationInfo(XTransform animationInfo)
+		protected long GetStartTimeForTranslation(XTransform animationInfo)
 		{
 			if (_animationInfos.Count > 1)
 			{

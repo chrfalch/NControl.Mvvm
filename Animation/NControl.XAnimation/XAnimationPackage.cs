@@ -271,28 +271,32 @@ namespace NControl.XAnimation
 			}
 		}
 
-		Point GetNormalizedPoint(Point p, double min, double max)
-		{
-			return new Point(Normalize(p.X, min, max), Normalize(p.Y, min, max));
-		}
 
 		EasingFunctionBezier GetEasingFunction(XTransform currentTransform, EasingFunctionBezier easing, 
        		long totalDuration, long calculatedTransformDuration)
 		{
-			var factor = totalDuration / calculatedTransformDuration;
-			var animationInfoStartTime = GetStartTimeForAnimationInfo(currentTransform) * factor;
+			var transformStartTime = GetStartTimeForTranslation(currentTransform);
+			if (transformStartTime > 0)
+			{
+				var totalLogicalLength = GetTotalAnimationTime();
+				var thisFactorOfTotal = totalLogicalLength / transformStartTime;
+				transformStartTime = totalDuration / thisFactorOfTotal;
+			}
 
-			var startValue = animationInfoStartTime * (1.0 / totalDuration);
-			var endValue = (animationInfoStartTime + calculatedTransformDuration) * (1.0 / totalDuration);
+			var startValue = transformStartTime * (1.0 / totalDuration);
+			var endValue = (transformStartTime + calculatedTransformDuration) * (1.0 / totalDuration);
 
-			var easingStart = easing.Interpolate(startValue);
-			var easingEnd = easing.Interpolate(endValue);
+			if (startValue.Equals(0.0))
+				return easing.Split(endValue).Item1;
 
-			var min = easingStart.X > easingStart.Y ? easingStart.Y : easingStart.X;
-			var max = easingEnd.X > easingEnd.Y ? easingEnd.X : easingEnd.Y;
+			if (endValue.Equals(1.0))
+				return easing.Split(startValue).Item2;
+			
+			var easings = easing.Split(startValue);
+			var newEasing = easings.Item2;
+			var finalEasing = newEasing.Split(endValue).Item1;
 
-			return new EasingFunctionBezier(GetNormalizedPoint(easingStart, min, max),
-		  		GetNormalizedPoint(easingEnd, min, max));
+			return finalEasing;
 		}
 
 		long GetCalculatedDuration(XTransform currentTransform, long duration)
@@ -300,11 +304,6 @@ namespace NControl.XAnimation
 			var totalLength = GetTotalAnimationTime();
 			var thisFactorOfTotal = totalLength / currentTransform.Duration;
 			return duration / thisFactorOfTotal;
-		}
-
-		static double Normalize(double value, double min, double max)
-		{
-			return (value - min) / (max - min);
 		}
 
 		/// <summary>

@@ -7,13 +7,17 @@ namespace NControl.XAnimation
 {
 	public sealed class EasingFunctionBezier
 	{
-		public Point Start { get; private set; }
-		public Point End { get; private set; }
+		public Point P0 { get; private set; }
+		public Point P1 { get; private set; }
+		public Point P2 { get; private set; }
+		public Point P3 { get; private set; }
 
         public EasingFunctionBezier(Point start, Point end)
 		{
-			Start = start;
-			End = end;
+			P0 = new Point(0, 0);
+			P1 = start;
+			P2 = end;
+			P3 = new Point(1, 1);
 		}
 
 		public EasingFunctionBezier(double startX, double startY, double endX, double endY) :
@@ -21,60 +25,59 @@ namespace NControl.XAnimation
 		{
 		}
 
-		Point GetCasteljauPoint(int r, int i, double t, IEnumerable<Point> points)
+		public Tuple<EasingFunctionBezier, EasingFunctionBezier> Split(double time)
 		{
-			if (r == 0) return points.ElementAt(i);
+			// First find the splitting point, this will be the last/first of the
+			// two resulting curves.
+			var p4 = Bezier4(P0, P1, P2, P3, time);
 
-			Point p1 = GetCasteljauPoint(r - 1, i, t, points);
-			Point p2 = GetCasteljauPoint(r - 1, i + 1, t, points);
+			var p5 = new Point(((P0.X + P1.X) * time), ((P0.Y + P1.Y) * time));
+			var p6 = new Point(((P2.X + P3.X) * time), ((P2.Y + P3.Y) * time));
+			var p7 = new Point(((P1.X + P2.X) * time), ((P1.Y + P2.Y) * time));
+			var p8 = new Point(((p5.X + p7.X) * time), ((p5.Y + p7.Y) * time));
+			var p9 = new Point(((p6.X + p7.X) * time), ((p6.Y + p7.Y) * time));
 
-			return new Point((int)((1 - t) * p1.X + t * p2.X), (int)((1 - t) * p1.Y + t * p2.Y));
+			var item1 = new EasingFunctionBezier(p5, p8) { P3 = p4 };
+			item1 = item1.Mul(p4);
+			var item2 = new EasingFunctionBezier(p9, p6) { P0 = p4 };
+
+			return new Tuple<EasingFunctionBezier, EasingFunctionBezier>(
+				item1, item2);
+				
 		}
 
-		public EasingFunctionBezier Slice(double start, double end)
+		public EasingFunctionBezier Mul(Point p)
 		{
-			var pt1 = GetCasteljauPoint(1, 0, start, new Point[] { Start, End });
-			var pt2 = GetCasteljauPoint(1, 0, end, new Point[] { Start, End });
-			return new EasingFunctionBezier(pt1, pt2);
-		}
-
-		public Point Interpolate(double time)
-		{
-			//return GetCasteljauPoint(1, 0, time, new Point[] { Start, End });
-
-			//return new Point((int)((1 - time) * Start.X + time * End.X), 
-			//                 (int)((1 - time) * Start.Y + time * End.Y));
-			return new Point(
-				X(time, 0.0, 1.0, Start.X, End.X),
-				Y(time, 0.0, 1.0, Start.Y, End.Y));
-		}
-
-		// Parametric functions for drawing a degree 3 Bezier curve.
-		static double X(double t,
-			double x0, double x1, double x2, double x3)
-		{
-			return (double)(
-				x0 * Math.Pow((1 - t), 3) +
-				x1 * 3 * t * Math.Pow((1 - t), 2) +
-				x2 * 3 * Math.Pow(t, 2) * (1 - t) +
-				x3 * Math.Pow(t, 3)
-			);
-		}
-
-		static double Y(double t,
-			double y0, double y1, double y2, double y3)
-		{
-			return (double)(
-				y0 * Math.Pow((1 - t), 3) +
-				y1 * 3 * t * Math.Pow((1 - t), 2) +
-				y2 * 3 * Math.Pow(t, 2) * (1 - t) +
-				y3 * Math.Pow(t, 3)
-			);
+			return new EasingFunctionBezier(new Point(P1.X / p.X, P1.Y / p.Y),
+											new Point(P2.X / p.X, P2.Y / p.Y))
+			{
+				P0 = new Point(P0.X / p.X, P0.Y / p.Y),
+				P3 = new Point(P3.X / p.X, P3.Y / p.Y),
+			};
 		}
 
 		public override string ToString()
 		{
-			return string.Format("[EasingFunctionBezier: Start={0}, End={1}]", Start, End);
+			return string.Format("[EasingFunctionBezier: P0={0}, P1={1}, P2={2}, P3={3}]", 
+				P0, P1, P2, P3);
+		}
+
+		Point Bezier4(Point p1, Point p2, Point p3, Point p4, double mu)
+		{
+			double mum1, mum13, mu3;
+			Point p = new Point();
+
+			mum1 = 1 - mu;
+			mum13 = mum1 * mum1 * mum1;
+			mu3 = mu * mu * mu;
+
+			p.X = mum13 * p1.X + 3 * mu * mum1 * mum1 * p2.X + 3 * 
+				mu * mu * mum1 * p3.X + mu3 * p4.X;
+			
+			p.Y = mum13 * p1.Y + 3 * mu * mum1 * mum1 * p2.Y + 3 * 
+				mu * mu * mum1 * p3.Y + mu3 * p4.Y;
+			
+		   return(p);
 		}
 	}
 }
