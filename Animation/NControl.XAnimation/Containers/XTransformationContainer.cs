@@ -12,7 +12,7 @@ namespace NControl.XAnimation
         /// <summary>
         /// List of animation information
         /// </summary>
-        protected readonly List<XTransform> _animationInfos = new List<XTransform>();
+        protected readonly List<XTransform> _transforms = new List<XTransform>();
 
         
         #endregion
@@ -29,12 +29,12 @@ namespace NControl.XAnimation
 		public XTransform Add()
 		{
 			XTransform retVal = null;
-			if (_animationInfos.Any())
-				retVal = new XTransform(_animationInfos.Last(), true);
+			if (_transforms.Any())
+				retVal = new XTransform(_transforms.Last(), true);
 			else
 				retVal = new XTransform();
 
-			_animationInfos.Add(retVal);
+			_transforms.Add(retVal);
 
 			return retVal;
 		}
@@ -48,14 +48,14 @@ namespace NControl.XAnimation
 				throw new ArgumentException(nameof(transformSetup));
 
 			XTransform retVal = null;
-			if (_animationInfos.Any())
-				retVal = new XTransform(_animationInfos.Last(), true);
+			if (_transforms.Any())
+				retVal = new XTransform(_transforms.Last(), true);
 			else
 				retVal = new XTransform();
 
 			transformSetup(retVal);
 
-			_animationInfos.Add(retVal);
+			_transforms.Add(retVal);
 
 			return this;
         }
@@ -66,14 +66,14 @@ namespace NControl.XAnimation
 		public XTransform Set()
 		{
 			XTransform retVal = null;
-			if (_animationInfos.Any())
-				retVal = new XTransform(_animationInfos.Last(), true);
+			if (_transforms.Any())
+				retVal = new XTransform(_transforms.Last(), true);
 			else
 				retVal = new XTransform();
 
 			retVal.SetOnlyTransform(true);
 
-			_animationInfos.Add(retVal);
+			_transforms.Add(retVal);
 
 			return retVal;
 		}
@@ -87,15 +87,15 @@ namespace NControl.XAnimation
 				throw new ArgumentException(nameof(transformSetup));
 
 			XTransform retVal = null;
-			if (_animationInfos.Any())
-				retVal = new XTransform(_animationInfos.Last(), true);
+			if (_transforms.Any())
+				retVal = new XTransform(_transforms.Last(), true);
 			else
 				retVal = new XTransform();
 
 			retVal.SetOnlyTransform(true);
 			transformSetup(retVal);
 
-			_animationInfos.Add(retVal);
+			_transforms.Add(retVal);
 
 			return this;
 		}
@@ -105,7 +105,7 @@ namespace NControl.XAnimation
 		/// </summary>
 		public XTransformationContainer Reset()
 		{
-			_animationInfos.Add(new XTransform(null, false));
+			_transforms.Add(new XTransform(null, false));
 
 			return this;
 		}

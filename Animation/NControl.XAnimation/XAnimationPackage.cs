@@ -85,12 +85,12 @@ namespace NControl.XAnimation
             if (_runningState)
                 return;
 
-            if (_animationInfos.Count == 0)
+            if (_transforms.Count == 0)
                 return;
 
             _runningState = true;
 
-			RunAnimation(_animationInfos.First(), false, completed);
+			RunAnimation(_transforms.First(), false, completed);
         }
 
         /// <summary>
@@ -111,12 +111,12 @@ namespace NControl.XAnimation
             if (_runningState)
                 return;
 
-            if (_animationInfos.Count == 0)
+            if (_transforms.Count == 0)
                 return;
 
             _runningState = true;
 
-			RunAnimation(_animationInfos.Last(), true, completed);
+			RunAnimation(_transforms.Last(), true, completed);
         }
 
 		#endregion
@@ -188,9 +188,10 @@ namespace NControl.XAnimation
 				// the end of the currentAnimation object. Let's find the previous 
 				// animation and animate to it! Check if we are at the beginning,
 				// if so lets use the interpolation start instead.
-				if (currentTransform != _animationInfos.First())
+				if (currentTransform != _transforms.First())
 				{
-					var nextAnimation = _animationInfos.ElementAt(_animationInfos.IndexOf(currentTransform) - 1);
+					var nextAnimation = _transforms.ElementAt(
+						_transforms.IndexOf(currentTransform) - 1);
 
 					if (currentTransform.OnlyTransform)
 					{
@@ -278,11 +279,11 @@ namespace NControl.XAnimation
 			if (reverse)
 			{
 				// Start previous
-				if (currentAnimation != _animationInfos.First() &&
+				if (currentAnimation != _transforms.First() &&
 					_runningState)
 				{
-					var index = _animationInfos.IndexOf(currentAnimation);
-					currentAnimation = _animationInfos.ElementAt(index - 1);
+					var index = _transforms.IndexOf(currentAnimation);
+					currentAnimation = _transforms.ElementAt(index - 1);
 					RunAnimation(currentAnimation, reverse, completed);
 				}
 				else
@@ -296,11 +297,11 @@ namespace NControl.XAnimation
 			else
 			{
 				// Start next
-				if (currentAnimation != _animationInfos.Last() &&
+				if (currentAnimation != _transforms.Last() &&
 					_runningState)
 				{
-					var index = _animationInfos.IndexOf(currentAnimation);
-					currentAnimation = _animationInfos.ElementAt(index + 1);
+					var index = _transforms.IndexOf(currentAnimation);
+					currentAnimation = _transforms.ElementAt(index + 1);
 					RunAnimation(currentAnimation, reverse, completed);
 				}
 				else
@@ -315,6 +316,9 @@ namespace NControl.XAnimation
 
 		long GetCalculatedDuration(XTransform currentTransform, long duration)
 		{
+			if (currentTransform.OnlyTransform)
+				return 0;
+			
 			var totalLength = GetTotalAnimationTime();
 			var thisFactorOfTotal = totalLength / currentTransform.Duration;
 			return duration / thisFactorOfTotal;
