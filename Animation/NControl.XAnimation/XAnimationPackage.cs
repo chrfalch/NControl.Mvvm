@@ -26,7 +26,23 @@ namespace NControl.XAnimation
         /// </summary>
         public XAnimationPackage(params VisualElement[] elements) : base(elements)
         {
+			Duration = 250;
         }
+
+		#endregion
+
+		#region Public Properties
+
+		/// <summary>
+		/// Gets or sets the duration.
+		/// </summary>
+		public long Duration{ get;set; }
+
+		public XAnimationPackage SetDuration(long duration)
+		{
+			Duration = duration;
+			return this;
+		}
 
 		#endregion
 
@@ -36,8 +52,7 @@ namespace NControl.XAnimation
 		/// Runs all animation packages in paralell and returns when they
 		/// are done.
 		/// </summary>
-		public static void RunAll(IEnumerable<XAnimationPackage> packages, Action completed,
-		                         long duration = 250)
+		public static void RunAll(IEnumerable<XAnimationPackage> packages, Action completed)
 		{
 			if (!packages.Any())
 			{
@@ -54,7 +69,7 @@ namespace NControl.XAnimation
 					if (animationCount == 0)
 						completed?.Invoke();
 					
-				}, duration);
+				});
 			}
 		}
 
@@ -65,7 +80,7 @@ namespace NControl.XAnimation
         /// <summary>
         /// Animates the contained transformations on the list of visual elements 
         /// </summary>
-        public void Animate(Action completed = null, long duration = 250)
+        public void Animate(Action completed = null)
         {
             if (_runningState)
                 return;
@@ -75,16 +90,16 @@ namespace NControl.XAnimation
 
             _runningState = true;
 
-			RunAnimation(_animationInfos.First(), false, completed, duration);
+			RunAnimation(_animationInfos.First(), false, completed);
         }
 
         /// <summary>
         /// Runs the animations async
         /// </summary>
-        public Task AnimateAsync(long duration = 250)
+        public Task AnimateAsync()
         {
             var tcs = new TaskCompletionSource<bool>();
-            Animate(() => tcs.TrySetResult(true), duration);
+            Animate(() => tcs.TrySetResult(true));
             return tcs.Task;
         }
 
@@ -101,7 +116,7 @@ namespace NControl.XAnimation
 
             _runningState = true;
 
-			RunAnimation(_animationInfos.Last(), true, completed, duration);
+			RunAnimation(_animationInfos.Last(), true, completed);
         }
 
 		#endregion
@@ -142,7 +157,7 @@ namespace NControl.XAnimation
 		/// Runs the animation from startAnimation to endAnimation
 		/// </summary>
         void RunAnimation(XTransform currentTransform, bool reverse, 
-      		Action completed, long duration)
+      		Action completed)
 		{
 			// If no views are live we can just return without calling completed,
 			// user interface is no longer available
@@ -165,7 +180,7 @@ namespace NControl.XAnimation
 			DoLog(() => currentTransform.ToString());
 
 			// Find calculated duration
-			var calculatedDuration = GetCalculatedDuration(currentTransform, duration);
+			var calculatedDuration = GetCalculatedDuration(currentTransform, Duration);
 
 			if (reverse)
 			{
@@ -180,7 +195,7 @@ namespace NControl.XAnimation
 					if (currentTransform.OnlyTransform)
 					{
 						Provider.Set(nextAnimation);
-						HandleRunCompleted(currentTransform, reverse, completed, duration);
+						HandleRunCompleted(currentTransform, reverse, completed);
 					}
 					else
 					{
@@ -193,7 +208,7 @@ namespace NControl.XAnimation
 						clonedAnimation.AnimateRectangle = currentTransform.AnimateRectangle;
 
 						Provider.Animate(clonedAnimation, () => HandleRunCompleted(currentTransform, reverse, 
-                       		completed, duration), calculatedDuration);
+                       		completed), calculatedDuration);
 					}
 				}
 				else
@@ -242,13 +257,13 @@ namespace NControl.XAnimation
 				{
 					// Set transformation directly
 					Provider.Set(currentTransform);
-					HandleRunCompleted(currentTransform, reverse, completed, duration);
+					HandleRunCompleted(currentTransform, reverse, completed);
 				}
 				else
 				{
 					// Run transformation
 					Provider.Animate(currentTransform, () =>
-						HandleRunCompleted(currentTransform, reverse, completed, duration),
+						HandleRunCompleted(currentTransform, reverse, completed),
 		                calculatedDuration);
 				}
 			}
@@ -258,7 +273,7 @@ namespace NControl.XAnimation
 		/// Animation Run completed
 		/// </summary>
 		void HandleRunCompleted(XTransform currentAnimation, bool reverse, 
-        	Action completed, long duration)
+        	Action completed)
 		{
 			if (reverse)
 			{
@@ -268,7 +283,7 @@ namespace NControl.XAnimation
 				{
 					var index = _animationInfos.IndexOf(currentAnimation);
 					currentAnimation = _animationInfos.ElementAt(index - 1);
-					RunAnimation(currentAnimation, reverse, completed, duration);
+					RunAnimation(currentAnimation, reverse, completed);
 				}
 				else
 				{
@@ -286,7 +301,7 @@ namespace NControl.XAnimation
 				{
 					var index = _animationInfos.IndexOf(currentAnimation);
 					currentAnimation = _animationInfos.ElementAt(index + 1);
-					RunAnimation(currentAnimation, reverse, completed, duration);
+					RunAnimation(currentAnimation, reverse, completed);
 				}
 				else
 				{

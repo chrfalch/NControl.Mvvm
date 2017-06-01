@@ -63,7 +63,7 @@ namespace XAnimationDemo
 			};
 
 			var animation = new XAnimationPackage(box, box2, box3, box4);
-			animation
+			animation.SetDuration(2000)
 				.Add((l)=> l
 					.SetDuration(1250)
 				  	.SetRotation(-45))
@@ -143,7 +143,7 @@ namespace XAnimationDemo
 									new Button{
 										Text = "X Animation",
 										Command = new Command ((obj) => {
-											animation.Animate(duration:2000,
+											animation.Animate(
 						                  	completed:()=> Debug.WriteLine("Animation done"));
 										})
 									},

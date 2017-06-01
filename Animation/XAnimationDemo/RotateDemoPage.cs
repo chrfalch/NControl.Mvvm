@@ -48,10 +48,12 @@ namespace XAnimationDemo
 					action = () =>
 					{
 						animation = new XAnimationPackage(label);
-						animation.Add()
-				            .SetEasing(1, 0, 1, 0)
-							.SetDuration(1000)
-							.SetRotation(slider.Value);
+						animation
+							.SetDuration(2000)
+							.Add()
+					            .SetEasing(1, 0, 1, 0)
+								.SetDuration(1000)
+								.SetRotation(slider.Value);
 
 						animation.Add()
 					        .SetEasing(0, 1, 0, 1)
@@ -63,7 +65,7 @@ namespace XAnimationDemo
 							if (checkbox.IsToggled)
 								action();
 							
-						}, 2000);
+						});
 					};
 
                    	action();
