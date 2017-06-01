@@ -32,26 +32,20 @@ namespace NControl.Mvvm
 				{
 					case TouchType.Start:
 						// Animate press
-						animation
-							.Duration(70)
-							.Scale(_scaleTo)
-							.Then()
-							.Run();
+						animation.Add((transform)=>
+							transform.SetDuration(70)
+			              		.SetScale(_scaleTo));
 						break;
 					case TouchType.Ended:
 						Tapped?.Invoke(bindable, EventArgs.Empty);
-						animation
-							.Duration(70)
-							.Scale(1.0)
-							.Then()
-							.Run();
+						animation.Add((transform) =>
+							transform.SetDuration(70)
+								.SetScale(1.0));
 						break;
 					case TouchType.Cancelled:
-						animation
-							.Duration(70)
-							.Scale(1.0)
-							.Then()
-							.Run();
+						animation.Add((transform) =>
+							transform.SetDuration(70)
+								.SetScale(1.0));
 						break;						
 				}
 			};

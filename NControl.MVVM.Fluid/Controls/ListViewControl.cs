@@ -312,22 +312,16 @@ namespace NControl.Mvvm
 
 		void AnimateVisibility(bool setVisibleTo, VisualElement element, Action callback = null)
 		{
+			var animation = new XAnimationPackage(element);
+
 			if (setVisibleTo)
-			{
-				new XAnimationPackage(element)
-					.Duration(150)
-					.Opacity(1.0)
-					.Then()
-					.Run(callback);
-			}
+				animation.Add(
+					(transform) => transform.SetDuration(150).SetOpacity(1.0));
 			else if (!setVisibleTo)
-			{
-				new XAnimationPackage(element)
-					.Duration(150)
-					.Opacity(0.0)
-					.Then()
-					.Run(callback);
-			}
+				animation.Add(
+					(transform) => transform.SetDuration(150).SetOpacity(0.0));
+
+			animation.Animate(callback);
 		}
 		#endregion
 

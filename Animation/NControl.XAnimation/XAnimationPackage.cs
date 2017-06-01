@@ -28,7 +28,37 @@ namespace NControl.XAnimation
         {
         }
 
-        #endregion
+		#endregion
+
+		#region Public Static Members
+
+		/// <summary>
+		/// Runs all animation packages in paralell and returns when they
+		/// are done.
+		/// </summary>
+		public static void RunAll(IEnumerable<XAnimationPackage> packages, Action completed,
+		                         long duration = 250)
+		{
+			if (!packages.Any())
+			{
+				completed?.Invoke();
+				return;
+			}
+
+			var animationCount = packages.Count();
+
+			foreach (var package in packages)
+			{
+				package.Animate(() => {
+					animationCount--;
+					if (animationCount == 0)
+						completed?.Invoke();
+					
+				}, duration);
+			}
+		}
+
+		#endregion
 
         #region Public Members
 

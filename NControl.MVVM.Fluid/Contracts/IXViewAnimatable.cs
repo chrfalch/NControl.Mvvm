@@ -7,14 +7,12 @@ namespace NControl.Mvvm
 {
 	public interface IXViewAnimatable
 	{
-		IEnumerable<XTransform> TransitionIn(INavigationContainer fromContainer, 
-                                            INavigationContainer toContainer, 
-                                            IEnumerable<XTransform> animations, 
-                                            PresentationMode presentationMode);
+		IEnumerable<XAnimationPackage> TransitionIn(
+			INavigationContainer fromContainer, INavigationContainer toContainer, 		                                    
+			IEnumerable<XAnimationPackage> animations, PresentationMode presentationMode);
 		
-		IEnumerable<XTransform> TransitionOut(INavigationContainer toContainer, 
-		                                             INavigationContainer fromContainer, 
-		                                             IEnumerable<XTransform> animations, 
-		                                             PresentationMode presentationMode);
+		IEnumerable<XAnimationPackage> TransitionOut(
+			INavigationContainer toContainer, INavigationContainer fromContainer,                                 
+			IEnumerable<XAnimationPackage> animations, PresentationMode presentationMode);
 	}
 }

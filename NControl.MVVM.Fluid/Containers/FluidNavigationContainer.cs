@@ -28,8 +28,8 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Animation for the swipe movement back/forth
 		/// </summary>
-		IEnumerable<XTransform> _dismissAnimationPackage;
-		IEnumerable<XTransform> _pushAnimationPackage;
+		IEnumerable<XAnimationPackage> _dismissAnimationPackage;
+		IEnumerable<XAnimationPackage> _pushAnimationPackage;
 
 		#endregion
 
@@ -234,10 +234,10 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Transition a new view in 
 		/// </summary>
-		public virtual IEnumerable<XTransform> TransitionIn(
+		public virtual IEnumerable<XAnimationPackage> TransitionIn(
 			INavigationContainer fromContainer, PresentationMode presentationMode)
 		{
-			var animations = new List<XTransform>();
+			var animations = new List<XAnimationPackage>();
 
 			if (presentationMode == PresentationMode.Default)
 			{
@@ -247,20 +247,21 @@ namespace NControl.Mvvm
 			else if (presentationMode == PresentationMode.Modal)
 			{
 				// Animate the new contents in
-				animations.Add(new XAnimationPackage(GetContentsView(), GetChromeView())
-					.Translate(0, Height)
-					.Set()
-					.Duration(350)
-					.Easing(EasingFunction.EaseIn)
-                    .Translate(0, 0));
+				var animation = new XAnimationPackage(GetContentsView(), GetChromeView());
+				animation.Set((transform) => transform.SetTranslation(0, Height));
+				animation.Add((transform) => transform.SetDuration(350)
+							  .SetEasing(EasingFunctions.EaseIn)
+							  .SetTranslation(0, 0));
+				
+				animations.Add(animation);
 			}
 			else if (presentationMode == PresentationMode.Popup)
 			{
 				// Animate the new contents in
-				animations.Add(new XAnimationPackage(this)
-					.Translate(0, Height)
-					.Set()
-	               	.Translate(0, 0));
+				var animation = new XAnimationPackage(this);
+				animation.Set((transform) => transform.SetTranslation(0, Height));
+				animation.Add((transform) => transform.SetTranslation(0, 0));
+				animations.Add(animation);
 			}
 
 			// Additional animations?
@@ -275,10 +276,10 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Transitions out.
 		/// </summary>
-		public virtual IEnumerable<XTransform> TransitionOut(INavigationContainer toContainer, 
+		public virtual IEnumerable<XAnimationPackage> TransitionOut(INavigationContainer toContainer, 
         	PresentationMode presentationMode)
 		{
-			var animations = new List<XTransform>();
+			var animations = new List<XAnimationPackage>();
 
 			if (presentationMode == PresentationMode.Default)
 			{
@@ -288,9 +289,11 @@ namespace NControl.Mvvm
 			else if (presentationMode == PresentationMode.Modal)
 			{
 				// Animate
-				animations.Add(new XAnimationPackage(GetContentsView(), GetChromeView())
-				    .Easing(EasingFunction.EaseIn)
-	                .Translate(0, Height));
+				var animation = new XAnimationPackage(GetContentsView(), GetChromeView());
+				animation.Add((transform) => transform.SetEasing(EasingFunctions.EaseIn)
+							  .SetTranslation(0, Height));
+				
+				animations.Add(animation);
 			}
 			else if (presentationMode == PresentationMode.Popup)
 			{
@@ -401,33 +404,6 @@ namespace NControl.Mvvm
 			return view == null || (bool)view.GetValue(NavigationPage.HasNavigationBarProperty);
 		}
 
-		protected IEnumerable<XTransform> HideNavigationbar(bool animated)
-		{
-			if (animated)
-				return new[]{new XAnimationPackage(_navigationContainer)
-				   		.Translate(0, -(_navigationBarHeight))
-						.Then()
-						.Opacity(0.0)
-						.Set()};
-			
-
-			_navigationContainer.TranslationY = -(_navigationBarHeight);
-            return new XTransform[0];
-		}
-
-		protected IEnumerable<XTransform> ShowNavigationBar(bool animated)
-		{
-			if (animated)
-				return new[]{new XAnimationPackage(_navigationContainer)
-						.Opacity(1.0)
-						.Set()
-				   		.Translate(0, 0)
-						.Then()};
-
-			_navigationContainer.TranslationY = -(_navigationBarHeight);
-			return new XTransform[0];
-		}
-
 		Rectangle GetNavigationBarRectangle()
 		{
 			return new Rectangle(0, _statusbarHeight, _layout.Width, _navigationBarHeight);
@@ -446,16 +422,18 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Creates the animations for dismissing the current element
 		/// </summary>
-		IEnumerable<XTransform> CreateTransitionOutAnimation(INavigationContainer toContainer)
+		IEnumerable<XAnimationPackage> CreateTransitionOutAnimation(INavigationContainer toContainer)
 		{
-			var animations = new List<XTransform>();
+			var animations = new List<XAnimationPackage>();
 
-			animations.Add(new XAnimationPackage(this)
-				.Translate(Width, 0)
-				.Then());
+			var animation = new XAnimationPackage(this);
+			animation.Add().SetTranslation(Width, 0);
+			animations.Add(animation);
 
 			// Move previous a litle bit out
-			animations.Add(new XAnimationPackage(toContainer.GetBaseView()).Translate(0, 0));
+			animation = new XAnimationPackage(toContainer.GetBaseView());
+			animation.Add().SetTranslation(0, 0);
+			animations.Add(animation);
 
 			return animations;
 		}
@@ -463,22 +441,29 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Create the animations for pushing a new element
 		/// </summary>
-		IEnumerable<XTransform> CreateTransitionInAnimation(INavigationContainer fromContainer, bool includeSet = true)
+		IEnumerable<XAnimationPackage> CreateTransitionInAnimation(INavigationContainer fromContainer, 
+			bool includeSet = true)
 		{
-			var animations = new List<XTransform>();
+			var animations = new List<XAnimationPackage>();
 
 			if (includeSet)
-				animations.Add(new XAnimationPackage(this)
-					.Translate(Width, 0)
-					.Set()
-					.Translate(0, 0));
+			{
+				var animation = new XAnimationPackage(this);
+				animation.Set().SetTranslation(Width, 0);
+				animation.Add().SetTranslation(0, 0);
+				animations.Add(animation);
+			}
 			else
-				animations.Add(new XAnimationPackage(this)
-					.Translate(0, 0));
+			{
+				var animation = new XAnimationPackage(this);
+				animation.Add().SetTranslation(0, 0);
+				animations.Add(animation);
+			}
 
 			// Move previous a litle bit out
-			animations.Add(new XAnimationPackage(fromContainer.GetBaseView())
-           		.Translate(-(Width* 0.25), 0));
+			var animation2 = new XAnimationPackage(fromContainer.GetBaseView());
+			animation2.Add().SetTranslation(-(Width * 0.25), 0);
+			animations.Add(animation2);
 
 			return animations;
 		}
