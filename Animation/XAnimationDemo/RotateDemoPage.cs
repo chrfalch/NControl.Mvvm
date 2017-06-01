@@ -49,12 +49,12 @@ namespace XAnimationDemo
 					{
 						animation = new XAnimationPackage(label);
 						animation.Add()
-					        .SetEasing(EasingFunctions.EaseOut)
+				            .SetEasing(1, 0, 1, 0)
 							.SetDuration(1000)
 							.SetRotation(slider.Value);
 
 						animation.Add()
-					        .SetEasing(EasingFunctions.EaseIn)
+					        .SetEasing(0, 1, 0, 1)
 							.SetDuration(1000)							
 							.SetTranslation(0, -60);
 						

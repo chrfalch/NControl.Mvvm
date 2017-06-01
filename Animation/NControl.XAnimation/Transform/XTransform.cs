@@ -145,6 +145,24 @@ namespace NControl.XAnimation
 		}
 
 		/// <summary>
+		/// Sets the easing.
+		/// </summary>
+		public XTransform SetEasing(Point start, Point end)
+		{
+			Easing = EasingFunctions.Custom(start, end);
+			return this;
+		}
+
+		/// <summary>
+		/// Sets the easing.
+		/// </summary>
+		public XTransform SetEasing(double startX, double startY, double endX, double endY)
+		{
+			Easing = EasingFunctions.Custom(startX, startY, endX, endY);
+			return this;
+		}
+
+		/// <summary>
 		/// Sets the scale factor
 		/// </summary>
 		/// <returns>The scale.</returns>
@@ -230,8 +248,7 @@ namespace NControl.XAnimation
 				AnimateRectangle = info.AnimateRectangle,
 				Color = info.Color,
 				Delay = info.Delay,
-				//Easing = info.Easing,
-				//EasingBezier = info.EasingBezier,
+				Easing = info.Easing,
 				OnlyTransform = info.OnlyTransform,
 				Opacity = info.Opacity,
 				Rectangle = info.Rectangle,
