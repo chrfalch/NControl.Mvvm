@@ -82,8 +82,8 @@ namespace NControl.Mvvm
 				{
 					// Hide
 					var animation = new XAnimationPackage(_overlay);
-					animation.Add(
-						(transform) => transform.SetDuration(150).SetOpacity(0.0));
+					animation.SetDuration(150).Add(
+						(transform) => transform.SetOpacity(0.0));
 
 					animation.Animate(() => {
 					   _provider.RemoveFromParent(_overlay);
@@ -99,7 +99,7 @@ namespace NControl.Mvvm
 					_overlay.Opacity = 0.0;
 					_provider.AddToParent(_overlay);
 					var animation = new XAnimationPackage(_overlay);
-					animation.Add().SetDuration(150).SetOpacity(1.0);
+					animation.SetDuration(150).Add().SetOpacity(1.0);
 					animation.Animate();
 				}
 			});

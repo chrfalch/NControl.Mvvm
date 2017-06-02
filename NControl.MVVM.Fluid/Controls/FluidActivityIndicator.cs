@@ -111,13 +111,12 @@ namespace NControl.Mvvm
 				var resetAngle = IsCounterClockWise ? -1 * Angle : Angle;
 
 				// Animate running
-				var animation = new XAnimationPackage(this);
-				animation.Add((transform) => transform.SetRotation(firstAngle));
-				animation.Add((transform) => transform.SetDuration(DurationMilliseconds)
-							  .SetEasing(EasingFunctions.Linear)
-				              .SetRotation(resetAngle));
+				var animation = new XAnimationPackage(this)
+					.SetDuration(DurationMilliseconds);
 				
-				animation.Animate(animationAction);				
+				animation.Add((transform) => transform.SetRotation(firstAngle));
+				animation.Add((transform) => transform.SetRotation(resetAngle));
+				animation.Animate(animationAction);
 			};
 
 			animationAction();

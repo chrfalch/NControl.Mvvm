@@ -48,6 +48,8 @@ namespace NControl.Mvvm
 								.SetScale(1.0));
 						break;						
 				}
+
+				animation.Animate();
 			};
 		}
 
