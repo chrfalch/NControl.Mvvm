@@ -115,7 +115,7 @@ namespace NControl.Mvvm
 					.SetDuration(DurationMilliseconds);
 				
 				animation.Add((transform) => transform.SetRotation(firstAngle));
-				animation.Add((transform) => transform.SetRotation(resetAngle));
+				animation.Set((transform) => transform.SetRotation(resetAngle));
 				animation.Animate(animationAction);
 			};
 
