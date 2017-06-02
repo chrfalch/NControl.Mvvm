@@ -9,7 +9,8 @@ using Xamarin.Forms;
 namespace NControl.Mvvm
 {
 
-	public class FluidNavigationContainer : ContentView, INavigationContainer
+	public class FluidNavigationContainer : ContentView, 
+		INavigationContainer, IXAnimatable
 	{
 		#region Private Members
 

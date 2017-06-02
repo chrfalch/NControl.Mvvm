@@ -227,8 +227,13 @@ namespace NControl.Mvvm
 			}
 			else
 			{
-				// No animation, just return straight await
+				// Call navigation container
+				navigationElement.Container.OnNavigatedTo(navigationElement);
+
+				// Notify appearing
 				view.OnAppearing();
+
+				// No animation, just return straight await
 				tcs.TrySetResult(true);
 			}
 
