@@ -100,11 +100,11 @@ namespace NControl.Mvvm
 		{
 			// TODO: Set duration on package
 			var retVal = new XAnimationPackage[] {
-				new XAnimationPackage(_overlay)					
+				new XAnimationPackage(_overlay)	
+					.SetDuration(150)
 					.Add((transform)=> transform
 					    .SetOpacity(0.0)
-						.SetEasing(EasingFunctions.EaseOut)
-						.SetOpacity(1.0)) as XAnimationPackage,
+						.SetEasing(EasingFunctions.EaseOut)) as XAnimationPackage,
 
 				new XAnimationPackage(_containerBorders)
 					.SetDuration(Duration)
