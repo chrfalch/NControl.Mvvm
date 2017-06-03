@@ -39,11 +39,7 @@ namespace XAnimationDemo
 			slidervalue.SetBinding(Label.TextProperty, nameof(Slider.Value));
 
 			var checkbox = new Switch { HorizontalOptions = LayoutOptions.Center };
-			var animation = new XAnimationPackage(label)
-				.Duration(1000)
-				.Rotate(slider.Value)
-				.Translate(0, -60);
-
+			XAnimationPackage animation = null;
 			var animateButton = new Button
 			{
 				Text = "Animate",
@@ -51,10 +47,24 @@ namespace XAnimationDemo
 					Action action = null;
 					action = () =>
 					{
-						animation.Run(() =>
+						animation = new XAnimationPackage(label);
+						animation
+							.SetDuration(2000)
+							.Add()
+					            .SetEasing(1, 0, 1, 0)
+								.SetDuration(1000)
+								.SetRotation(slider.Value);
+
+						animation.Add()
+					        .SetEasing(0, 1, 0, 1)
+							.SetDuration(1000)							
+							.SetTranslation(0, -60);
+						
+						animation.Animate(() =>
 						{
 							if (checkbox.IsToggled)
 								action();
+							
 						});
 					};
 
@@ -65,7 +75,11 @@ namespace XAnimationDemo
 			var reverseButton = new Button
 			{
 				Text = "Reverse",
-				Command = new Command(() => animation.RunReverse())
+				Command = new Command(() =>
+				{
+					if (animation != null)
+						animation.AnimateReverse(duration:2000);
+				})
 			};
 
 			// The root page of your application

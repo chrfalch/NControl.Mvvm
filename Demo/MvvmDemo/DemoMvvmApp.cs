@@ -16,7 +16,8 @@ namespace MvvmDemo
 		/// <param name="platform">Platform.</param>
 		public DemoMvvmApp (IMvvmPlatform platform): base(platform)
 		{
-			XAnimationPackage.SlowAnimations = false;
+			//XElementContainer.SlowAnimations = true;
+			//XElementContainer.ShowSetTransforms = true;
 		}
 
 		public override Type GetMainViewType()

@@ -65,26 +65,26 @@ namespace NControl.Mvvm
 
 		#region Transitions
 
-		public IEnumerable<IXAnimation> TransitionIn(INavigationContainer fromContainer, PresentationMode presentationMode)
+		public IEnumerable<XAnimationPackage> TransitionIn(INavigationContainer fromContainer, 
+		                                                   PresentationMode presentationMode)
 		{
-			var retVal = new[] {
+			var retVal = new XAnimationPackage[] {
 				new XAnimationPackage(_overlay)
-					.Opacity(0.0)
-					.Set()
-					.Duration(150)
-					.Easing(EasingFunction.EaseIn)
-					.Opacity(1.0)
-					.Then(),
+					.SetDuration(150)
+					.Set((transform)=> transform.SetOpacity(0.0))
+					.Add((transform)=> transform
+						.SetEasing(EasingFunctions.EaseIn)
+					    .SetOpacity(1.0)) as XAnimationPackage,
 
 				new XAnimationPackage(_containerBorders)
-					.Scale(1.3)
-					.Opacity(0.0)
-					.Set()
-					.Duration(Duration)
-					.Easing(EasingFunction.EaseIn)
-					.Opacity(1.0)
-					.Scale(1.0)
-					.Then()
+					.SetDuration(Duration)
+					.Set((transform)=> transform
+					     .SetScale(1.3)
+					     .SetOpacity(0))
+					.Add((transform)=> transform						
+					     .SetEasing(EasingFunctions.EaseIn)						
+					     .SetOpacity(1.0)
+					     .SetScale(1.0)) as XAnimationPackage,
 			};
 
 			if (GetContentsView() is IXViewAnimatable)
@@ -94,24 +94,24 @@ namespace NControl.Mvvm
 			return retVal;
 		}
 
-		public IEnumerable<IXAnimation> TransitionOut(
+		public IEnumerable<XAnimationPackage> TransitionOut(
 			INavigationContainer toContainer, PresentationMode presentationMode)
-		{
-			var retVal = new[] {
-				new XAnimationPackage(_overlay)
-					.Opacity(0.0)
-					.Duration(Duration)
-					.Easing(EasingFunction.EaseOut)
-					.Then(),
+		{			
+			var retVal = new XAnimationPackage[] {
+				new XAnimationPackage(_overlay)	
+					.SetDuration(250)
+					.Add((transform)=> transform
+					    .SetOpacity(0.0)
+						.SetEasing(EasingFunctions.EaseOut)) as XAnimationPackage,
 
 				new XAnimationPackage(_containerBorders)
-					.Scale(1.3)
-					.Opacity(0.0)
-					.Duration(Duration)
-					.Easing(EasingFunction.EaseOut)
-					.Then()
+					.SetDuration(Duration)
+					.Add((transform)=> transform
+						 .SetEasing(EasingFunctions.EaseOut)
+						 .SetOpacity(0.0)
+					     .SetScale(1.3)) as XAnimationPackage,
 			};
-
+								
 			if (GetContentsView() is IXViewAnimatable)
 				return (GetContentsView() as IXViewAnimatable).TransitionOut(
 					toContainer, this, retVal, presentationMode);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NControl.XAnimation;
 using Xamarin.Forms;
 
@@ -76,44 +77,44 @@ namespace NControl.Mvvm
 
 		#region Transition
 
-		protected override IEnumerable<IXAnimation> ModalTransitionIn(
-			INavigationContainer container, IEnumerable<IXAnimation> animations)
+		protected override IEnumerable<XAnimationPackage> ModalTransitionIn(
+			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
 		{
 			return new[] {
 
 				// Slide in
 				new XAnimationPackage(_contentView)
-					.Translate(-Width, 0)
-					.Rotate(-15)
-					.Set()
-					.Translate(0, 0)
-					.Rotate(0)
-					.Then(),
+					.Set((transform) => transform
+				    	.SetTranslation(-Width, 0)
+					     .SetRotation(-15))
+					.Add((transform) => transform
+						.SetTranslation(0, 0)
+					    .SetRotation(0)) as XAnimationPackage,
 
 				new XAnimationPackage(_headerView, _footerView)
-					.Translate(-Width, 0)
-					.Opacity(0.0)
-					.Set()
-					.Translate(0, 0)
-					.Opacity(1.0)
-					.Then(),
-			};
+					.Set((transform) => transform
+						.SetTranslation(-Width, 0)
+						.SetOpacity(0.0))
+					.Add((transform) => transform
+					    .SetTranslation(0, 0)
+						.SetOpacity(1.0)) as XAnimationPackage,
+            };
 		}
 
-		protected override IEnumerable<IXAnimation> ModalTransitionOut(
-			INavigationContainer container, IEnumerable<IXAnimation> animations)
+		protected override IEnumerable<XAnimationPackage> ModalTransitionOut(
+			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
 		{
 			return new[] 
 			{
 				new XAnimationPackage(_contentView)
-					.Translate(-Width, 0)
-					.Rotate(-15)
-					.Then(),
+					.Add((transform) => transform
+						.SetTranslation(-Width, 0)
+					    .SetRotation(-15)) as XAnimationPackage,
 
 				new XAnimationPackage(_headerView, _footerView)
-					.Translate(-Width, 0)
-					.Opacity(0.0)
-					.Then(),
+					.Add((transform) => transform
+						.SetTranslation(-Width, 0)
+					    .SetOpacity(0.0)) as XAnimationPackage
 			};
 		}
 		#endregion

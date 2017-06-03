@@ -19,24 +19,24 @@ namespace NControl.XAnimation.Droid
 	{
 		#region Private Members
 		float _displayDensity = 1.0f;
-		IXPackage _animation;
+		XTransformationContainer _container;
 		#endregion
 
-		public void Initialize(IXPackage animation)
+		public void Initialize(XTransformationContainer container)
 		{
-			_animation = animation;
+			_container = container;
 
 			// Get display density to fix pixel scaling
 			using (var metrics = Xamarin.Forms.Forms.Context.Resources.DisplayMetrics)
 				_displayDensity = metrics.Density;			
 		}
 
-		public bool GetHasViewsToAnimate(XAnimationInfo animationinfo)
+		public bool GetHasViewsToAnimate(XTransform animationinfo)
 		{
 			var numberofLiveViews = 0;
-			for (var i = 0; i < _animation.ElementCount; i++)
+			for (var i = 0; i < _container.ElementCount; i++)
 			{
-				var element = _animation.GetElement(i);
+				var element = _container.GetElement(i);
 				var viewGroup = GetViewGroup(element);
 				if (viewGroup.Parent != null)
 					numberofLiveViews++;
@@ -45,7 +45,7 @@ namespace NControl.XAnimation.Droid
 			return numberofLiveViews > 0;
 		}
 
-		public void Animate(XAnimationInfo animationInfo, Action completed)
+		public void Animate(XTransform transform, Action completed, long duration)
 		{
 			var animations = new List<object>();
 			var animationCount = 0;
@@ -55,64 +55,66 @@ namespace NControl.XAnimation.Droid
 				animationCount--;
 				if (animationCount == 0)
 				{
-					Set(animationInfo);
+					Set(transform);
 					completed?.Invoke();
 				}
 			};
 
-			for (var i = 0; i<_animation.ElementCount; i++)
+			for (var i = 0; i<_container.ElementCount; i++)
 			{
-				var element = _animation.GetElement(i);
+				var element = _container.GetElement(i);
 				var viewGroup = GetViewGroup(element);
 				var nativeAnimation = viewGroup.Animate();
 				nativeAnimation
-					.SetDuration(GetTime(animationInfo.Duration))
-					.SetStartDelay(GetTime(animationInfo.Delay))
-					.SetInterpolator(GetInterpolator(animationInfo))
+					.SetDuration(GetTime(transform.Duration))
+					.SetStartDelay(GetTime(transform.Delay))
+					.SetInterpolator(GetInterpolator(transform.Easing))
 					.SetListener(new AnimatorListener(null, animationFinishedAction, null, null));
 
-				nativeAnimation.Alpha((float)animationInfo.Opacity);
-				nativeAnimation.Rotation((float)animationInfo.Rotate);
-				nativeAnimation.ScaleX((float)animationInfo.Scale);
-				nativeAnimation.ScaleY((float)animationInfo.Scale);
-				nativeAnimation.TranslationX((float)animationInfo.TranslationX * _displayDensity);
-				nativeAnimation.TranslationY((float)animationInfo.TranslationY * _displayDensity);
+				nativeAnimation.Alpha((float)transform.Opacity);
+				nativeAnimation.Rotation((float)transform.Rotation);
+				nativeAnimation.ScaleX((float)transform.Scale);
+				nativeAnimation.ScaleY((float)transform.Scale);
+				nativeAnimation.TranslationX((float)transform.TranslationX * _displayDensity);
+				nativeAnimation.TranslationY((float)transform.TranslationY * _displayDensity);
 
 				animations.Add(nativeAnimation);
 
-				if (animationInfo.AnimateColor)
+				if (transform.AnimateColor)
 				{
 					var fromColor = element.BackgroundColor.ToAndroid();
-					var toColor = animationInfo.Color.ToAndroid();
+					var toColor = transform.Color.ToAndroid();
 
 					var colorAnimator = ObjectAnimator.OfInt(viewGroup, "backgroundColor", fromColor, toColor);
 					colorAnimator.SetTarget(viewGroup);
 					colorAnimator.SetEvaluator(new ArgbEvaluator());
-					colorAnimator.SetDuration(GetTime(animationInfo.Duration));
-					colorAnimator.SetInterpolator(GetInterpolator(animationInfo));
-					colorAnimator.StartDelay = GetTime(animationInfo.Delay);
+					colorAnimator.SetDuration(GetTime(transform.Duration));
+					colorAnimator.SetInterpolator(GetInterpolator(transform.Easing));
+					colorAnimator.StartDelay = GetTime(transform.Delay);
 					colorAnimator.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
 
 					animations.Add(colorAnimator);
 				}
 
-				if (animationInfo.AnimateRectangle)
+				if (transform.AnimateRectangle)
 				{
-					animations.Add(GetRectangleAnimation(element, viewGroup, animationInfo, animationFinishedAction));
+					animations.Add(GetRectangleAnimation(element, viewGroup, transform, 
+					                                     animationFinishedAction, transform.Easing));
 				}
 
 				// Get children
-				if (animationInfo.AnimateRectangle)
+				if (transform.AnimateRectangle)
 				{
 					// Get animation info for target after layout has been updated
-					var childHierarchyInfo = GetChildHierarchyInfo(element, animationInfo);
+					var childHierarchyInfo = GetChildHierarchyInfo(element, transform);
 
 					foreach (var childElement in childHierarchyInfo.Keys)
 					{
 						// Get child details
 						var childView = GetViewGroup(childElement);
 						var childAnimation = GetRectangleAnimation(
-							childElement, childView, childHierarchyInfo[childElement], animationFinishedAction);
+							childElement, childView, 
+							childHierarchyInfo[childElement], animationFinishedAction, transform.Easing);
 
 						// Add animations
 						animations.Add(childAnimation);
@@ -131,10 +133,10 @@ namespace NControl.XAnimation.Droid
 			}
 		}
 
-		public void Set(VisualElement element, XAnimationInfo animationInfo)
+		public void Set(VisualElement element, XTransform animationInfo)
 		{
 			element.Opacity = (float)animationInfo.Opacity;
-			element.Rotation = (float)animationInfo.Rotate;
+			element.Rotation = (float)animationInfo.Rotation;
 			element.Scale = (float)animationInfo.Scale;
 			element.TranslationX = (float)animationInfo.TranslationX;
 			element.TranslationY = (float)animationInfo.TranslationY;
@@ -146,18 +148,19 @@ namespace NControl.XAnimation.Droid
 				element.BackgroundColor = animationInfo.Color;
 		}
 
-		public void Set(XAnimationInfo animationInfo)
+		public void Set(XTransform animationInfo)
 		{
-			for (var i = 0; i < _animation.ElementCount; i++)
+			for (var i = 0; i < _container.ElementCount; i++)
 			{
-				var element = _animation.GetElement(i);
+				var element = _container.GetElement(i);
 				Set(element, animationInfo);
 			}
 		}
 
 		#region Private Members
 
-		Animator GetRectangleAnimation(VisualElement element, ViewGroup viewGroup, XAnimationInfo animationInfo, Action<Animator> animationFinishedAction)
+		Animator GetRectangleAnimation(VisualElement element, ViewGroup viewGroup, XTransform animationInfo, 
+		                               Action<Animator> animationFinishedAction, EasingFunctionBezier easing)
 		{
 			var originalSize = new Rectangle(viewGroup.Left, viewGroup.Top, viewGroup.Width, viewGroup.Height);
 			var newSize = new Rectangle(animationInfo.Rectangle.Left * _displayDensity,
@@ -168,7 +171,7 @@ namespace NControl.XAnimation.Droid
 			var resizeAnimation = ValueAnimator.OfFloat(0.0f, 1.0f);
 
 			resizeAnimation.SetDuration(GetTime(animationInfo.Duration));
-			resizeAnimation.SetInterpolator(GetInterpolator(animationInfo));
+			resizeAnimation.SetInterpolator(GetInterpolator(easing));
 			resizeAnimation.StartDelay = GetTime(animationInfo.Delay);
 			resizeAnimation.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
 			resizeAnimation.AddUpdateListener(new UpdateListener((obj) =>
@@ -193,9 +196,9 @@ namespace NControl.XAnimation.Droid
 			return resizeAnimation;
 		}
 
-		Dictionary<VisualElement, XAnimationInfo> GetChildHierarchyInfoInt(VisualElement element, XAnimationInfo animationInfo)
+		Dictionary<VisualElement, XTransform> GetChildHierarchyInfoInt(VisualElement element, XTransform animationInfo)
 		{
-			var retVal = new Dictionary<VisualElement, XAnimationInfo>();
+			var retVal = new Dictionary<VisualElement, XTransform>();
 
 			if (element is ContentView)
 			{
@@ -226,7 +229,7 @@ namespace NControl.XAnimation.Droid
 			return retVal;
 		}
 
-		Dictionary<VisualElement, XAnimationInfo> GetChildHierarchyInfo(VisualElement element, XAnimationInfo animationInfo)
+		Dictionary<VisualElement, XTransform> GetChildHierarchyInfo(VisualElement element, XTransform animationInfo)
 		{
 			var originalState = GetAnimationInfoFromElement(element, animationInfo);
 
@@ -237,25 +240,9 @@ namespace NControl.XAnimation.Droid
 			return toValues;
 		}
 
-		XAnimationInfo GetAnimationInfoFromElement(VisualElement element, XAnimationInfo animationInfo)
+		XTransform GetAnimationInfoFromElement(VisualElement element, XTransform animationInfo)
 		{
-			return new XAnimationInfo
-			{
-				Duration = animationInfo.Duration,
-				Delay = animationInfo.Delay,
-				Easing = animationInfo.Easing,
-				EasingBezier = animationInfo.EasingBezier,
-				OnlyTransform = animationInfo.OnlyTransform,
-				Rotate = element.Rotation,
-				TranslationX = element.TranslationX,
-				TranslationY = element.TranslationY,
-				Scale = element.Scale,
-				Opacity = element.Opacity,
-				AnimateColor = animationInfo.AnimateColor,
-				Color = element.BackgroundColor,
-				AnimateRectangle = animationInfo.AnimateRectangle,
-				Rectangle = new Xamarin.Forms.Rectangle(element.X, element.Y, element.Width, element.Height),
-			};
+			return XTransform.FromAnimationInfoAndElement(element, animationInfo);
 		}
 
 		/// <summary>
@@ -276,27 +263,11 @@ namespace NControl.XAnimation.Droid
 		}
 		#endregion
 
-		IInterpolator GetInterpolator(XAnimationInfo animationInfo)
+		IInterpolator GetInterpolator(EasingFunctionBezier easing)
 		{
-			switch (animationInfo.Easing)
-			{
-				case EasingFunction.EaseIn:
-					return new AccelerateInterpolator();					
-					
-				case EasingFunction.EaseOut:
-					return new DecelerateInterpolator();					
-					
-				case EasingFunction.EaseInOut:
-					return new AccelerateDecelerateInterpolator();
-					
-				case EasingFunction.Custom:
-					return new DroidBezierInterpolator(
-					(float)animationInfo.EasingBezier.Start.X, (float)animationInfo.EasingBezier.Start.Y,
-					(float)animationInfo.EasingBezier.End.X, (float)animationInfo.EasingBezier.End.Y);
-
-				default:
-					return new LinearInterpolator();
-			}
+			return new DroidBezierInterpolator(
+					(float)easing.Start.X, (float)easing.Start.Y,
+					(float)easing.End.X, (float)easing.End.Y);			
 		}
 
 		long GetTime(long time)

@@ -153,16 +153,12 @@ namespace NControl.Mvvm
 
 			if (newValue != oldValue)
 			{
-				if((bool)newValue)
-					new XAnimationPackage(ctrl._backButton)
-					  .Opacity(1.0)
-		              .Then()
-		              .Run();
+				if ((bool)newValue)
+					(new XAnimationPackage(ctrl._backButton)
+					 .Add((t) => t.SetOpacity(1.0)) as XAnimationPackage).Animate();
 				else
-					new XAnimationPackage(ctrl._backButton)
-					  .Opacity(0.0)
-					  .Then()
-		              .Run();
+					(new XAnimationPackage(ctrl._backButton)
+					 .Add((t) => t.SetOpacity(0.0)) as XAnimationPackage).Animate();
 			}
 		});
 
