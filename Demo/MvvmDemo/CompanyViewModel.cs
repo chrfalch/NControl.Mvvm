@@ -6,26 +6,26 @@ using System.Windows.Input;
 
 namespace MvvmDemo
 {
-	public class CompanyViewModel: BaseViewModel
+	public class CompanyViewModel : BaseViewModel
 	{
-		public CompanyViewModel ()
+		public CompanyViewModel()
 		{
 			Title = "NControl.Mvvm";
 
 		}
 
-		public override async Task InitializeAsync ()
+		public override async Task InitializeAsync()
 		{
-			await base.InitializeAsync ();
+			await base.InitializeAsync();
 
 			CollectionState = CollectionState.Loading;
 			await Task.Delay(1550);
-			Companies.AddRange (Company.CompanyRepository);
+			Companies.AddRange(Company.CompanyRepository);
 			CollectionState = CollectionState.Loaded;
 		}
 
 		public ObservableCollectionWithAddRange<Company> Companies =>
-			GetValue(() => new ObservableCollectionWithAddRange<Company> ());
+			GetValue(() => new ObservableCollectionWithAddRange<Company>());
 
 		public CollectionState CollectionState
 		{
@@ -34,27 +34,22 @@ namespace MvvmDemo
 		}
 
 		[DependsOn(nameof(CollectionState))]
-		public ICommand RefreshCommand
+		public ICommand RefreshCommand => GetOrCreateCommandAsync(async _ =>
 		{
-			get 
-			{ 
-				return GetOrCreateCommandAsync(async _ =>{					
+			CollectionState = CollectionState.Loading;
 
-					CollectionState = CollectionState.Loading;
-
-					try
-					{						
-						await Task.Delay(1500);
-						Companies.Clear();
-					}
-					finally
-					{
-						CollectionState = CollectionState.Loaded;
-					}
-
-				}, _=> CollectionState != CollectionState.Loading);
+			try
+			{
+				await Task.Delay(1500);
+				Companies.Clear();
 			}
-		}
+			finally
+			{
+				CollectionState = CollectionState.Loaded;
+			}
+
+		}, _ => CollectionState != CollectionState.Loading);
+			
 
 		public ICommand SelectCompanyCommand => GetCommand(() => new PresentCommand<EmployeeViewModel>());
 		public ICommand ShowAboutCommand => GetCommand(() => new PresentModalCommand<AboutViewModel>());

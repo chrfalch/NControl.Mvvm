@@ -13,65 +13,12 @@ namespace MvvmDemo
 			Title = "About";
 		}
 
-		public override async Task InitializeAsync()
-		{
-			await base.InitializeAsync();
-
-			//MvvmApp.Current.MessageHub.Subscribe<MyMessage>(this, async message => {
-
-			//		IsRunningAsyncCommand = true;
-
-			//		for (var i = 0; i< 10; i++)
-			//		{
-			//			await Task.Delay(150);
-			//			NumberValue++;
-			//		}
-
-			//		//IsBusy = false;
-			//		IsRunningAsyncCommand = false;
-
-			//		await MvvmApp.Current.Presenter.ShowMessageAsync(Title, message.Message, "OK");
-			//});
-		}
-
-		public Command ClickMeCommand
-		{
-			get
-			{
-				return GetOrCreateCommand((obj) =>
-				{
-					MvvmApp.Current.MessageHub.Publish(new MyMessage("This is the message"));
-				});
-			}
-		}
+		#region Properties
 
 		public bool IsRunningAsyncCommand
 		{
-			get { return GetValue<bool>();}
-			set { SetValue(value);}
-		}
-
-		public ICommand CountAsyncCommand
-		{
-			get
-			{
-				return GetOrCreateCommandAsync(async (arg) => {
-
-					//IsBusy = true;
-					//IsBusyText = "Counting...";
-					//IsBusySubTitle = "the numbers in a sequence from zero to 10 stopping on 10.";
-					IsRunningAsyncCommand = true;
-
-					for (var i = 0; i < 10; i++)
-					{
-						await Task.Delay(150);
-						NumberValue++;
-					}
-
-					//IsBusy = false;
-					IsRunningAsyncCommand = false;
-				});
-			}
+			get { return GetValue<bool>(); }
+			set { SetValue(value); }
 		}
 
 		public int NumberValue
@@ -80,16 +27,37 @@ namespace MvvmDemo
 			set { SetValue(value); }
 		}
 
-		[OnMessage(typeof(MyMessage))]
-		public AsyncCommand<MyMessage> HandleMyMessage => GetCommand(() => new AsyncCommand<MyMessage>(
-			async (MyMessage arg) =>
+		#endregion
+
+		#region Commands
+
+		public ICommand ClickMeCommand => GetCommand(() => new PublishCommand<MyMessage>((param)=> 
+			new MyMessage("This is the message")));
+
+		public ICommand CountAsyncCommand => GetOrCreateCommandAsync(async (arg) =>
 		{
-			await MvvmApp.Current.Presenter.ShowMessageAsync(Title, arg.Message, "OK");
-		}));
+
+			IsRunningAsyncCommand = true;
+
+			for (var i = 0; i < 10; i++)
+			{
+				await Task.Delay(150);
+				NumberValue++;
+			}
+
+			IsRunningAsyncCommand = false;
+		});
+
+		[OnMessage(typeof(MyMessage))]
+		public ICommand HandleMyMessage => GetOrCreateCommandAsync(
+			async (MyMessage arg) =>
+			await MvvmApp.Current.Presenter.ShowMessageAsync(Title, arg.Message, "OK")
+		);
 
 		public ICommand PushNewAboutCommand => GetCommand(() => new PresentCommand<FeedViewModel>());
-		public override ICommand CloseCommand => GetCommand(() => new DismissCommand(PresentationMode, ()=> true));
+		public override ICommand CloseCommand => GetCommand(() => new DismissCommand(PresentationMode, () => true));
 
+		#endregion
 	}
 
 	public class MyMessage
