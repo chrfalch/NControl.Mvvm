@@ -20,4 +20,13 @@ namespace NControl.Mvvm
 			Padding = Config.DefaultPadding * 2;
 		}
 	}
+
+	public class VerticalStackLayoutWithSmallPadding : VerticalStackLayout
+	{
+		public VerticalStackLayoutWithSmallPadding()
+		{
+			Padding = Config.DefaultPadding;
+			Spacing = Config.DefaultSpacing * 0.5;
+		}	
+	}
 }

@@ -8,7 +8,7 @@ namespace MvvmDemo
 	{
 		public override Type GetCellType()
 		{
-			return typeof(FeedCell);
+			return typeof(CityCell);
 		}
 	}
 }
