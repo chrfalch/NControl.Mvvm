@@ -15,7 +15,7 @@ namespace NControl.XAnimation.Droid
 	/// <summary>
 	/// Android implementation of the animation provider
 	/// </summary>
-	public class DroidXAnimationProvider: IXAnimationProvider
+	public class DroidXAnimationProvider : IXAnimationProvider
 	{
 		#region Private Members
 		float _displayDensity = 1.0f;
@@ -28,7 +28,7 @@ namespace NControl.XAnimation.Droid
 
 			// Get display density to fix pixel scaling
 			using (var metrics = Xamarin.Forms.Forms.Context.Resources.DisplayMetrics)
-				_displayDensity = metrics.Density;			
+				_displayDensity = metrics.Density;
 		}
 
 		public bool GetHasViewsToAnimate(XTransform animationinfo)
@@ -50,7 +50,7 @@ namespace NControl.XAnimation.Droid
 			var animations = new List<object>();
 			var animationCount = 0;
 
-			Action<Animator> animationFinishedAction = _=>
+			Action<Animator> animationFinishedAction = _ =>
 			{
 				animationCount--;
 				if (animationCount == 0)
@@ -60,13 +60,13 @@ namespace NControl.XAnimation.Droid
 				}
 			};
 
-			for (var i = 0; i<_container.ElementCount; i++)
+			for (var i = 0; i < _container.ElementCount; i++)
 			{
 				var element = _container.GetElement(i);
 				var viewGroup = GetViewGroup(element);
 				var nativeAnimation = viewGroup.Animate();
 				nativeAnimation
-					.SetDuration(GetTime(transform.Duration))
+					.SetDuration(GetTime(duration))
 					.SetStartDelay(GetTime(transform.Delay))
 					.SetInterpolator(GetInterpolator(transform.Easing))
 					.SetListener(new AnimatorListener(null, animationFinishedAction, null, null));
@@ -88,7 +88,7 @@ namespace NControl.XAnimation.Droid
 					var colorAnimator = ObjectAnimator.OfInt(viewGroup, "backgroundColor", fromColor, toColor);
 					colorAnimator.SetTarget(viewGroup);
 					colorAnimator.SetEvaluator(new ArgbEvaluator());
-					colorAnimator.SetDuration(GetTime(transform.Duration));
+					colorAnimator.SetDuration(GetTime(duration));
 					colorAnimator.SetInterpolator(GetInterpolator(transform.Easing));
 					colorAnimator.StartDelay = GetTime(transform.Delay);
 					colorAnimator.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
@@ -98,8 +98,8 @@ namespace NControl.XAnimation.Droid
 
 				if (transform.AnimateRectangle)
 				{
-					animations.Add(GetRectangleAnimation(element, viewGroup, transform, 
-					                                     animationFinishedAction, transform.Easing));
+					animations.Add(GetRectangleAnimation(element, viewGroup, transform,
+														 animationFinishedAction, transform.Easing, duration));
 				}
 
 				// Get children
@@ -113,8 +113,8 @@ namespace NControl.XAnimation.Droid
 						// Get child details
 						var childView = GetViewGroup(childElement);
 						var childAnimation = GetRectangleAnimation(
-							childElement, childView, 
-							childHierarchyInfo[childElement], animationFinishedAction, transform.Easing);
+							childElement, childView,
+							childHierarchyInfo[childElement], animationFinishedAction, transform.Easing, duration);
 
 						// Add animations
 						animations.Add(childAnimation);
@@ -143,8 +143,8 @@ namespace NControl.XAnimation.Droid
 
 			if (animationInfo.AnimateRectangle)
 				element.Layout(animationInfo.Rectangle);
-			
-			if(animationInfo.AnimateColor)
+
+			if (animationInfo.AnimateColor)
 				element.BackgroundColor = animationInfo.Color;
 		}
 
@@ -159,8 +159,9 @@ namespace NControl.XAnimation.Droid
 
 		#region Private Members
 
-		Animator GetRectangleAnimation(VisualElement element, ViewGroup viewGroup, XTransform animationInfo, 
-		                               Action<Animator> animationFinishedAction, EasingFunctionBezier easing)
+		Animator GetRectangleAnimation(VisualElement element, ViewGroup viewGroup, XTransform animationInfo,
+									   Action<Animator> animationFinishedAction, EasingFunctionBezier easing,
+		                              long duration)
 		{
 			var originalSize = new Rectangle(viewGroup.Left, viewGroup.Top, viewGroup.Width, viewGroup.Height);
 			var newSize = new Rectangle(animationInfo.Rectangle.Left * _displayDensity,
@@ -170,7 +171,7 @@ namespace NControl.XAnimation.Droid
 
 			var resizeAnimation = ValueAnimator.OfFloat(0.0f, 1.0f);
 
-			resizeAnimation.SetDuration(GetTime(animationInfo.Duration));
+			resizeAnimation.SetDuration(GetTime(duration));
 			resizeAnimation.SetInterpolator(GetInterpolator(easing));
 			resizeAnimation.StartDelay = GetTime(animationInfo.Delay);
 			resizeAnimation.AddListener(new AnimatorListener(null, animationFinishedAction, null, null));
@@ -259,7 +260,7 @@ namespace NControl.XAnimation.Droid
 			}
 
 			return renderer.ViewGroup;
-		
+
 		}
 		#endregion
 
@@ -267,12 +268,12 @@ namespace NControl.XAnimation.Droid
 		{
 			return new DroidBezierInterpolator(
 					(float)easing.Start.X, (float)easing.Start.Y,
-					(float)easing.End.X, (float)easing.End.Y);			
+					(float)easing.End.X, (float)easing.End.Y);
 		}
 
 		long GetTime(long time)
 		{
-			return time * (XAnimationPackage.SlowAnimations ? 5 : 1);
+			return (long)(time * (XElementContainer.SlowAnimations ? 2.5 : 1));
 		}
 	}
 
@@ -296,8 +297,8 @@ namespace NControl.XAnimation.Droid
 		Action<Animator> _repeatAction;
 		Action<Animator> _startAction;
 
-		public AnimatorListener(Action<Animator>  start = null, Action<Animator> end = null, 
-		                         Action<Animator> cancel = null, Action<Animator> repeat = null)
+		public AnimatorListener(Action<Animator> start = null, Action<Animator> end = null,
+								 Action<Animator> cancel = null, Action<Animator> repeat = null)
 		{
 			_startAction = start;
 			_endAction = end;
