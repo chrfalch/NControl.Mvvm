@@ -71,7 +71,7 @@ namespace MvvmDemo
 
 									new ButtonBarItem{
 										Icon = FontMaterialDesignLabel.MDMenu,
-										Command = ViewModel.ShowMenuCommand
+										Command = ViewModel.ShowCityListCommand
 									}
 								}
 							}

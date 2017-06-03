@@ -55,7 +55,7 @@ namespace MvvmDemo
 		public ICommand ShowAboutCommand => GetCommand(() => new PresentModalCommand<AboutViewModel>());
 		public ICommand SearchCommand => GetCommand(() => new PresentModalCommand<SearchViewModel>());
 		public ICommand ShowFeedCommand => GetCommand(() => new PresentModalCommand<FeedViewModel>());
-		public ICommand ShowMenuCommand => GetCommand(() => new PresentModalCommand<MenuViewModel>());
+		public ICommand ShowCityListCommand => GetCommand(() => new PresentModalCommand<CityListViewModel>());
 	}
 }
 
