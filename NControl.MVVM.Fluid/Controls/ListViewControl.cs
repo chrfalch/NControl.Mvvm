@@ -28,6 +28,9 @@ namespace NControl.Mvvm
 
 		#endregion
 
+		/// <summary>
+		/// Constructor
+		/// </summary>
 		public ListViewControl()
 		{
 			VerticalOptions = LayoutOptions.FillAndExpand;
@@ -258,6 +261,12 @@ namespace NControl.Mvvm
 			get { return (CollectionState)GetValue(StateProperty); }
 			set { SetValue(StateProperty, value); }
 		}
+
+		/// <summary>
+		/// Returns the underlying list view control
+		/// </summary>
+		public ListViewEx ListView => _listView;
+
 		#endregion
 
 		#region Private Members
