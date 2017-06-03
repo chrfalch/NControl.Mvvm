@@ -107,7 +107,7 @@ namespace MvvmDemo
 				.Add((t) => t
 					.SetEasing(easing)
 					.SetRotation(animateOut ? 180 : 0.0)
-				     .SetTranslation(0, animateOut ? -(circleSize - 8) : 0)) as XAnimationPackage;
+				    .SetTranslation(0, animateOut ? -(circleSize - 8) : 0)) as XAnimationPackage;
 
 			animation.Animate();
 
