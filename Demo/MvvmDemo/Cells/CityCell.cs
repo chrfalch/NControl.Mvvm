@@ -18,6 +18,7 @@ namespace MvvmDemo
 				TextColor = Color.White,
 				FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
 			};
+			_nameLabel.SetTransitionIdentifier("name");
 
 			_cityLabel = new Label
 			{
@@ -25,6 +26,7 @@ namespace MvvmDemo
 				FontAttributes = FontAttributes.Bold,
 				FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
 			};
+			_cityLabel.SetTransitionIdentifier("city");
 
 			_contents = new VerticalStackLayoutWithSmallPadding
 			{
@@ -36,6 +38,7 @@ namespace MvvmDemo
 				HeightRequest = 180,
 				Aspect = Aspect.AspectFill,
 			};
+			_image.SetTransitionIdentifier("image");
 
 			View = new FluidShadowView
 			{

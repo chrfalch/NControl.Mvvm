@@ -10,6 +10,7 @@ namespace NControl.Mvvm
 		public BasePresentCommand(PresentationMode presentationMode = PresentationMode.Default,
 			Func<object, bool> canExecuteFunc = null, Action<bool> presentedCallback = null) : 
 			base(async (param)=> {
+				
 				// Present viewmodel
 				await MvvmApp.Current.Presenter.ShowViewModelAsync<TViewModel>(
 					presentationMode, presentedCallback, true, param);

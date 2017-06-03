@@ -246,8 +246,13 @@ namespace NControl.Mvvm
 		NavigationElement PresentView(View view, PresentationMode presentationMode, Action<bool> dismissedAction)
 		{
 			// Create container
-			var container = _navigationContainerProvider.CreateNavigationContainer(
-				presentationMode);
+			INavigationContainer container = null;
+			if (view is INavigationContainerProvider)
+				container = (view as INavigationContainerProvider).CreateNavigationContainer(
+					presentationMode);
+			else
+				container = _navigationContainerProvider.CreateNavigationContainer(
+					presentationMode);
 
 			// Add contents view to container's content area
 			container.SetContent(view);

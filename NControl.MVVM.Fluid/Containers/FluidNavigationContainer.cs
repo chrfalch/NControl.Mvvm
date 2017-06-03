@@ -19,6 +19,7 @@ namespace NControl.Mvvm
 		protected readonly RelativeLayout _layout;
 		protected readonly ContentView _container;
 		protected readonly Grid _navigationContainer;
+		protected readonly BoxView _statusBar;
 		protected readonly FluidNavigationBar _navigationBar;
 
 		double _statusbarHeight;
@@ -66,6 +67,12 @@ namespace NControl.Mvvm
 						(_container.Content as IView).GetViewModel().PresentationMode);
 			});
 
+			_statusBar = new BoxView
+			{
+				BackgroundColor = Config.PrimaryColor,
+				VerticalOptions = LayoutOptions.Start,
+			};
+
 			_container = new ContentView();
 
 			_navigationContainer = new Grid
@@ -92,14 +99,21 @@ namespace NControl.Mvvm
 
 			// Add navigation container
 			_layout.Children.Add(_navigationContainer, () => GetNavigationBarRectangle());
-			_layout.Children.Add(new BoxView
-			{
-				BackgroundColor = Config.PrimaryColor,
-				VerticalOptions = LayoutOptions.Start,
-			}, () => new Rectangle(0, 0, _layout.Width, _statusbarHeight));
+			_layout.Children.Add(_statusBar, () => GetStatusbarRectangle());
 
 			// Bindings
 			this.BindTo(TitleProperty, nameof(IViewModel.Title));
+
+			if (HasTransparentStatusbar)
+			{
+				_statusBar.BackgroundColor = Color.Transparent;
+				_navigationBar.BackgroundColor = Color.Transparent;
+			}
+			else
+			{
+				_statusBar.BackgroundColor = Config.PrimaryColor;
+				_navigationBar.BackgroundColor = Config.PrimaryColor;
+			}
 
 		}
 		View IntGetOverlayView()
@@ -146,6 +160,38 @@ namespace NControl.Mvvm
 			get { return (bool)GetValue(HasNavigationBarShadowProperty); }
 			set { SetValue(HasNavigationBarShadowProperty, value); }
 		}
+
+		/// <summary>
+		/// The HasTransparentStatusbar property.
+		/// </summary>
+		public static BindableProperty HasTransparentStatusbarProperty = BindableProperty.Create(
+			nameof(HasTransparentStatusbar), typeof(bool), typeof(FluidNavigationContainer), false,
+			BindingMode.OneWay, null, propertyChanged: (bindable, oldValue, newValue) =>
+			{
+				var ctrl = (FluidNavigationContainer)bindable;
+
+				if ((bool)newValue)
+				{
+					ctrl._statusBar.BackgroundColor = Color.Transparent;
+					ctrl._navigationBar.BackgroundColor = Color.Transparent;
+				}
+				else
+				{
+					ctrl._statusBar.BackgroundColor = Config.PrimaryColor;
+					ctrl._navigationBar.BackgroundColor = Config.PrimaryColor;
+				}
+
+				ctrl._layout.ForceLayout();
+			});
+
+		/// <summary>
+		/// Gets or sets the HasTransparentStatusbar of the FluidNavigationContainer instance.
+		/// </summary>
+		public bool HasTransparentStatusbar
+		{
+			get { return (bool)GetValue(HasTransparentStatusbarProperty); }
+			set { SetValue(HasTransparentStatusbarProperty, value); }
+		}
 		#endregion
 
 		#region INavigationContainer
@@ -153,7 +199,7 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Add a new child to the container
 		/// </summary>
-		public void SetContent(View content)
+		public virtual void SetContent(View content)
 		{
 			if (content == null)
 			{
@@ -167,9 +213,15 @@ namespace NControl.Mvvm
 				throw new ArgumentException("Content must implement IView");
 			
 			_container.Content = content;
+			OnContentSet(content);
 			BindingContext = (content as IView).GetViewModel();
 			UpdateToolbarItems(content);
 			OnPropertyChanged(nameof(BackButtonVisible));
+		}
+
+		public virtual void OnContentSet(View content)
+		{
+			
 		}
 
 		/// <summary>
@@ -267,7 +319,7 @@ namespace NControl.Mvvm
 
 			// Additional animations?
 			if (_container.Content is IXViewAnimatable)
-					return (_container.Content as IXViewAnimatable).TransitionIn(
+				return (_container.Content as IXViewAnimatable).TransitionIn(
 					fromContainer, this, animations, presentationMode);
 
 			return animations;
@@ -405,19 +457,33 @@ namespace NControl.Mvvm
 			return view == null || (bool)view.GetValue(NavigationPage.HasNavigationBarProperty);
 		}
 
+		Rectangle GetStatusbarRectangle()
+		{
+			var topView = _container.Content;
+			var hasNavigationBar = GetViewHasNavigationBar(topView);
+			if (!hasNavigationBar)
+				return Rectangle.Zero;
+			return new Rectangle(0, 0, _layout.Width, _statusbarHeight);
+		}
+
 		Rectangle GetNavigationBarRectangle()
 		{
+			var topView = _container.Content;
+			var hasNavigationBar = GetViewHasNavigationBar(topView);
+			if (!hasNavigationBar)
+				return Rectangle.Zero;
+			
 			return new Rectangle(0, _statusbarHeight, _layout.Width, _navigationBarHeight);
 		}
 
 		Rectangle GetContainerRectangle()
 		{
 			var topView = _container.Content;
-			var hasNavigationBar = GetViewHasNavigationBar(topView);
+			var hasNavigationBar = GetViewHasNavigationBar(topView) && !HasTransparentStatusbar;
 
 			return new Rectangle(
-				0, _statusbarHeight + (hasNavigationBar ? _navigationBarHeight : 0), _layout.Width,
-				_layout.Height - (_statusbarHeight + (hasNavigationBar ? _navigationBarHeight : 0)));
+				0, (hasNavigationBar ? _statusbarHeight + _navigationBarHeight : 0), _layout.Width,
+				_layout.Height - ((hasNavigationBar ? _navigationBarHeight + _statusbarHeight : 0)));
 		}
 
 		/// <summary>
@@ -479,7 +545,7 @@ namespace NControl.Mvvm
 			if (_container == null)
 				return "Empty";
 
-			return "FluidNavigationContainer: " + _container.Content.GetType().Name;
+			return GetType().Name + ": " + _container.Content.GetType().Name;
 		}
 	}
 }

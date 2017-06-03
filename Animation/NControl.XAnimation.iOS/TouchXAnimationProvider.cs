@@ -82,7 +82,8 @@ namespace NControl.XAnimation.iOS
 						{
 							// Get child details
 							var childView = GetView(childElement);
-							var childAnimations = GetRectangleAnimations(childElement, childView, childHierarchyInfo[childElement]);
+							var childAnimations = GetRectangleAnimations(
+								childElement, childView, childHierarchyInfo[childElement]);
 
 							viewAnimations.Add(childView, childAnimations);
 						}
@@ -97,7 +98,7 @@ namespace NControl.XAnimation.iOS
 			CATransaction.AnimationDuration = GetTime(duration);
 			CATransaction.CompletionBlock = () => {
 
-				SetInternal(transform, false);
+
 				completed?.Invoke();
 			};
 
@@ -107,12 +108,12 @@ namespace NControl.XAnimation.iOS
 					view.Layer.AddAnimation(viewAnimations[view].ElementAt(i), "animinfo-anims-" + i.ToString());
 
 			// Set end values
-			for (var i = 0; i<_container.ElementCount; i++)
-			{
-				var element = _container.GetElement(i);
-				SetPlatformElementFromAnimationInfo(element, transform);
-			}
-
+			//for (var i = 0; i<_container.ElementCount; i++)
+			//{
+			//	var element = _container.GetElement(i);
+			//	SetPlatformElementFromAnimationInfo(element, transform);
+			//}
+            SetInternal(transform, false);
 
 			// Commit transaction
 			CATransaction.Commit();

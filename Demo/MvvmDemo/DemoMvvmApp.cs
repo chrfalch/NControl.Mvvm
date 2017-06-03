@@ -22,7 +22,7 @@ namespace MvvmDemo
 
 		public override Type GetMainViewType()
 		{
-			return typeof(CompanyView);
+			return typeof(CityListView);
 		}
 
 		/// <summary>
@@ -37,6 +37,7 @@ namespace MvvmDemo
 			ViewContainer.RegisterView<SearchViewModel, SearchView> ();
 			ViewContainer.RegisterView<FeedViewModel, FeedView>();
 			ViewContainer.RegisterView<CityListViewModel, CityListView>();
+			ViewContainer.RegisterView<CityViewModel, CityView>();
 		}
 	}
 }

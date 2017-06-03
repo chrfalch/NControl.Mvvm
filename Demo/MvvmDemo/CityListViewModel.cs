@@ -14,6 +14,9 @@ namespace MvvmDemo
 			return base.InitializeAsync();
 		}
 
+		public override ICommand SelectItemCommand => GetCommand(
+			() => new PresentCommand<CityViewModel>());
+
 		public override Task<IEnumerable<FeedItem>> LoadItemsAsync()
 		{
 			return Task.FromResult(FeedItem.FeedRepository);

@@ -1,4 +1,6 @@
 ﻿using System;
+using Xamarin.Forms;
+
 namespace NControl.Mvvm
 {
 	public interface IEnvironmentProvider
@@ -12,5 +14,10 @@ namespace NControl.Mvvm
 		/// Returns the display density. Use to multiply with sizes etc.
 		/// </summary>
 		float DisplayDensity { get; }
+
+		/// <summary>
+		/// Gets the location on screen.
+		/// </summary>
+		Rectangle GetLocationOnScreen(VisualElement view);
 	}
 }
