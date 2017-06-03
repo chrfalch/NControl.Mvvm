@@ -68,7 +68,6 @@ namespace NControl.Mvvm
 		public IEnumerable<XAnimationPackage> TransitionIn(INavigationContainer fromContainer, 
 		                                                   PresentationMode presentationMode)
 		{
-			// TODO: Set duration on package
 			var retVal = new XAnimationPackage[] {
 				new XAnimationPackage(_overlay)
 					.SetDuration(150)
@@ -97,11 +96,10 @@ namespace NControl.Mvvm
 
 		public IEnumerable<XAnimationPackage> TransitionOut(
 			INavigationContainer toContainer, PresentationMode presentationMode)
-		{
-			// TODO: Set duration on package
+		{			
 			var retVal = new XAnimationPackage[] {
 				new XAnimationPackage(_overlay)	
-					.SetDuration(150)
+					.SetDuration(250)
 					.Add((transform)=> transform
 					    .SetOpacity(0.0)
 						.SetEasing(EasingFunctions.EaseOut)) as XAnimationPackage,

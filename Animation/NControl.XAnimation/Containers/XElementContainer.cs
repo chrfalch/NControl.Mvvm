@@ -23,6 +23,7 @@ namespace NControl.XAnimation
 		/// Set to true to speed down animations
 		/// </summary>
 		public static bool SlowAnimations { get; set; }
+		public static bool ShowSetTransforms { get; set; }
 
 		#endregion
 

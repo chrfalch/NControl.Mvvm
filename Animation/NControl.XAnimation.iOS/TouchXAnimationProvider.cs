@@ -25,13 +25,13 @@ namespace NControl.XAnimation.iOS
 		/// <summary>
 		/// Parent animation
 		/// </summary>
-        XTransformationContainer _container;
+		XTransformationContainer _container;
 
 		#endregion
 
-        public void Initialize(XTransformationContainer container)
+		public void Initialize(XTransformationContainer container)
 		{
-            _container = container;
+			_container = container;
 		}
 
 		public bool GetHasViewsToAnimate(XTransform animationinfo)
@@ -95,7 +95,11 @@ namespace NControl.XAnimation.iOS
 			CATransaction.DisableActions = true;
 			CATransaction.AnimationTimingFunction = GetTimingFunction(transform.Easing);
 			CATransaction.AnimationDuration = GetTime(duration);
-			CATransaction.CompletionBlock = completed;
+			CATransaction.CompletionBlock = () => {
+
+				SetInternal(transform, false);
+				completed?.Invoke();
+			};
 
 			// Add animations
 			foreach (var view in viewAnimations.Keys)
@@ -103,7 +107,12 @@ namespace NControl.XAnimation.iOS
 					view.Layer.AddAnimation(viewAnimations[view].ElementAt(i), "animinfo-anims-" + i.ToString());
 
 			// Set end values
-			Set(transform);
+			for (var i = 0; i<_container.ElementCount; i++)
+			{
+				var element = _container.GetElement(i);
+				SetPlatformElementFromAnimationInfo(element, transform);
+			}
+
 
 			// Commit transaction
 			CATransaction.Commit();
@@ -111,11 +120,7 @@ namespace NControl.XAnimation.iOS
 
 		public void Set(XTransform animationInfo)
 		{
-			for (var i = 0; i < _container.ElementCount; i++)
-			{
-				var element = _container.GetElement(i);
-				SetElementFromAnimationInfo(element, animationInfo);
-			}
+			SetInternal(animationInfo);
 		}
 
 		public void Set(VisualElement element, XTransform animationInfo)
@@ -124,6 +129,18 @@ namespace NControl.XAnimation.iOS
 		}
 
 		#region Private Members
+
+		void SetInternal(XTransform transform, bool waitIfSlowSet = true)
+		{
+			for (var i = 0; i < _container.ElementCount; i++)
+			{
+				var element = _container.GetElement(i);
+				SetElementFromAnimationInfo(element, transform);
+			}
+
+			if (waitIfSlowSet && XElementContainer.ShowSetTransforms)
+				NSThread.SleepFor(0.5);
+		}
 
 		Dictionary<VisualElement, XTransform> GetChildHierarchyInfoInt(VisualElement element, XTransform animationInfo)
 		{
@@ -178,7 +195,7 @@ namespace NControl.XAnimation.iOS
 
 		float GetTime(long time)
 		{
-			return (float)(time * (XElementContainer.SlowAnimations ? 5 : 1) / 1000.0);
+			return (float)(time * (XElementContainer.SlowAnimations ? 2.5 : 1) / 1000.0);
 		}
 
 		List<CAAnimation> GetAnimationsForElement(VisualElement element, UIView view, XTransform animationInfo)

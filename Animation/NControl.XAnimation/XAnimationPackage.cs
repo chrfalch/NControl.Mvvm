@@ -334,6 +334,7 @@ namespace NControl.XAnimation
 		/// </summary>
 		void DoLog(Func<string> messageCallback)
 		{
+			return;
 #if DEBUG
 			System.Diagnostics.Debug.WriteLine(DateTime.Now.TimeOfDay + " - XAnimation: " + messageCallback());
 #endif
