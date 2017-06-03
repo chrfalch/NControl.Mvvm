@@ -18,21 +18,13 @@ namespace MvvmDemo
 			await ReloadItemsAsync();
 		}
 
-		public ObservableCollectionWithAddRange<FeedItem> FeedItems
-		{
-			get { return GetValue(() => new ObservableCollectionWithAddRange<FeedItem>()); }		
-		}
+		public ObservableCollectionWithAddRange<FeedItem> FeedItems => 
+			GetValue(() => new ObservableCollectionWithAddRange<FeedItem>()); 
 
-		public ICommand SelectItemCommand
-		{
-			get
-			{
-				return GetOrCreateCommand<FeedItem>((feedItem) => {
-					// await MvvmApp.Current.Presenter.ShowViewModelAsync<AboutViewModel>();
-				});
-			}
-		}
-
+		public ICommand SelectItemCommand => GetOrCreateCommand<FeedItem>((feedItem) => {
+			// TODO: Handle click on feed items
+		});
+			
 		public CollectionState CollectionState
 		{
 			get { return GetValue<CollectionState>(); }
@@ -40,15 +32,9 @@ namespace MvvmDemo
 		}
 
 		[DependsOn(nameof(CollectionState))]
-		public ICommand RefreshCommand
-		{
-			get
-			{
-				return GetOrCreateCommandAsync(async _=>
-					await ReloadItemsAsync(), _=> CollectionState != CollectionState.Loading);
-			}
-		}
-
+		public ICommand RefreshCommand => GetOrCreateCommandAsync(async _=>
+			await ReloadItemsAsync(), _=> CollectionState != CollectionState.Loading);
+			
 		async Task ReloadItemsAsync()
 		{
 			CollectionState = CollectionState.Loading;
