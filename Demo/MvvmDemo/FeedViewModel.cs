@@ -1,53 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using NControl.Mvvm;
 
 namespace MvvmDemo
 {
-	public class FeedViewModel: BaseViewModel
+	public class FeedViewModel: BaseItemListViewModel<FeedItem>
 	{
-		public FeedViewModel()
+		public override Task InitializeAsync()
 		{
 			Title = "Feed";
+			return base.InitializeAsync();
 		}
 
-		public override async Task InitializeAsync()
-		{			
-			await base.InitializeAsync();
-			await ReloadItemsAsync();
-		}
-
-		public ObservableCollectionWithAddRange<FeedItem> FeedItems => 
-			GetValue(() => new ObservableCollectionWithAddRange<FeedItem>()); 
-
-		public ICommand SelectItemCommand => GetOrCreateCommand<FeedItem>((feedItem) => {
-			// TODO: Handle click on feed items
-		});
-			
-		public CollectionState CollectionState
+		public override Task<IEnumerable<FeedItem>> LoadItemsAsync()
 		{
-			get { return GetValue<CollectionState>(); }
-			set { SetValue(value); }
-		}
-
-		[DependsOn(nameof(CollectionState))]
-		public ICommand RefreshCommand => GetOrCreateCommandAsync(async _=>
-			await ReloadItemsAsync(), _=> CollectionState != CollectionState.Loading);
-			
-		async Task ReloadItemsAsync()
-		{
-			CollectionState = CollectionState.Loading;
-
-			try
-			{
-				await Task.Delay(150);
-				FeedItems.AddRange(FeedItem.FeedRepository);
-			}
-			finally
-			{
-				CollectionState = CollectionState.Loaded;
-			}
+			return Task.FromResult(FeedItem.FeedRepository);
 		}
 	}
 }
