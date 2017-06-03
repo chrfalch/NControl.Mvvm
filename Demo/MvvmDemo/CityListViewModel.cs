@@ -8,6 +8,12 @@ namespace MvvmDemo
 {
 	public class CityListViewModel: BaseItemListViewModel<FeedItem>
 	{
+		public override Task InitializeAsync()
+		{
+			Title = "Cities";
+			return base.InitializeAsync();
+		}
+
 		public override Task<IEnumerable<FeedItem>> LoadItemsAsync()
 		{
 			return Task.FromResult(FeedItem.FeedRepository);
