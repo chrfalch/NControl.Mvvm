@@ -23,18 +23,12 @@ namespace MvvmDemo
 		}
 
 		public ObservableCollectionWithAddRange<Employee> Employees => GetValue(()=>
-					new ObservableCollectionWithAddRange<Employee> ());			
+					new ObservableCollectionWithAddRange<Employee> ());
 
-		public ICommand SelectEmployeeCommand => GetOrCreateCommandAsync<Employee> (async (employee) => {
-					await MvvmApp.Current.Presenter.ShowViewModelAsync<EmployeeDetailsViewModel>(
-						PresentationMode.Popup, dismissedCallback: (b) =>
-					{
-						System.Diagnostics.Debug.WriteLine("EmployeeDetailsViewModel Closed.");
-					}, parameter: employee);
-				});			
+		public ICommand SelectEmployeeCommand => GetCommand(()=> new PresentPopupCommand<EmployeeDetailsViewModel>(
+			(b) => System.Diagnostics.Debug.WriteLine("EmployeeDetailsViewModel Closed.")));
 
 		public ICommand ShowAboutCommand => GetCommand(()=> new PresentModalCommand<AboutViewModel>());
-
 		public ICommand ShowModalCommand => ShowAboutCommand;
 	}
 }
