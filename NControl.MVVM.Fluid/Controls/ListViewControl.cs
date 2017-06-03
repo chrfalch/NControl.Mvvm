@@ -262,11 +262,6 @@ namespace NControl.Mvvm
 			set { SetValue(StateProperty, value); }
 		}
 
-		/// <summary>
-		/// Returns the underlying list view control
-		/// </summary>
-		public ListViewEx ListView => _listView;
-
 		#endregion
 
 		#region Private Members
