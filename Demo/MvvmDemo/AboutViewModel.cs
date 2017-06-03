@@ -17,21 +17,21 @@ namespace MvvmDemo
 		{
 			await base.InitializeAsync();
 
-			MvvmApp.Current.MessageHub.Subscribe<MyMessage>(this, async message => {
+			//MvvmApp.Current.MessageHub.Subscribe<MyMessage>(this, async message => {
 
-					IsRunningAsyncCommand = true;
+			//		IsRunningAsyncCommand = true;
 
-					for (var i = 0; i< 10; i++)
-					{
-						await Task.Delay(150);
-						NumberValue++;
-					}
+			//		for (var i = 0; i< 10; i++)
+			//		{
+			//			await Task.Delay(150);
+			//			NumberValue++;
+			//		}
 
-					//IsBusy = false;
-					IsRunningAsyncCommand = false;
+			//		//IsBusy = false;
+			//		IsRunningAsyncCommand = false;
 
-					await MvvmApp.Current.Presenter.ShowMessageAsync(Title, message.Message, "OK");
-			});
+			//		await MvvmApp.Current.Presenter.ShowMessageAsync(Title, message.Message, "OK");
+			//});
 		}
 
 		public Command ClickMeCommand
@@ -80,33 +80,16 @@ namespace MvvmDemo
 			set { SetValue(value); }
 		}
 
-		//[OnMessage(typeof(MyMessage))]
-		public AsyncCommand<MyMessage> HandleMyMessage
+		[OnMessage(typeof(MyMessage))]
+		public AsyncCommand<MyMessage> HandleMyMessage => GetCommand(() => new AsyncCommand<MyMessage>(
+			async (MyMessage arg) =>
 		{
-			get
-			{
-				return GetOrCreateCommandAsync(async (MyMessage arg) => {
-					await MvvmApp.Current.Presenter.ShowMessageAsync(Title, arg.Message, "OK");
-				});
-			}
-		}
+			await MvvmApp.Current.Presenter.ShowMessageAsync(Title, arg.Message, "OK");
+		}));
 
-		public ICommand PushNewAboutCommand
-		{
-			get
-			{
-				return GetOrCreateCommandAsync(async _=> 
-				                               await MvvmApp.Current.Presenter.ShowViewModelAsync<FeedViewModel>());
-			}
-		}
-		public override ICommand CloseCommand
-		{
-			get
-			{
-				return GetOrCreateCommandAsync(async (arg) => 
-                   await MvvmApp.Current.Presenter.DismissViewModelAsync(PresentationMode, true));
-			}
-		}
+		public ICommand PushNewAboutCommand => GetCommand(() => new PresentCommand<FeedViewModel>());
+		public override ICommand CloseCommand => GetCommand(() => new DismissCommand(PresentationMode, ()=> true));
+
 	}
 
 	public class MyMessage

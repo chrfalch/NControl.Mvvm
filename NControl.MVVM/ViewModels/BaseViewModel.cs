@@ -217,6 +217,38 @@ namespace NControl.Mvvm
 		}
 
 		/// <summary>
+		/// Creates or returns the 
+		/// </summary>
+		/// <returns>The command.</returns>
+		protected AsyncCommand<T> GetCommand<T>(Func<AsyncCommand<T>> createCommandFunc,
+			[CallerMemberName] string commandName = null) where T : class
+		{
+			if (string.IsNullOrEmpty(commandName))
+			throw new ArgumentException("commandname");
+
+			if (!_asyncCommands.ContainsKey(commandName))
+			_asyncCommands.Add(commandName, createCommandFunc());
+
+			return _asyncCommands[commandName] as AsyncCommand<T>;
+		}
+
+		/// <summary>
+		/// Creates or returns the 
+		/// </summary>
+		/// <returns>The command.</returns>
+		protected Command<T> GetCommand<T>(Func<Command> createCommandFunc,
+			[CallerMemberName] string commandName = null)where T : class
+		{
+			if (string.IsNullOrEmpty(commandName))
+				throw new ArgumentException("commandname");
+
+			if (!_commands.ContainsKey(commandName))
+				_commands.Add(commandName, createCommandFunc());
+
+			return _commands[commandName] as Command<T>;
+		}
+
+		/// <summary>
 		/// Listens for property change.
 		/// </summary>
 		/// <param name="property">Property.</param>

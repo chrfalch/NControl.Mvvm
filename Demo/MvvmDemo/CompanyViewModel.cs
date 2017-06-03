@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NControl.Mvvm;
 using Xamarin.Forms;
 using System.Threading.Tasks;
@@ -56,7 +56,7 @@ namespace MvvmDemo
 			}
 		}
 
-		public ICommand SelectCompanyCommand => GetCommand(() => new PresentDefaultCommand<EmployeeViewModel>());
+		public ICommand SelectCompanyCommand => GetCommand(() => new PresentCommand<EmployeeViewModel>());
 		public ICommand ShowAboutCommand => GetCommand(() => new PresentModalCommand<AboutViewModel>());
 		public ICommand SearchCommand => GetCommand(() => new PresentModalCommand<SearchViewModel>());
 		public ICommand ShowFeedCommand => GetCommand(() => new PresentModalCommand<FeedViewModel>());

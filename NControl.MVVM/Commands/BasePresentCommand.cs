@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 
 namespace NControl.Mvvm
 {
-	public abstract class PresentCommand<TViewModel>: AsyncCommand 
+
+	public abstract class BasePresentCommand<TViewModel>: AsyncCommand 
 		where TViewModel : BaseViewModel
 	{
-		public PresentCommand(PresentationMode presentationMode = PresentationMode.Default,
+		public BasePresentCommand(PresentationMode presentationMode = PresentationMode.Default,
 			Func<object, bool> canExecuteFunc = null, Action<bool> presentedCallback = null) : 
 			base(async (param)=> {
 				// Present viewmodel
@@ -17,17 +18,17 @@ namespace NControl.Mvvm
 		{}
 	}
 
-	public class PresentDefaultCommand<TViewModel> : PresentCommand<TViewModel>
+	public class PresentCommand<TViewModel> : BasePresentCommand<TViewModel>
 		where TViewModel : BaseViewModel
 	{
-		public PresentDefaultCommand(Action<bool> presentedCallback = null,
+		public PresentCommand(Action<bool> presentedCallback = null,
 			Func<object, bool> canExecuteFunc = null) : 
 			base(PresentationMode.Default, canExecuteFunc, presentedCallback)
 		{
 		}	
 	}
 
-	public class PresentModalCommand<TViewModel> : PresentCommand<TViewModel>
+	public class PresentModalCommand<TViewModel> : BasePresentCommand<TViewModel>
 		where TViewModel : BaseViewModel
 	{
 		public PresentModalCommand(Action<bool> presentedCallback = null,
@@ -37,13 +38,28 @@ namespace NControl.Mvvm
 		}	
 	}
 
-	public class PresentPopupCommand<TViewModel> : PresentCommand<TViewModel>
+	public class PresentPopupCommand<TViewModel> : BasePresentCommand<TViewModel>
 		where TViewModel : BaseViewModel
 	{
 		public PresentPopupCommand(Action<bool> presentedCallback = null, 
            Func<object, bool> canExecuteFunc = null) : 
-			base(PresentationMode.Popup, canExecuteFunc, presentedCallback)
+				base(PresentationMode.Popup, canExecuteFunc, presentedCallback)
 		{
 		}	
+	}
+
+	public class DismissCommand : AsyncCommand
+	{
+		public DismissCommand(PresentationMode presentationMode, 
+           Func<bool> resultFunc = null,
+		   Func<object, bool> canExecuteFunc = null) :
+		base(async (param) =>
+		{
+			// Present viewmodel
+			await MvvmApp.Current.Presenter.DismissViewModelAsync(
+				presentationMode, resultFunc == null ? false : resultFunc());
+
+		}, canExecuteFunc)
+		{ }
 	}
 }
