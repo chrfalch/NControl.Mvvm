@@ -25,6 +25,7 @@ namespace MvvmDemo
 			_nameLabel = new Label
 			{
 				TextColor = Color.White,
+				BackgroundColor = Color.Aqua,
 				FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
 			};
 
@@ -32,6 +33,7 @@ namespace MvvmDemo
 			{
 				TextColor = Color.White,
 				FontAttributes = FontAttributes.Bold,
+				BackgroundColor = Color.Aqua,
 				FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
 			};
 

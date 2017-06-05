@@ -217,13 +217,12 @@ namespace NControl.Mvvm
 					if (toRect.Width.Equals(0)) toRect.Width = fromRect.Width;
 					if (toRect.Height.Equals(0)) toRect.Height = fromRect.Height;
 
-					var startRect = new Rectangle(toView.Bounds.X, toView.Bounds.Y, fromRect.Width, fromRect.Height);
-
 					var transformation = new XInterpolationPackage(toView);
 
-					transformation.Set()
-				              .SetRectangle(startRect)
-				              .SetTranslation(fromRect.X - toRect.X, fromRect.Y - toRect.Y);
+					var newViewLocation = GetLocalCoordinates(toView, fromRect);
+					fromRect.X = newViewLocation.X;
+					fromRect.Y = newViewLocation.Y;
+					transformation.Set().SetRectangle(fromRect);
 
 					System.Diagnostics.Debug.WriteLine(toView + " " + fromRect + " => " + toRect);
 
@@ -239,11 +238,16 @@ namespace NControl.Mvvm
 			return transformationList;
 		}
 
-		Rectangle GetScreenCoordinates(VisualElement view)
+		Rectangle GetScreenCoordinates(VisualElement element)
 		{
 			var environmentProvider = Container.Resolve<IEnvironmentProvider>();
-			return environmentProvider.GetLocationOnScreen(view);
+			return environmentProvider.GetLocationOnScreen(element);
+		}
 
+		Rectangle GetLocalCoordinates(VisualElement element, Rectangle rect)
+		{
+			var environmentProvider = Container.Resolve<IEnvironmentProvider>();
+			return environmentProvider.GetLocalLocation(element, rect);
 		}
 		#endregion
 	}

@@ -1,5 +1,8 @@
 ﻿using System;
+using CoreGraphics;
 using Foundation;
+using UIKit;
+using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
 namespace NControl.Mvvm.iOS
@@ -27,15 +30,28 @@ namespace NControl.Mvvm.iOS
 			}
 		}
 
-		public Xamarin.Forms.Rectangle GetLocationOnScreen(Xamarin.Forms.VisualElement element)
+		public Rectangle GetLocationOnScreen(VisualElement element)
 		{
 			var renderer = Platform.GetRenderer(element);
 			if (renderer == null)
-				return Xamarin.Forms.Rectangle.Zero;
+				return Rectangle.Zero;
 
 			var nativeView = renderer.NativeView;
 			var frameOnScreen = nativeView.ConvertRectToView(nativeView.Frame, null);
-			return new Xamarin.Forms.Rectangle(frameOnScreen.X, frameOnScreen.Y, frameOnScreen.Width, frameOnScreen.Height);
+			return new Rectangle(frameOnScreen.X, frameOnScreen.Y, frameOnScreen.Width, frameOnScreen.Height);
+		}
+
+		public Rectangle GetLocalLocation(VisualElement element, Rectangle rect)
+		{
+			var renderer = Platform.GetRenderer(element);
+			if (renderer == null)
+				return Rectangle.Zero;
+
+			var nativeView = renderer.NativeView;
+			var locationForView = UIApplication.SharedApplication.KeyWindow.ConvertPointToView(
+				new CGPoint(rect.X, rect.Y), nativeView);
+
+			return new Rectangle(locationForView.X, locationForView.Y, rect.Width, rect.Height);
 		}
 	}
 }

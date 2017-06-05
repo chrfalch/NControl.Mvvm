@@ -35,6 +35,7 @@ namespace MvvmDemo
 					Children = {
 						new Label {
 							TextColor = Color.Red,							
+						BackgroundColor = Color.Yellow,
 							FontAttributes = FontAttributes.Bold,
 							FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
 						}.BindTo(Label.TextProperty, nameof(ViewModel.City))
@@ -42,6 +43,7 @@ namespace MvvmDemo
 
 						new Label {
 							TextColor = Color.Red,							
+						BackgroundColor = Color.Yellow,
 							FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
 						}.BindTo(Label.TextProperty, nameof(ViewModel.Name))
 					     .SetTransitionIdentifier("name", TransitionTarget.Target),
