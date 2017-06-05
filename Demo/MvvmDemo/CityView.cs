@@ -27,23 +27,21 @@ namespace MvvmDemo
 				.BindTo(Image.SourceProperty, nameof(ViewModel.Image))
 				.SetTransitionIdentifier("image", TransitionTarget.Target), 0, 0)
 
-				.AddChildTo(_bottomBox = new VerticalStackLayoutWithPadding
+				.AddChildTo(_bottomBox = new VerticalStackLayoutWithSmallPadding
 				{
 					BackgroundColor = Color.Black.MultiplyAlpha(0.5),
 					VerticalOptions = LayoutOptions.End,
 					HorizontalOptions = LayoutOptions.FillAndExpand,
 					Children = {
 						new Label {
-							TextColor = Color.Red,
-							
+							TextColor = Color.Red,							
 							FontAttributes = FontAttributes.Bold,
 							FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
 						}.BindTo(Label.TextProperty, nameof(ViewModel.City))
 					     .SetTransitionIdentifier("city", TransitionTarget.Target),
 
 						new Label {
-							TextColor = Color.Red,
-							
+							TextColor = Color.Red,							
 							FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
 						}.BindTo(Label.TextProperty, nameof(ViewModel.Name))
 					     .SetTransitionIdentifier("name", TransitionTarget.Target),

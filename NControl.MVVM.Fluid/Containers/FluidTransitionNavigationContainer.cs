@@ -94,31 +94,31 @@ namespace NControl.Mvvm
 			INavigationContainer toContainer, PresentationMode presentationMode)
 		{
 			// Try to find the thing we're moving away from					
-			var fromTransitionCandidates = GetTransitionCandidates(TransitionTarget.Source);
+			//var fromTransitionCandidates = GetTransitionCandidates(TransitionTarget.Source);
 
-			// Try to find the thing we're moving into
-			var toView = toContainer.GetContentsView();
-			var toTransitionCandidates = GetTransitionCandidates(TransitionTarget.Target);
+			//// Try to find the thing we're moving into
+			//var toView = toContainer.GetContentsView();
+			//var toTransitionCandidates = GetTransitionCandidates(TransitionTarget.Target);
 
-			var transformationList = new List<XInterpolationPackage>();
+			//var transformationList = new List<XInterpolationPackage>();
 
-			// We might have more than one candidate, lets ask the new view if
-			// it prefers a specific one, or just do the default behaviour
-			if (toTransitionCandidates.Any() && fromTransitionCandidates.Any())
-			{
-				transformationList.AddRange(GetTransitionsFromCandidates(
-						toTransitionCandidates, fromTransitionCandidates));
+			//// We might have more than one candidate, lets ask the new view if
+			//// it prefers a specific one, or just do the default behaviour
+			//if (toTransitionCandidates.Any() && fromTransitionCandidates.Any())
+			//{
+			//	transformationList.AddRange(GetTransitionsFromCandidates(
+			//			toTransitionCandidates, fromTransitionCandidates));
 
-				if (transformationList.Any())
-				{
-					toView.Animate("Animate", (d) =>
-					{
-						foreach (var transformation in transformationList)
-							transformation.Interpolate(d);
+			//	if (transformationList.Any())
+			//	{
+			//		toView.Animate("Animate", (d) =>
+			//		{
+			//			foreach (var transformation in transformationList)
+			//				transformation.Interpolate(d);
 
-					}, 1.0, 0.0, length: TransitionDuration, easing: Easing.CubicInOut);
-				}
-			}
+			//		}, 1.0, 0.0, length: TransitionDuration, easing: Easing.CubicInOut);
+			//	}
+			//}
 				
 			var animations = new List<XAnimationPackage>(new XAnimationPackage[]{
 				new XAnimationPackage(_overlay)
@@ -220,8 +220,6 @@ namespace NControl.Mvvm
 					var startRect = new Rectangle(toView.Bounds.X, toView.Bounds.Y, fromRect.Width, fromRect.Height);
 
 					var transformation = new XInterpolationPackage(toView);
-					if (toView is Label)
-						continue;
 
 					transformation.Set()
 				              .SetRectangle(startRect)

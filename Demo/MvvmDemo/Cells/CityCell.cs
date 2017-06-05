@@ -12,12 +12,12 @@ namespace MvvmDemo
 		readonly Image _image;
 
 		protected override void OnTapped()
-		{
-			base.OnTapped();
-
+		{			
 			_nameLabel.SetTransitionIdentifier("name", TransitionTarget.Source);
 			_image.SetTransitionIdentifier("image", TransitionTarget.Source);
 			_cityLabel.SetTransitionIdentifier("city", TransitionTarget.Source);
+
+			base.OnTapped();
 		}
 
 		public CityCell()
