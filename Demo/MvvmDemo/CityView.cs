@@ -23,8 +23,9 @@ namespace MvvmDemo
 					Aspect = Aspect.AspectFill,
 					HorizontalOptions = LayoutOptions.FillAndExpand,
 					VerticalOptions = LayoutOptions.FillAndExpand,
-				}.BindTo(Image.SourceProperty, nameof(ViewModel.Image))
-			 .SetTransitionIdentifier("image"), 0, 0)
+				}
+				.BindTo(Image.SourceProperty, nameof(ViewModel.Image))
+				.SetTransitionIdentifier("image", TransitionTarget.Target), 0, 0)
 
 				.AddChildTo(_bottomBox = new VerticalStackLayoutWithPadding
 				{
@@ -33,19 +34,19 @@ namespace MvvmDemo
 					HorizontalOptions = LayoutOptions.FillAndExpand,
 					Children = {
 						new Label {
-							TextColor = Color.White,
-							HorizontalOptions = LayoutOptions.FillAndExpand,
+							TextColor = Color.Red,
+							
 							FontAttributes = FontAttributes.Bold,
 							FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
 						}.BindTo(Label.TextProperty, nameof(ViewModel.City))
-					     .SetTransitionIdentifier("city"),
+					     .SetTransitionIdentifier("city", TransitionTarget.Target),
 
 						new Label {
-							TextColor = Color.White,
-							HorizontalOptions = LayoutOptions.FillAndExpand,
+							TextColor = Color.Red,
+							
 							FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
 						}.BindTo(Label.TextProperty, nameof(ViewModel.Name))
-					     .SetTransitionIdentifier("name"),
+					     .SetTransitionIdentifier("name", TransitionTarget.Target),
 					}
 			}, 0, 0);
 		}
@@ -55,12 +56,12 @@ namespace MvvmDemo
 		{
 			var list = new List<XAnimationPackage>();
 			list.AddRange(base.DefaultTransitionIn(container, animations));
-			list.Add(new XAnimationPackage(_bottomBox).SetDuration(50)
-		         .Set((transform) => transform.SetOpacity(0))
-		         .Add((transform) => transform
-		              .SetEasing(EasingFunctions.EaseInOut)
-			          .SetOpacity(0)) 
-		         as XAnimationPackage);
+			//list.Add(new XAnimationPackage(_bottomBox).SetDuration(50)
+		 //        .Set((transform) => transform.SetOpacity(0))
+		 //        .Add((transform) => transform
+		 //             .SetEasing(EasingFunctions.EaseInOut)
+			//          .SetOpacity(0)) 
+		 //        as XAnimationPackage);
 			
 			return list;
 		}

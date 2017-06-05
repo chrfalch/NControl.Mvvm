@@ -14,6 +14,8 @@ namespace MvvmDemo
 				MaterialDesignIcon = FontMaterialDesignLabel.MDClose,
 				Command = ViewModel.CloseCommand,
 			});
+
+			TransitionExtensions.BeginTransition();
 		}
 
 		public override Type GetCellType()

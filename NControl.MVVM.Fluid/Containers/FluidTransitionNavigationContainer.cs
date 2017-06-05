@@ -46,14 +46,11 @@ namespace NControl.Mvvm
 			INavigationContainer fromContainer, PresentationMode presentationMode)
 		{
 			// Try to find the thing we're clicking on in the from view
-			var fromView = fromContainer.GetContentsView();
-			var fromTransitionCandidates = new Dictionary<string, List<View>>();
-			GetTransitionCandidates(fromView, fromTransitionCandidates);
+			var fromTransitionCandidates = GetTransitionCandidates(TransitionTarget.Source);
 
 			// Try to find the thing we're clicking on in the to view
 			var toView = GetContentsView();
-			var toTransitionCandidates = new Dictionary<string, List<View>>();
-			GetTransitionCandidates(toView, toTransitionCandidates);
+			var toTransitionCandidates = GetTransitionCandidates(TransitionTarget.Target);
 
 			var transformationList = new List<XInterpolationPackage>();
 
@@ -61,25 +58,29 @@ namespace NControl.Mvvm
 			// it prefers a specific one, or just do the default behaviour
 			if (toTransitionCandidates.Any() && fromTransitionCandidates.Any())
 			{
-				transformationList.AddRange(
-					GetResolvedCandidateTransitionInAnimations(fromTransitionCandidates, 
-					                                           toTransitionCandidates));
+				transformationList.AddRange(GetTransitionsFromCandidates(
+					fromTransitionCandidates, toTransitionCandidates));
+
+				if (transformationList.Any())
+				{
+					toView.Animate("Animate", (d) =>
+					{
+						foreach (var transformation in transformationList)
+							transformation.Interpolate(d);
+
+					}, 0.0, 1.0, length: TransitionDuration, easing: Easing.CubicInOut);
+				}
 			}
 
-			toView.Animate("Animate", (d) =>
-			{
-				foreach (var transformation in transformationList)
-					transformation.Interpolate(d);
-				
-			}, 0.0, 1.0, length:TransitionDuration, easing: Easing.CubicInOut);
-				
-			var animations = new List<XAnimationPackage>(new XAnimationPackage[]{
+			var animations = new List<XAnimationPackage>(
+				new XAnimationPackage[]{
 				new XAnimationPackage(_overlay)
 					.SetDuration(TransitionDuration)
 					.Set((transform) => transform.SetOpacity(0.0))
 					//.Add((transform) => transform.SetOpacity(1.0))
 					as XAnimationPackage
-				});
+				}
+			);
 
 			// Additional animations?
 			if (_container.Content is IXViewAnimatable)
@@ -92,15 +93,12 @@ namespace NControl.Mvvm
 		public override IEnumerable<XAnimationPackage> TransitionOut(
 			INavigationContainer toContainer, PresentationMode presentationMode)
 		{
-			// Try to find the thing we're moving away from
-			var fromView = GetContentsView();
-			var fromTransitionCandidates = new Dictionary<string, List<View>>();
-						GetTransitionCandidates(fromView, fromTransitionCandidates);
+			// Try to find the thing we're moving away from					
+			var fromTransitionCandidates = GetTransitionCandidates(TransitionTarget.Source);
 
 			// Try to find the thing we're moving into
 			var toView = toContainer.GetContentsView();
-			var toTransitionCandidates = new Dictionary<string, List<View>>();
-			GetTransitionCandidates(toView, toTransitionCandidates);
+			var toTransitionCandidates = GetTransitionCandidates(TransitionTarget.Target);
 
 			var transformationList = new List<XInterpolationPackage>();
 
@@ -108,17 +106,19 @@ namespace NControl.Mvvm
 			// it prefers a specific one, or just do the default behaviour
 			if (toTransitionCandidates.Any() && fromTransitionCandidates.Any())
 			{
-				transformationList.AddRange(
-					GetResolvedCandidateTransitionInAnimations(toTransitionCandidates, 
-					                                           fromTransitionCandidates));
-			}
+				transformationList.AddRange(GetTransitionsFromCandidates(
+						toTransitionCandidates, fromTransitionCandidates));
 
-			toView.Animate("Animate", (d) =>
-			{
-				foreach (var transformation in transformationList)
-					transformation.Interpolate(d);
-				
-			}, 1.0, 0.0, length:TransitionDuration, easing: Easing.CubicInOut);
+				if (transformationList.Any())
+				{
+					toView.Animate("Animate", (d) =>
+					{
+						foreach (var transformation in transformationList)
+							transformation.Interpolate(d);
+
+					}, 1.0, 0.0, length: TransitionDuration, easing: Easing.CubicInOut);
+				}
+			}
 				
 			var animations = new List<XAnimationPackage>(new XAnimationPackage[]{
 				new XAnimationPackage(_overlay)
@@ -136,37 +136,55 @@ namespace NControl.Mvvm
 
 		#region Private Members
 
-		void GetTransitionCandidates(View view, Dictionary<string, List<View>> dict)
+		Dictionary<string, List<VisualElement>> GetTransitionCandidates(TransitionTarget target)
 		{
-			if (view is ContentView)
+			var dict = new Dictionary<string, List<VisualElement>>();
+			var transitionIdentifiers = TransitionExtensions.GetAvailableTransactionIdentifiers();
+			foreach (var transitionIdentifier in transitionIdentifiers)
 			{
-				if ((view as ContentView).Content != null)
-					GetTransitionCandidates((view as ContentView).Content, dict);
-			}
-			else if (view is ILayoutController)
-			{
-				foreach (var child in (view as ILayoutController).Children)
-					if (child is View)
-						GetTransitionCandidates(child as View, dict);
-			}
-			else if (view is ListViewEx)
-			{
-				if((view as ListViewEx).SelectedCell is ViewCell)					
-					GetTransitionCandidates(((view as ListViewEx).SelectedCell as ViewCell).View, dict);
+				var tis = TransitionExtensions.GetElementsForIdentifier(transitionIdentifier, target);
+				foreach (var ti in tis)
+				{
+					if (!dict.ContainsKey(transitionIdentifier))
+						dict.Add(transitionIdentifier, new List<VisualElement>());
+
+					dict[transitionIdentifier].Add(ti);
+				}
 			}
 
-			var transitionIdentifier = view.GetTransitionIdentifier();
-			if (!string.IsNullOrEmpty(transitionIdentifier))
-			{
-				if (!dict.ContainsKey(transitionIdentifier))
-					dict.Add(transitionIdentifier, new List<View>());
+			return dict;
 
-				dict[transitionIdentifier].Add(view);
-			}
+			//if (view is ContentView)
+			//{
+			//	if ((view as ContentView).Content != null)
+			//		GetTransitionCandidates((view as ContentView).Content, dict);
+			//}
+			//else if (view is ILayoutController)
+			//{
+			//	foreach (var child in (view as ILayoutController).Children)
+			//		if (child is View)
+			//			GetTransitionCandidates(child as View, dict);
+			//}
+			//else if (view is ListViewEx)
+			//{
+			//	if((view as ListViewEx).SelectedCell is ViewCell)					
+			//		GetTransitionCandidates(((view as ListViewEx).SelectedCell as ViewCell).View, dict);
+			//}
+
+			//var transitionIdentifiers = TransitionExtensions.GetAvailableTransactionIdentifiers();
+			//var transitionIdentifier = view.GetTransitionIdentifier();
+			//if (!string.IsNullOrEmpty(transitionIdentifier))
+			//{
+			//	if (!dict.ContainsKey(transitionIdentifier))
+			//		dict.Add(transitionIdentifier, new List<View>());
+
+			//	dict[transitionIdentifier].Add(view);
+			//}
 		}
 
-		IEnumerable<XInterpolationPackage> GetResolvedCandidateTransitionInAnimations(
-			Dictionary<string, List<View>> fromTransitionCandidates, Dictionary<string, List<View>> toTransitionCandidates)
+		IEnumerable<XInterpolationPackage> GetTransitionsFromCandidates(
+			Dictionary<string, List<VisualElement>> fromTransitionCandidates, 
+			Dictionary<string, List<VisualElement>> toTransitionCandidates)
 		{
 			var transformationList = new List<XInterpolationPackage>();
 
@@ -178,11 +196,18 @@ namespace NControl.Mvvm
 					var fromList = fromTransitionCandidates[toTransitionCandidateKey];
 					var toList = toTransitionCandidates[toTransitionCandidateKey];
 
+					if (toList.Count > 1)
+					{
+						throw new ArgumentException("Target transition candidates should only contain one candiate, " +
+													"now it contains " + toList.Count);
+					}
+
 					// Now we can start to match and mate, lets just take the first one from
 					// both lists, TODO: we can create some logic to let the toView handle
 					// this selection
-					var fromView = fromList.FirstOrDefault();
 					var toView = toList.FirstOrDefault();
+					var fromView = fromList.FirstOrDefault();
+
 					if (fromView == null || toView == null)
 						continue;
 
@@ -193,20 +218,21 @@ namespace NControl.Mvvm
 					if (toRect.Height.Equals(0)) toRect.Height = fromRect.Height;
 
 					var startRect = new Rectangle(toView.Bounds.X, toView.Bounds.Y, fromRect.Width, fromRect.Height);
-					System.Diagnostics.Debug.WriteLine(toView + " " + new Rectangle(fromRect.X - toRect.X, 
-					                                                                fromRect.Y - toRect.Y, 
-					                                                                startRect.Width, startRect.Height)
-					                                   + " => " + toRect);
 
 					var transformation = new XInterpolationPackage(toView);
+					if (toView is Label)
+						continue;
+
 					transformation.Set()
-					              .SetRectangle(startRect)
-					              .SetTranslation(fromRect.X - toRect.X, fromRect.Y - toRect.Y);
-					
+				              .SetRectangle(startRect)
+				              .SetTranslation(fromRect.X - toRect.X, fromRect.Y - toRect.Y);
+
+					System.Diagnostics.Debug.WriteLine(toView + " " + fromRect + " => " + toRect);
+
 					//transformation.Add()
 					//		 .SetEasing(EasingFunctions.EaseInOut)
 					//		 .SetRectangle(toRect)
-					//              .SetTranslation(0, 0);
+ 				 //            .SetTranslation(0, 0);
 
 					transformationList.Add(transformation);
 				}

@@ -96,7 +96,7 @@ namespace NControl.Mvvm
 					new ExtendedButton{
 						BindingContext = this,
 						Command = new Command((obj) => {
-							if (State != CollectionState.Loading &&
+							if (State != CollectionState.Loading &&							    
 								RefreshCommand != null &&
 								RefreshCommand.CanExecute(null))
 							{

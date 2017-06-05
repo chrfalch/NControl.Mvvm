@@ -11,6 +11,15 @@ namespace MvvmDemo
 		readonly StackLayout _contents;
 		readonly Image _image;
 
+		protected override void OnTapped()
+		{
+			base.OnTapped();
+
+			_nameLabel.SetTransitionIdentifier("name", TransitionTarget.Source);
+			_image.SetTransitionIdentifier("image", TransitionTarget.Source);
+			_cityLabel.SetTransitionIdentifier("city", TransitionTarget.Source);
+		}
+
 		public CityCell()
 		{
 			_nameLabel = new Label
@@ -18,7 +27,6 @@ namespace MvvmDemo
 				TextColor = Color.White,
 				FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
 			};
-			_nameLabel.SetTransitionIdentifier("name");
 
 			_cityLabel = new Label
 			{
@@ -26,7 +34,6 @@ namespace MvvmDemo
 				FontAttributes = FontAttributes.Bold,
 				FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
 			};
-			_cityLabel.SetTransitionIdentifier("city");
 
 			_contents = new VerticalStackLayoutWithSmallPadding
 			{
@@ -38,7 +45,6 @@ namespace MvvmDemo
 				HeightRequest = 180,
 				Aspect = Aspect.AspectFill,
 			};
-			_image.SetTransitionIdentifier("image");
 
 			View = new FluidShadowView
 			{

@@ -91,29 +91,25 @@ namespace NControl.XAnimation.iOS
 				}
 			}
 
+			if (!viewAnimations.Values.Any())
+			{
+				completed?.Invoke();
+				return;
+			}
+
 			// Start animation with transaction
 			CATransaction.Begin();
 			CATransaction.DisableActions = true;
 			CATransaction.AnimationTimingFunction = GetTimingFunction(transform.Easing);
 			CATransaction.AnimationDuration = GetTime(duration);
-			CATransaction.CompletionBlock = () => {
-
-
-				completed?.Invoke();
-			};
+			CATransaction.CompletionBlock = completed;
 
 			// Add animations
 			foreach (var view in viewAnimations.Keys)
 				for (var i = 0; i < viewAnimations[view].Count(); i++)
 					view.Layer.AddAnimation(viewAnimations[view].ElementAt(i), "animinfo-anims-" + i.ToString());
 
-			// Set end values
-			//for (var i = 0; i<_container.ElementCount; i++)
-			//{
-			//	var element = _container.GetElement(i);
-			//	SetPlatformElementFromAnimationInfo(element, transform);
-			//}
-            SetInternal(transform, false);
+			SetInternal(transform, false);
 
 			// Commit transaction
 			CATransaction.Commit();
@@ -283,16 +279,20 @@ namespace NControl.XAnimation.iOS
 			toBounds.Size = new CGSize(animationInfo.Rectangle.Width, animationInfo.Rectangle.Height);
 
 			var boundsAnimation = new CABasicAnimation();
-			boundsAnimation.KeyPath = "bounds";
-			boundsAnimation.From = NSValue.FromCGRect(fromBounds);
-			boundsAnimation.To = NSValue.FromCGRect(toBounds);
+			boundsAnimation.KeyPath = "size";
+			boundsAnimation.From = NSValue.FromCGSize(fromBounds.Size);
+			boundsAnimation.To = NSValue.FromCGSize(toBounds.Size);
 
 			animations.Add(boundsAnimation);
 
-			var fromPos = view.Layer.ValueForKey(new NSString("position"));
 			var toPos = new CGPoint(
 				(nfloat)animationInfo.Rectangle.X + (view.Layer.AnchorPoint.X * toBounds.Width),
 				(nfloat)animationInfo.Rectangle.Y + (view.Layer.AnchorPoint.Y * toBounds.Height));
+
+			if (view.Layer.Position.X.Equals(toPos.X) && view.Layer.Position.Y.Equals(toPos.Y))
+				return animations;
+
+			var fromPos = view.Layer.ValueForKey(new NSString("position"));
 
 			var posAnimation = new CABasicAnimation();
 			posAnimation.KeyPath = "position";
@@ -353,7 +353,9 @@ namespace NControl.XAnimation.iOS
 			element.Opacity = animationInfo.Opacity;
 
 			if (animationInfo.AnimateRectangle)
+			{
 				element.Layout(animationInfo.Rectangle);
+			}
 
 			if (animationInfo.AnimateColor)
 				element.BackgroundColor = animationInfo.Color;
