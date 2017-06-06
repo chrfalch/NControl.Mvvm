@@ -285,21 +285,25 @@ namespace NControl.XAnimation.iOS
 
 			animations.Add(boundsAnimation);
 
-			var toPos = new CGPoint(
-				(nfloat)animationInfo.Rectangle.X + (view.Layer.AnchorPoint.X * toBounds.Width),
-				(nfloat)animationInfo.Rectangle.Y + (view.Layer.AnchorPoint.Y * toBounds.Height));
+			if (animationInfo.Rectangle.X != double.MinValue &&
+			   animationInfo.Rectangle.Y != double.MaxValue)
+			{
+				var toPos = new CGPoint(
+					(nfloat)animationInfo.Rectangle.X + (view.Layer.AnchorPoint.X * toBounds.Width),
+					(nfloat)animationInfo.Rectangle.Y + (view.Layer.AnchorPoint.Y * toBounds.Height));
 
-			if (view.Layer.Position.X.Equals(toPos.X) && view.Layer.Position.Y.Equals(toPos.Y))
-				return animations;
+				if (view.Layer.Position.X.Equals(toPos.X) && view.Layer.Position.Y.Equals(toPos.Y))
+					return animations;
 
-			var fromPos = view.Layer.ValueForKey(new NSString("position"));
+				var fromPos = view.Layer.ValueForKey(new NSString("position"));
 
-			var posAnimation = new CABasicAnimation();
-			posAnimation.KeyPath = "position";
-			posAnimation.From = fromPos;
-			posAnimation.To = NSValue.FromCGPoint(toPos);
+				var posAnimation = new CABasicAnimation();
+				posAnimation.KeyPath = "position";
+				posAnimation.From = fromPos;
+				posAnimation.To = NSValue.FromCGPoint(toPos);
 
-			animations.Add(posAnimation);
+				animations.Add(posAnimation);
+			}
 
 			return animations;
 		}
@@ -330,7 +334,10 @@ namespace NControl.XAnimation.iOS
 					(nfloat)animationInfo.Rectangle.Y + (view.Layer.AnchorPoint.Y * toBounds.Height));
 
 				view.Layer.Position = toPos;
-				view.Layer.Bounds = toBounds;
+
+				if(animationInfo.Rectangle.X != double.MinValue &&
+				   animationInfo.Rectangle.Y != double.MinValue)
+					view.Layer.Bounds = toBounds;
 			}
 
 			if (animationInfo.AnimateColor)
@@ -354,7 +361,12 @@ namespace NControl.XAnimation.iOS
 
 			if (animationInfo.AnimateRectangle)
 			{
-				element.Layout(animationInfo.Rectangle);
+				if (animationInfo.Rectangle.X != double.MinValue &&
+				   animationInfo.Rectangle.Y != double.MinValue)
+					element.Layout(animationInfo.Rectangle);
+				else
+					element.Layout(new Xamarin.Forms.Rectangle(
+						element.X, element.Y, animationInfo.Rectangle.Width, animationInfo.Rectangle.Height));
 			}
 
 			if (animationInfo.AnimateColor)
