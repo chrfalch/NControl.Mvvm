@@ -22,16 +22,19 @@ namespace MvvmDemo
 				{
 					Aspect = Aspect.AspectFill,
 					HorizontalOptions = LayoutOptions.FillAndExpand,
-					VerticalOptions = LayoutOptions.FillAndExpand,
+					VerticalOptions = LayoutOptions.FillAndExpand,					
 				}
 				.BindTo(Image.SourceProperty, nameof(ViewModel.Image))
-				.SetTransitionIdentifier("image", TransitionTarget.Target), 0, 0)
+				.SetTransitionIdentifier("image", TransitionTarget.Target)
+				.SetTransitionIdentifier("image-details", TransitionTarget.Source)
+				.AddBehaviorTo(new ClickBehavior(()=> ViewModel.ViewDetailsCommand, ()=> ViewModel.CityModel)), 
+				0, 0)
 
 				.AddChildTo(_bottomBox = new VerticalStackLayoutWithSmallPadding
 				{
-					BackgroundColor = Color.Black.MultiplyAlpha(0.5),
-					VerticalOptions = LayoutOptions.End,
-					HorizontalOptions = LayoutOptions.FillAndExpand,
+					//BackgroundColor = Color.Black.MultiplyAlpha(0.5),
+					//VerticalOptions = LayoutOptions.StartAndExpand,
+					//HorizontalOptions = LayoutOptions.FillAndExpand,
 					Children = {
 						new Label {
 							TextColor = Color.Red,							

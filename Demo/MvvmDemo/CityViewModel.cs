@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Windows.Input;
 using NControl.Mvvm;
+
 namespace MvvmDemo
 {
 	public class CityViewModel: BaseViewModel<FeedItem>
@@ -18,21 +20,14 @@ namespace MvvmDemo
 		}
 
 		[DependsOn(nameof(CityModel))]
-		public string City
-		{
-			get { return CityModel?.City; }
-		}
+		public string City => CityModel?.City;
 
 		[DependsOn(nameof(CityModel))]
-		public string Name
-		{
-			get { return CityModel?.Name; }
-		}
+		public string Name => CityModel?.Name; 
 
 		[DependsOn(nameof(CityModel))]
-		public string Image
-		{
-			get { return CityModel?.Image; }
-		}
+		public string Image => CityModel?.Image; 
+
+		public ICommand ViewDetailsCommand = new PresentCommand<CityDetailsViewModel>();
 	}
 }
