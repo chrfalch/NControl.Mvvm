@@ -16,7 +16,8 @@ namespace NControl.Mvvm
 					presentationMode, presentedCallback, true, param);
 			
 			}, canExecuteFunc) 
-		{}
+		{
+		}
 	}
 
 	public class PresentCommand<TViewModel> : BasePresentCommand<TViewModel>

@@ -77,7 +77,7 @@ namespace NControl.Mvvm
 				new XAnimationPackage(_overlay)
 					.SetDuration(TransitionDuration)
 					.Set((transform) => transform.SetOpacity(0.0))
-					//.Add((transform) => transform.SetOpacity(1.0))
+				//	.Add((transform) => transform.SetOpacity(0.4))
 					as XAnimationPackage
 				}
 			);
@@ -120,11 +120,13 @@ namespace NControl.Mvvm
 			//	}
 			//}
 				
-			var animations = new List<XAnimationPackage>(new XAnimationPackage[]{
-				new XAnimationPackage(_overlay)
-					.SetDuration(TransitionDuration)
-					.Add((transform) => transform.SetOpacity(0.0)) as XAnimationPackage
-				});
+			var animations = new List<XAnimationPackage>(
+				//new XAnimationPackage[]{
+				//	new XAnimationPackage(_overlay)
+				//		.SetDuration(TransitionDuration)
+				//		.Add((transform) => transform.SetOpacity(0.0)) as XAnimationPackage
+				//	}
+			);
 
 			// Additional animations?
 			if (_container.Content is IXViewAnimatable)
@@ -154,32 +156,6 @@ namespace NControl.Mvvm
 
 			return dict;
 
-			//if (view is ContentView)
-			//{
-			//	if ((view as ContentView).Content != null)
-			//		GetTransitionCandidates((view as ContentView).Content, dict);
-			//}
-			//else if (view is ILayoutController)
-			//{
-			//	foreach (var child in (view as ILayoutController).Children)
-			//		if (child is View)
-			//			GetTransitionCandidates(child as View, dict);
-			//}
-			//else if (view is ListViewEx)
-			//{
-			//	if((view as ListViewEx).SelectedCell is ViewCell)					
-			//		GetTransitionCandidates(((view as ListViewEx).SelectedCell as ViewCell).View, dict);
-			//}
-
-			//var transitionIdentifiers = TransitionExtensions.GetAvailableTransactionIdentifiers();
-			//var transitionIdentifier = view.GetTransitionIdentifier();
-			//if (!string.IsNullOrEmpty(transitionIdentifier))
-			//{
-			//	if (!dict.ContainsKey(transitionIdentifier))
-			//		dict.Add(transitionIdentifier, new List<View>());
-
-			//	dict[transitionIdentifier].Add(view);
-			//}
 		}
 
 		IEnumerable<XInterpolationPackage> GetTransitionsFromCandidates(
@@ -216,20 +192,18 @@ namespace NControl.Mvvm
 					var toRect = GetScreenCoordinates(toView);
 					if (toRect.Width.Equals(0)) toRect.Width = fromRect.Width;
 					if (toRect.Height.Equals(0)) toRect.Height = fromRect.Height;
-
+					   
 					var transformation = new XInterpolationPackage(toView);
+					transformation.Set()
+					              .SetRectangle(new Rectangle(double.MinValue, double.MinValue, fromRect.Width, fromRect.Height))
+					              .SetTranslation(fromRect.X, fromRect.Y);
 
-					var newViewLocation = GetLocalCoordinates(toView, fromRect);
-					fromRect.X = newViewLocation.X;
-					fromRect.Y = newViewLocation.Y;
-					transformation.Set().SetRectangle(fromRect);
-
-					System.Diagnostics.Debug.WriteLine(toView + " " + fromRect + " => " + toRect);
+					// System.Diagnostics.Debug.WriteLine(toView + " " + fromRect + " => " + toRect + ", res: " + startRect);
 
 					//transformation.Add()
-					//		 .SetEasing(EasingFunctions.EaseInOut)
-					//		 .SetRectangle(toRect)
- 				 //            .SetTranslation(0, 0);
+					//			  .SetEasing(EasingFunctions.EaseInOut)
+					//              .SetRectangle(new Rectangle(double.MinValue, double.MinValue, toRect.Width, toRect.Height))
+					//              .SetTranslation(0, 0);
 
 					transformationList.Add(transformation);
 				}
@@ -241,7 +215,40 @@ namespace NControl.Mvvm
 		Rectangle GetScreenCoordinates(VisualElement element)
 		{
 			var environmentProvider = Container.Resolve<IEnvironmentProvider>();
-			return environmentProvider.GetLocationOnScreen(element);
+			var native = environmentProvider.GetLocationOnScreen(element);
+			return native;
+
+			//var retVal = element.Bounds;
+			////if (element is View)
+			////{
+			////	retVal.X += (element as View).Margin.Left;
+			////	retVal.Y += (element as View).Margin.Top;
+			////}
+
+			//var parent = element.Parent;
+			//while (parent != null)
+			//{
+			//	if (parent is VisualElement)
+			//	{
+			//		retVal.X += (parent as VisualElement).Bounds.Left;
+			//		retVal.Y += (parent as VisualElement).Bounds.Top;
+			//	}
+
+			//	if (parent is View)
+			//	{
+			//		retVal.X += (parent as View).Margin.Left;
+			//		retVal.Y += (parent as View).Margin.Top;
+			//		if (parent is Layout)
+			//		{ 
+			//			retVal.X += (parent as Layout).Padding.Left;
+			//			retVal.Y += (parent as Layout).Padding.Top;
+			//		}
+			//	}
+				
+			//	parent = parent.Parent;
+			//}
+
+			//return retVal;
 		}
 
 		Rectangle GetLocalCoordinates(VisualElement element, Rectangle rect)

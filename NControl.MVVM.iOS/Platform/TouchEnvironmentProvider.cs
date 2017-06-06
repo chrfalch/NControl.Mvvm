@@ -35,9 +35,9 @@ namespace NControl.Mvvm.iOS
 			var renderer = Platform.GetRenderer(element);
 			if (renderer == null)
 				return Rectangle.Zero;
-
+			
 			var nativeView = renderer.NativeView;
-			var frameOnScreen = nativeView.ConvertRectToView(nativeView.Frame, null);
+			var frameOnScreen = nativeView.ConvertRectToView(nativeView.Bounds, null);
 			return new Rectangle(frameOnScreen.X, frameOnScreen.Y, frameOnScreen.Width, frameOnScreen.Height);
 		}
 
