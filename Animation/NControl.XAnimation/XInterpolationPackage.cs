@@ -225,7 +225,17 @@ namespace NControl.XAnimation
 			element.Opacity = transform.Opacity;
 
 			if (transform.AnimateRectangle)
-				element.Layout(transform.Rectangle);
+			{
+				if (transform.Rectangle.X.Equals(double.MinValue) &&
+				   transform.Rectangle.Y.Equals(double.MinValue))
+				{
+					element.Layout(new Rectangle(element.X, element.Y,
+												 transform.Rectangle.Width,
+												 transform.Rectangle.Height));
+				}
+				else
+					element.Layout(transform.Rectangle);
+			}
 
 			if (transform.AnimateColor)
 				element.BackgroundColor = transform.Color;

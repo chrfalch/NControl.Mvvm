@@ -9,7 +9,7 @@ namespace MvvmDemo
 		public override System.Threading.Tasks.Task InitializeAsync(FeedItem parameter)
 		{
 			CityModel = parameter;
-			Title = string.Empty;
+			Title = parameter.City;
 			return base.InitializeAsync(parameter);
 		}
 
@@ -20,10 +20,10 @@ namespace MvvmDemo
 		}
 
 		[DependsOn(nameof(CityModel))]
-		public string City => CityModel?.City;
+		public string City => CityModel?.City ?? " ";
 
 		[DependsOn(nameof(CityModel))]
-		public string Name => CityModel?.Name; 
+		public string Name => CityModel?.Name ?? " "; 
 
 		[DependsOn(nameof(CityModel))]
 		public string Image => CityModel?.Image; 

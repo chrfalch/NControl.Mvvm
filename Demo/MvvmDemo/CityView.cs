@@ -22,23 +22,24 @@ namespace MvvmDemo
 				{
 					Aspect = Aspect.AspectFill,
 					HorizontalOptions = LayoutOptions.FillAndExpand,
-					VerticalOptions = LayoutOptions.FillAndExpand,					
+					VerticalOptions = LayoutOptions.FillAndExpand,
 				}
 				.BindTo(Image.SourceProperty, nameof(ViewModel.Image))
 				.SetTransitionIdentifier("image", TransitionTarget.Target)
 				.SetTransitionIdentifier("image-details", TransitionTarget.Source)
-				.AddBehaviorTo(new ClickBehavior(()=> ViewModel.ViewDetailsCommand, ()=> ViewModel.CityModel)), 
+				.AddBehaviorTo(new ClickBehavior(() => ViewModel.ViewDetailsCommand, 
+				                                 () => ViewModel.CityModel)),
 				0, 0)
 
 				.AddChildTo(_bottomBox = new VerticalStackLayoutWithSmallPadding
 				{
-					//BackgroundColor = Color.Black.MultiplyAlpha(0.5),
-					//VerticalOptions = LayoutOptions.StartAndExpand,
-					//HorizontalOptions = LayoutOptions.FillAndExpand,
+					BackgroundColor = Color.Black.MultiplyAlpha(0.5),
+					VerticalOptions = LayoutOptions.EndAndExpand,
+					HorizontalOptions = LayoutOptions.FillAndExpand,
 					Children = {
 						new Label {
-							TextColor = Color.Red,							
-						BackgroundColor = Color.Yellow,
+							TextColor = Color.Red,
+							BackgroundColor = Color.Yellow,
 							FontAttributes = FontAttributes.Bold,
 							FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
 						}.BindTo(Label.TextProperty, nameof(ViewModel.City))
@@ -46,10 +47,11 @@ namespace MvvmDemo
 
 						new Label {
 							TextColor = Color.Red,							
-						BackgroundColor = Color.Yellow,
+							BackgroundColor = Color.Yellow,
 							FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
 						}.BindTo(Label.TextProperty, nameof(ViewModel.Name))
-					     .SetTransitionIdentifier("name", TransitionTarget.Target),
+					     .SetTransitionIdentifier("name", TransitionTarget.Target)
+					     .SetTransitionIdentifier("name-details", TransitionTarget.Source),
 					}
 			}, 0, 0);
 		}

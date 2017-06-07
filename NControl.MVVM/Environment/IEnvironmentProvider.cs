@@ -18,7 +18,7 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Gets the location on screen.
 		/// </summary>
-		Rectangle GetLocationOnScreen(VisualElement element);
-		Rectangle GetLocalLocation(VisualElement element, Rectangle rect);
+		Point GetLocationOnScreen(VisualElement element);
+		Point GetLocalLocation(VisualElement element, Point point);
 	}
 }

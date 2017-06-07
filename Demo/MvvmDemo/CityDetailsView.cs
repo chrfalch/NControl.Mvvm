@@ -16,6 +16,9 @@ namespace MvvmDemo
 		{
 			return new VerticalStackLayout
 			{
+				Spacing = 0,
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				VerticalOptions= LayoutOptions.FillAndExpand,
 				Children =
 				{
 					new Image
@@ -25,11 +28,16 @@ namespace MvvmDemo
 					}
 					.BindTo(Image.SourceProperty, nameof(ViewModel.Image))
 					.SetTransitionIdentifier("image-details", TransitionTarget.Target),
-					
-					new Label{
-						Margin = Config.DefaultPadding,
+
+					new ScrollView{
+						VerticalOptions = LayoutOptions.FillAndExpand,
+						BackgroundColor = Config.ViewBackgroundColor,
+						Content = new Label{
+							Margin = Config.DefaultPadding,
+						}
+						.BindTo(Label.TextProperty, nameof(ViewModel.Description))
 					}
-					.BindTo(Label.TextProperty, nameof(ViewModel.Description))
+					.SetTransitionIdentifier("name-details", TransitionTarget.Target)
 				}
 			};
 		}

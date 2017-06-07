@@ -10,6 +10,7 @@ namespace NControl.Mvvm
 	public class FluidTransitionNavigationContainer : FluidNavigationContainer
 	{
 		public const uint TransitionDuration = 1250;
+		IEnvironmentProvider _environmentProvider;
 
 		public FluidTransitionNavigationContainer()
 		{
@@ -189,21 +190,19 @@ namespace NControl.Mvvm
 
 					// Now we can create a transition between these two items
 					var fromRect = GetScreenCoordinates(fromView);
-					var toRect = GetScreenCoordinates(toView);
+					var toRect = toView.Bounds;
+
 					if (toRect.Width.Equals(0)) toRect.Width = fromRect.Width;
 					if (toRect.Height.Equals(0)) toRect.Height = fromRect.Height;
-					   
+
+					var newLoc = GetLocalCoordinates(toView, fromRect);
+
 					var transformation = new XInterpolationPackage(toView);
-					transformation.Set()
-					              .SetRectangle(new Rectangle(double.MinValue, double.MinValue, fromRect.Width, fromRect.Height))
-					              .SetTranslation(fromRect.X, fromRect.Y);
+					transformation.Set().SetRectangle(newLoc);
 
-					// System.Diagnostics.Debug.WriteLine(toView + " " + fromRect + " => " + toRect + ", res: " + startRect);
-
-					//transformation.Add()
-					//			  .SetEasing(EasingFunctions.EaseInOut)
-					//              .SetRectangle(new Rectangle(double.MinValue, double.MinValue, toRect.Width, toRect.Height))
-					//              .SetTranslation(0, 0);
+					transformation.Add()
+								  .SetEasing(EasingFunctions.EaseInOut)
+								  .SetRectangle(toRect);
 
 					transformationList.Add(transformation);
 				}
@@ -214,47 +213,25 @@ namespace NControl.Mvvm
 
 		Rectangle GetScreenCoordinates(VisualElement element)
 		{
-			var environmentProvider = Container.Resolve<IEnvironmentProvider>();
-			var native = environmentProvider.GetLocationOnScreen(element);
-			return native;
-
-			//var retVal = element.Bounds;
-			////if (element is View)
-			////{
-			////	retVal.X += (element as View).Margin.Left;
-			////	retVal.Y += (element as View).Margin.Top;
-			////}
-
-			//var parent = element.Parent;
-			//while (parent != null)
-			//{
-			//	if (parent is VisualElement)
-			//	{
-			//		retVal.X += (parent as VisualElement).Bounds.Left;
-			//		retVal.Y += (parent as VisualElement).Bounds.Top;
-			//	}
-
-			//	if (parent is View)
-			//	{
-			//		retVal.X += (parent as View).Margin.Left;
-			//		retVal.Y += (parent as View).Margin.Top;
-			//		if (parent is Layout)
-			//		{ 
-			//			retVal.X += (parent as Layout).Padding.Left;
-			//			retVal.Y += (parent as Layout).Padding.Top;
-			//		}
-			//	}
-				
-			//	parent = parent.Parent;
-			//}
-
-			//return retVal;
+			var native = EnvironmentProvider.GetLocationOnScreen(element);
+			return new Rectangle(native, element.Bounds.Size);
 		}
 
 		Rectangle GetLocalCoordinates(VisualElement element, Rectangle rect)
 		{
-			var environmentProvider = Container.Resolve<IEnvironmentProvider>();
-			return environmentProvider.GetLocalLocation(element, rect);
+			return new Rectangle(EnvironmentProvider.GetLocalLocation(element, rect.Location),
+			                     rect.Size);
+		}
+
+		IEnvironmentProvider EnvironmentProvider
+		{
+			get
+			{
+				if (_environmentProvider == null)
+					_environmentProvider = Container.Resolve<IEnvironmentProvider>();
+
+				return _environmentProvider;
+			}
 		}
 		#endregion
 	}

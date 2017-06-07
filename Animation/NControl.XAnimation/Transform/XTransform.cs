@@ -185,6 +185,33 @@ namespace NControl.XAnimation
 			return this;
 		}
 
+		/// <summary>
+		/// Sets the size.
+		/// </summary>
+		/// <returns>The size.</returns>
+		/// <param name="size">Size.</param>
+		public XTransform SetSize(Size size)
+		{
+			SetRectangle(new Rectangle(
+				double.MinValue, double.MinValue, size.Width, size.Height));
+			
+			return this;
+		}
+
+		/// <summary>
+		/// Sets the size.
+		/// </summary>
+		/// <returns>The size.</returns>
+		/// <param name="width">Width.</param>
+		/// <param name="height">Height.</param>
+		public XTransform SetSize(double width, double height)
+		{
+			SetRectangle(new Rectangle(
+				double.MinValue, double.MinValue, width, height));
+
+			return this;
+		}
+
 		public XTransform SetColor(Color color)
 		{
 			AnimateColor = true;

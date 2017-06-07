@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -30,28 +31,31 @@ namespace NControl.Mvvm.iOS
 			}
 		}
 
-		public Rectangle GetLocationOnScreen(VisualElement element)
+		public Point GetLocationOnScreen(VisualElement element)
 		{
 			var renderer = Platform.GetRenderer(element);
 			if (renderer == null)
-				return Rectangle.Zero;
+				return Point.Zero;
 			
 			var nativeView = renderer.NativeView;
-			var frameOnScreen = nativeView.ConvertRectToView(nativeView.Bounds, null);
-			return new Rectangle(frameOnScreen.X, frameOnScreen.Y, frameOnScreen.Width, frameOnScreen.Height);
+			var pt = UIApplication.SharedApplication.KeyWindow.ConvertPointFromView(
+				nativeView.Frame.Location, nativeView);
+
+			return new Point(pt.X, pt.Y);
 		}
 
-		public Rectangle GetLocalLocation(VisualElement element, Rectangle rect)
+		public Point GetLocalLocation(VisualElement element, Point point)
 		{
 			var renderer = Platform.GetRenderer(element);
 			if (renderer == null)
-				return Rectangle.Zero;
+				return Point.Zero;
 
 			var nativeView = renderer.NativeView;
-			var locationForView = UIApplication.SharedApplication.KeyWindow.ConvertPointToView(
-				new CGPoint(rect.X, rect.Y), nativeView);
+			var cgpt = new CGPoint(point.X, point.Y);
+			var pt = UIApplication.SharedApplication.KeyWindow.ConvertPointToView(
+				cgpt, nativeView);
 
-			return new Rectangle(locationForView.X, locationForView.Y, rect.Width, rect.Height);
+			return new Point(pt.X, pt.Y);
 		}
 	}
 }
