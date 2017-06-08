@@ -9,8 +9,10 @@ namespace NControl.Mvvm
 {
 	public class FluidTransitionNavigationContainer : FluidNavigationContainer
 	{
-		public const uint TransitionDuration = 1250;
+		public const uint TransitionDuration = 350;
 		IEnvironmentProvider _environmentProvider;
+		readonly List<XInterpolationPackage> _transformationList = 
+			new List<XInterpolationPackage>();
 
 		public FluidTransitionNavigationContainer()
 		{
@@ -46,27 +48,26 @@ namespace NControl.Mvvm
 		public override IEnumerable<XAnimationPackage> TransitionIn(
 			INavigationContainer fromContainer, PresentationMode presentationMode)
 		{
+			_transformationList.Clear();
+
 			// Try to find the thing we're clicking on in the from view
 			var fromTransitionCandidates = GetTransitionCandidates(TransitionTarget.Source);
 
 			// Try to find the thing we're clicking on in the to view
-			var toView = GetContentsView();
 			var toTransitionCandidates = GetTransitionCandidates(TransitionTarget.Target);
-
-			var transformationList = new List<XInterpolationPackage>();
 
 			// We might have more than one candidate, lets ask the new view if
 			// it prefers a specific one, or just do the default behaviour
 			if (toTransitionCandidates.Any() && fromTransitionCandidates.Any())
 			{
-				transformationList.AddRange(GetTransitionsFromCandidates(
+				_transformationList.AddRange(GetTransitionsFromCandidates(
 					fromTransitionCandidates, toTransitionCandidates));
 
-				if (transformationList.Any())
+				if (_transformationList.Any())
 				{
-					toView.Animate("Animate", (d) =>
+					this.Animate("Animate", (d) =>
 					{
-						foreach (var transformation in transformationList)
+						foreach (var transformation in _transformationList)
 							transformation.Interpolate(d);
 
 					}, 0.0, 1.0, length: TransitionDuration, easing: Easing.CubicInOut);
@@ -78,7 +79,7 @@ namespace NControl.Mvvm
 				new XAnimationPackage(_overlay)
 					.SetDuration(TransitionDuration)
 					.Set((transform) => transform.SetOpacity(0.0))
-				//	.Add((transform) => transform.SetOpacity(0.4))
+					.Add((transform) => transform.SetOpacity(0.4))
 					as XAnimationPackage
 				}
 			);
@@ -94,39 +95,22 @@ namespace NControl.Mvvm
 		public override IEnumerable<XAnimationPackage> TransitionOut(
 			INavigationContainer toContainer, PresentationMode presentationMode)
 		{
-			// Try to find the thing we're moving away from					
-			//var fromTransitionCandidates = GetTransitionCandidates(TransitionTarget.Source);
+			if (_transformationList.Any())
+			{
+				this.Animate("Animate", (d) =>
+				{
+					foreach (var transformation in _transformationList)
+						transformation.Interpolate(d);
 
-			//// Try to find the thing we're moving into
-			//var toView = toContainer.GetContentsView();
-			//var toTransitionCandidates = GetTransitionCandidates(TransitionTarget.Target);
-
-			//var transformationList = new List<XInterpolationPackage>();
-
-			//// We might have more than one candidate, lets ask the new view if
-			//// it prefers a specific one, or just do the default behaviour
-			//if (toTransitionCandidates.Any() && fromTransitionCandidates.Any())
-			//{
-			//	transformationList.AddRange(GetTransitionsFromCandidates(
-			//			toTransitionCandidates, fromTransitionCandidates));
-
-			//	if (transformationList.Any())
-			//	{
-			//		toView.Animate("Animate", (d) =>
-			//		{
-			//			foreach (var transformation in transformationList)
-			//				transformation.Interpolate(d);
-
-			//		}, 1.0, 0.0, length: TransitionDuration, easing: Easing.CubicInOut);
-			//	}
-			//}
+				}, 1.0, 0.0, length: TransitionDuration, easing: Easing.CubicInOut);
+			}
 				
 			var animations = new List<XAnimationPackage>(
-				//new XAnimationPackage[]{
-				//	new XAnimationPackage(_overlay)
-				//		.SetDuration(TransitionDuration)
-				//		.Add((transform) => transform.SetOpacity(0.0)) as XAnimationPackage
-				//	}
+				new XAnimationPackage[]{
+					new XAnimationPackage(_overlay)
+						.SetDuration(TransitionDuration)
+						.Add((transform) => transform.SetOpacity(0.0)) as XAnimationPackage
+					}
 			);
 
 			// Additional animations?

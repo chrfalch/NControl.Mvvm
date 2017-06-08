@@ -15,8 +15,6 @@ namespace NControl.Mvvm
 		static List<TransitionInfo> _transitionElements =>
 			MvvmApp.Current.Get(() => new List<TransitionInfo>());
 
-		static int _transitionBlockId = 0;
-
 		#endregion
 
 		#region Public Members
@@ -25,7 +23,7 @@ namespace NControl.Mvvm
 			this VisualElement element, string identifier, TransitionTarget target)
 		{
 			CleanList();
-			AddToList(new TransitionInfo(identifier, element, _transitionBlockId, target));
+			AddToList(new TransitionInfo(identifier, element, target));
 			return element;
 		}
 
@@ -33,7 +31,7 @@ namespace NControl.Mvvm
 			this View element, string identifier, TransitionTarget target)
 		{
 			CleanList();
-			AddToList(new TransitionInfo(identifier, element, _transitionBlockId, target));
+			AddToList(new TransitionInfo(identifier, element, target));
 			return element;
 		}
 
@@ -43,7 +41,7 @@ namespace NControl.Mvvm
 			CleanList();
 
 			return _transitionElements
-				.Where(ti => ti.TransitionBlockId == _transitionBlockId &&
+				.Where(ti => 
 					   ti.TransitionId == identifier &&
 					   ti.Target == target)
 				.Select(ti => ti.GetElement());
@@ -53,15 +51,9 @@ namespace NControl.Mvvm
 		{
 			CleanList();
 
-			return _transitionElements
-				.Where(ti => ti.TransitionBlockId == _transitionBlockId)
+			return _transitionElements				
 				.Select(ti => ti.TransitionId)
 				.Distinct();
-		}
-
-		public static void BeginTransition()
-		{
-			_transitionBlockId++;
 		}
 
 		#endregion
@@ -89,7 +81,6 @@ namespace NControl.Mvvm
 				// remove
 				var itemToRemove = _transitionElements.FirstOrDefault(
 					oti => oti.TransitionId == ti.TransitionId &&
-					oti.TransitionBlockId == _transitionBlockId &&
 					oti.Target == ti.Target);
 
 				_transitionElements.Remove(itemToRemove);
@@ -110,14 +101,12 @@ namespace NControl.Mvvm
 	{
 		public string TransitionId { get; private set; }
 		public WeakReference Element { get; private set; }
-		public int TransitionBlockId { get; private set; }
 		public TransitionTarget Target { get;private set;}
 
 		public TransitionInfo(string transitionId, VisualElement element, 
-		                      int transitionBlockid, TransitionTarget target)
+		                      TransitionTarget target)
 		{
 			TransitionId = transitionId;
-			TransitionBlockId = transitionBlockid;
 			Element = new WeakReference(element);
 			Target = target;
 		}
