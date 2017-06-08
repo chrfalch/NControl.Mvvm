@@ -15,6 +15,7 @@ namespace NControl.Mvvm.iOS
 		public override void RegisterActivityIndicator()
 		{
 			Container.RegisterSingleton<IActivityIndicator, FluidActivityIndicatorView>();
+			Container.Register<IViewHelperProvider, TouchViewHelperProvider>();
 		}
 	}
 }

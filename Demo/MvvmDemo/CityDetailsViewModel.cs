@@ -20,10 +20,10 @@ namespace MvvmDemo
 		}
 
 		[DependsOn(nameof(CityModel))]
-		public string City => CityModel?.City; 
+		public string City => CityModel?.City ?? " "; 
 
 		[DependsOn(nameof(CityModel))]
-		public string Description => CityModel?.Description; 
+		public string Description => CityModel?.Description ?? " "; 
 
 		[DependsOn(nameof(CityModel))]
 		public string Image => CityModel?.Image;

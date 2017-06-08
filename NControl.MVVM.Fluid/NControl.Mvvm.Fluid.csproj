@@ -58,6 +58,8 @@
     <Compile Include="Views\BaseFluidItemListView.cs" />
     <Compile Include="Containers\FluidTransitionNavigationContainer.cs" />
     <Compile Include="Extensions\TransitionExtensions.cs" />
+    <Compile Include="Contracts\IViewHelperProvider.cs" />
+    <Compile Include="Contracts\IXViewTransitionable.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">

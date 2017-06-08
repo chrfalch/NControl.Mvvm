@@ -79,6 +79,7 @@
   <ItemGroup>
     <Folder Include="Resources\" />
     <Folder Include="Renderers\" />
+    <Folder Include="Providers\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FluidTouchPlatform.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Renderers\FluidBlurOverlayRenderer.cs" />
     <Compile Include="Renderers\FluidRoundedCornerViewRenderer.cs" />
     <Compile Include="Renderers\FluidShadowViewRenderer.cs" />
+    <Compile Include="Providers\TouchViewHelperProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

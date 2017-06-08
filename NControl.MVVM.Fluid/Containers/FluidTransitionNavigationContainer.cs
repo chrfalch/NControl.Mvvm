@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,8 +9,8 @@ namespace NControl.Mvvm
 {
 	public class FluidTransitionNavigationContainer : FluidNavigationContainer
 	{
-		public const uint TransitionDuration = 350;
-		IEnvironmentProvider _environmentProvider;
+		public const uint TransitionDuration = 250;
+		IViewHelperProvider _viewHelperProvider;
 		readonly List<XInterpolationPackage> _transformationList = 
 			new List<XInterpolationPackage>();
 
@@ -51,13 +51,12 @@ namespace NControl.Mvvm
 			_transformationList.Clear();
 
 			// Try to find the thing we're clicking on in the from view
-			var fromTransitionCandidates = GetTransitionCandidates(TransitionTarget.Source);
+			var fromTransitionCandidates = GetTransitionCandidates(fromContainer.GetBaseView(), TransitionTarget.Source);
 
 			// Try to find the thing we're clicking on in the to view
-			var toTransitionCandidates = GetTransitionCandidates(TransitionTarget.Target);
+			var toTransitionCandidates = GetTransitionCandidates(GetBaseView(), TransitionTarget.Target);
 
 			// We might have more than one candidate, lets ask the new view if
-			// it prefers a specific one, or just do the default behaviour
 			if (toTransitionCandidates.Any() && fromTransitionCandidates.Any())
 			{
 				_transformationList.AddRange(GetTransitionsFromCandidates(
@@ -70,7 +69,7 @@ namespace NControl.Mvvm
 						foreach (var transformation in _transformationList)
 							transformation.Interpolate(d);
 
-					}, 0.0, 1.0, length: TransitionDuration, easing: Easing.CubicInOut);
+					}, 0.0, 1.0, length: TransitionDuration, easing: Easing.CubicOut);
 				}
 			}
 
@@ -102,7 +101,7 @@ namespace NControl.Mvvm
 					foreach (var transformation in _transformationList)
 						transformation.Interpolate(d);
 
-				}, 1.0, 0.0, length: TransitionDuration, easing: Easing.CubicInOut);
+				}, 1.0, 0.0, length: TransitionDuration, easing: Easing.CubicOut);
 			}
 				
 			var animations = new List<XAnimationPackage>(
@@ -123,7 +122,11 @@ namespace NControl.Mvvm
 
 		#region Private Members
 
-		Dictionary<string, List<VisualElement>> GetTransitionCandidates(TransitionTarget target)
+		/// <summary>
+		/// Returns a list of candidate views transition operations
+		/// </summary>
+		Dictionary<string, List<VisualElement>> GetTransitionCandidates(VisualElement expectedParent, 
+		                                                                TransitionTarget target)
 		{
 			var dict = new Dictionary<string, List<VisualElement>>();
 			var transitionIdentifiers = TransitionExtensions.GetAvailableTransactionIdentifiers();
@@ -132,6 +135,27 @@ namespace NControl.Mvvm
 				var tis = TransitionExtensions.GetElementsForIdentifier(transitionIdentifier, target);
 				foreach (var ti in tis)
 				{
+					// Make sure we have the parent we want
+					var parent = ti.Parent;
+					var correctParent = false;
+					while (parent != null)
+					{
+						if (parent == expectedParent)
+						{
+							correctParent = true;
+							break;
+						}
+
+						if (parent.Parent is Cell)
+							parent = parent.Parent.Parent;
+						else
+							parent = parent.Parent;
+					}
+
+					if (!correctParent || parent == null)
+						continue;
+
+					// Add to result
 					if (!dict.ContainsKey(transitionIdentifier))
 						dict.Add(transitionIdentifier, new List<VisualElement>());
 
@@ -140,10 +164,15 @@ namespace NControl.Mvvm
 			}
 
 			return dict;
-
 		}
 
-		IEnumerable<XInterpolationPackage> GetTransitionsFromCandidates(
+		/// <summary>
+		/// Builds a list of transitions from the list of candidates
+		/// </summary>
+		/// <returns>The transitions from candidates.</returns>
+		/// <param name="fromTransitionCandidates">From transition candidates.</param>
+		/// <param name="toTransitionCandidates">To transition candidates.</param>
+		IEnumerable<XInterpolationPackage> GetTransitionsFromCandidates(			
 			Dictionary<string, List<VisualElement>> fromTransitionCandidates, 
 			Dictionary<string, List<VisualElement>> toTransitionCandidates)
 		{
@@ -156,12 +185,6 @@ namespace NControl.Mvvm
 				{
 					var fromList = fromTransitionCandidates[toTransitionCandidateKey];
 					var toList = toTransitionCandidates[toTransitionCandidateKey];
-
-					if (toList.Count > 1)
-					{
-						throw new ArgumentException("Target transition candidates should only contain one candiate, " +
-													"now it contains " + toList.Count);
-					}
 
 					// Now we can start to match and mate, lets just take the first one from
 					// both lists, TODO: we can create some logic to let the toView handle
@@ -179,14 +202,19 @@ namespace NControl.Mvvm
 					if (toRect.Width.Equals(0)) toRect.Width = fromRect.Width;
 					if (toRect.Height.Equals(0)) toRect.Height = fromRect.Height;
 
-					var newLoc = GetLocalCoordinates(toView, fromRect);
+					fromRect = GetLocalCoordinates(toView, fromRect);
 
 					var transformation = new XInterpolationPackage(toView);
-					transformation.Set().SetRectangle(newLoc);
+					transformation.Set().SetRectangle(fromRect);
 
 					transformation.Add()
 								  .SetEasing(EasingFunctions.EaseInOut)
 								  .SetRectangle(toRect);
+
+					// Let view override
+					if (_container.Content is IXViewTransitionable)
+						transformation = (_container.Content as IXViewTransitionable).OverrideTransition(
+							toTransitionCandidateKey, fromView, toView, fromRect, toRect, transformation);
 
 					transformationList.Add(transformation);
 				}
@@ -195,26 +223,39 @@ namespace NControl.Mvvm
 			return transformationList;
 		}
 
+		/// <summary>
+		/// Returns screen coordinates for a given element
+		/// </summary>
+		/// <returns>The screen coordinates.</returns>
+		/// <param name="element">Element.</param>
 		Rectangle GetScreenCoordinates(VisualElement element)
 		{
-			var native = EnvironmentProvider.GetLocationOnScreen(element);
+			var native = ViewHelperProvider.GetLocationOnScreen(element);
 			return new Rectangle(native, element.Bounds.Size);
 		}
 
+		/// <summary>
+		/// Returns local coordinate conversion 
+		/// </summary>
+		/// <returns>The local coordinates.</returns>
 		Rectangle GetLocalCoordinates(VisualElement element, Rectangle rect)
 		{
-			return new Rectangle(EnvironmentProvider.GetLocalLocation(element, rect.Location),
+			return new Rectangle(ViewHelperProvider.GetLocalLocation(element, rect.Location),
 			                     rect.Size);
 		}
 
-		IEnvironmentProvider EnvironmentProvider
+		/// <summary>
+		/// Returns the environment provider
+		/// </summary>
+		/// <value>The environment provider.</value>
+		IViewHelperProvider ViewHelperProvider
 		{
 			get
 			{
-				if (_environmentProvider == null)
-					_environmentProvider = Container.Resolve<IEnvironmentProvider>();
+				if (_viewHelperProvider == null)
+					_viewHelperProvider = Container.Resolve<IViewHelperProvider>();
 
-				return _environmentProvider;
+				return _viewHelperProvider;
 			}
 		}
 		#endregion

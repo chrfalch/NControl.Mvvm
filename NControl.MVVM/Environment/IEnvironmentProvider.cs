@@ -14,11 +14,5 @@ namespace NControl.Mvvm
 		/// Returns the display density. Use to multiply with sizes etc.
 		/// </summary>
 		float DisplayDensity { get; }
-
-		/// <summary>
-		/// Gets the location on screen.
-		/// </summary>
-		Point GetLocationOnScreen(VisualElement element);
-		Point GetLocalLocation(VisualElement element, Point point);
 	}
 }

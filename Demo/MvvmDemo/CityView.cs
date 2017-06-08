@@ -6,10 +6,8 @@ using Xamarin.Forms;
 
 namespace MvvmDemo
 {
-	public class CityView: BaseFluidContentsView<CityViewModel>, INavigationContainerProvider
+	public class CityView : BaseFluidContentsView<CityViewModel>, INavigationContainerProvider
 	{
-		VerticalStackLayout _bottomBox;
-
 		public INavigationContainer CreateNavigationContainer(PresentationMode mode)
 		{
 			return new FluidTransitionNavigationContainer(true);
@@ -27,62 +25,31 @@ namespace MvvmDemo
 				.BindTo(Image.SourceProperty, nameof(ViewModel.Image))
 				.SetTransitionIdentifier("image", TransitionTarget.Target)
 				.SetTransitionIdentifier("image-details", TransitionTarget.Source)
-				.AddBehaviorTo(new ClickBehavior(() => ViewModel.ViewDetailsCommand, 
-				                                 () => ViewModel.CityModel)),
+				.AddBehaviorTo(new ClickBehavior(() => ViewModel.ViewDetailsCommand,
+												 () => ViewModel.CityModel)),
 				0, 0)
 
-				.AddChildTo(_bottomBox = new VerticalStackLayoutWithSmallPadding
+				.AddChildTo(new VerticalStackLayoutWithSmallPadding
 				{
 					BackgroundColor = Color.Black.MultiplyAlpha(0.5),
 					VerticalOptions = LayoutOptions.EndAndExpand,
 					HorizontalOptions = LayoutOptions.FillAndExpand,
 					Children = {
 						new Label {
-							TextColor = Color.Red,
-							BackgroundColor = Color.Yellow,
+							TextColor = Color.White,
 							FontAttributes = FontAttributes.Bold,
 							FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
 						}.BindTo(Label.TextProperty, nameof(ViewModel.City))
-					     .SetTransitionIdentifier("city", TransitionTarget.Target),
+						 .SetTransitionIdentifier("city", TransitionTarget.Target),
 
 						new Label {
-							TextColor = Color.Red,							
-							BackgroundColor = Color.Yellow,
+							TextColor = Color.White,
 							FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
 						}.BindTo(Label.TextProperty, nameof(ViewModel.Name))
-					     .SetTransitionIdentifier("name", TransitionTarget.Target)
-					     .SetTransitionIdentifier("name-details", TransitionTarget.Source),
+						 .SetTransitionIdentifier("name", TransitionTarget.Target)
+					     .SetTransitionIdentifier("name-details", TransitionTarget.Source)
 					}
-			}, 0, 0);
-		}
-
-		protected override IEnumerable<XAnimationPackage> DefaultTransitionIn(
-			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
-		{
-			var list = new List<XAnimationPackage>();
-			list.AddRange(base.DefaultTransitionIn(container, animations));
-			//list.Add(new XAnimationPackage(_bottomBox).SetDuration(50)
-		 //        .Set((transform) => transform.SetOpacity(0))
-		 //        .Add((transform) => transform
-		 //             .SetEasing(EasingFunctions.EaseInOut)
-			//          .SetOpacity(0)) 
-		 //        as XAnimationPackage);
-			
-			return list;
-		}
-
-		protected override IEnumerable<XAnimationPackage> DefaultTransitionOut(
-			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
-		{
-			var list = new List<XAnimationPackage>();
-			list.AddRange(base.DefaultTransitionOut(container, animations));
-			list.Add(new XAnimationPackage(_bottomBox).SetDuration(50)
-				 .Add((transform) => transform
-					  .SetEasing(EasingFunctions.EaseInOut)
-			          .SetOpacity(0.0))
-				 as XAnimationPackage);
-
-			return list;
+				} as VerticalStackLayout, 0, 0);
 		}
 	}
 }
