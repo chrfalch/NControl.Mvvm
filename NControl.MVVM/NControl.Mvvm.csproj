@@ -85,7 +85,7 @@
     <Compile Include="Presenters\Implementatino\DefaultPresenter.cs" />
     <Compile Include="Presenters\Implementatino\DefaultViewContainer.cs" />
     <Compile Include="Presenters\Implementatino\ModalNavigationPage.cs" />
-    <Compile Include="Commands\BasePresentCommand.cs" />
+    <Compile Include="Commands\BaseNavigateCommand.cs" />
     <Compile Include="Commands\DismissCommand.cs" />
     <Compile Include="Commands\PublishCommand.cs" />
   </ItemGroup>

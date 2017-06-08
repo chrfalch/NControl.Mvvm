@@ -51,11 +51,11 @@ namespace MvvmDemo
 		}, _ => CollectionState != CollectionState.Loading);
 			
 
-		public ICommand SelectCompanyCommand => GetCommand(() => new PresentCommand<EmployeeViewModel>());
-		public ICommand ShowAboutCommand => GetCommand(() => new PresentModalCommand<AboutViewModel>());
-		public ICommand SearchCommand => GetCommand(() => new PresentModalCommand<SearchViewModel>());
-		public ICommand ShowFeedCommand => GetCommand(() => new PresentModalCommand<FeedViewModel>());
-		public ICommand ShowCityListCommand => GetCommand(() => new PresentModalCommand<CityListViewModel>());
+		public ICommand SelectCompanyCommand => GetCommand(() => new NavigateCommand<EmployeeViewModel>());
+		public ICommand ShowAboutCommand => GetCommand(() => new NavigateModalCommand<AboutViewModel>());
+		public ICommand SearchCommand => GetCommand(() => new NavigateModalCommand<SearchViewModel>());
+		public ICommand ShowFeedCommand => GetCommand(() => new NavigateModalCommand<FeedViewModel>());
+		public ICommand ShowCityListCommand => GetCommand(() => new NavigateModalCommand<CityListViewModel>());
 	}
 }
 

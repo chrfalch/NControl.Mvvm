@@ -54,7 +54,7 @@ namespace MvvmDemo
 			await MvvmApp.Current.Presenter.ShowMessageAsync(Title, arg.Message, "OK")
 		);
 
-		public ICommand PushNewAboutCommand => GetCommand(() => new PresentCommand<FeedViewModel>());
+		public ICommand PushNewAboutCommand => GetCommand(() => new NavigateCommand<FeedViewModel>());
 		public override ICommand CloseCommand => GetCommand(() => new DismissCommand(PresentationMode, () => true));
 
 		#endregion

@@ -38,7 +38,7 @@ namespace MvvmDemo
 		}
 
 		public ICommand EmployeSelectedCommand => GetCommand(
-			()=> new PresentPopupCommand<EmployeeDetailsViewModel>(canExecuteFunc:(emp)=> emp != null));
+			()=> new NavigatePopupCommand<EmployeeDetailsViewModel>(canExecuteFunc:(emp)=> emp != null));
 
 		void ReloadItems()
 		{

@@ -15,7 +15,7 @@ namespace MvvmDemo
 		}
 
 		public override ICommand SelectItemCommand => GetCommand(
-			() => new PresentCommand<CityViewModel>());
+			() => new NavigateCommand<CityViewModel>());
 
 		public override Task<IEnumerable<FeedItem>> LoadItemsAsync()
 		{

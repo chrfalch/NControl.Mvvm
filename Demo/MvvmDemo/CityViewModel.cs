@@ -28,6 +28,6 @@ namespace MvvmDemo
 		[DependsOn(nameof(CityModel))]
 		public string Image => CityModel?.Image; 
 
-		public ICommand ViewDetailsCommand = new PresentCommand<CityDetailsViewModel>();
+		public ICommand ViewDetailsCommand = new NavigateCommand<CityDetailsViewModel>();
 	}
 }

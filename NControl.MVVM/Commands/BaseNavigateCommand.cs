@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 namespace NControl.Mvvm
 {
 
-	public abstract class BasePresentCommand<TViewModel>: AsyncCommand 
+	public abstract class BaseNavigateCommand<TViewModel>: AsyncCommand 
 		where TViewModel : BaseViewModel
 	{
-		public BasePresentCommand(PresentationMode presentationMode = PresentationMode.Default,
+		public BaseNavigateCommand(PresentationMode presentationMode = PresentationMode.Default,
 			Func<object, bool> canExecuteFunc = null, Action<bool> presentedCallback = null) : 
 			base(async (param)=> {
 				
@@ -20,30 +20,30 @@ namespace NControl.Mvvm
 		}
 	}
 
-	public class PresentCommand<TViewModel> : BasePresentCommand<TViewModel>
+	public class NavigateCommand<TViewModel> : BaseNavigateCommand<TViewModel>
 		where TViewModel : BaseViewModel
 	{
-		public PresentCommand(Action<bool> presentedCallback = null,
+		public NavigateCommand(Action<bool> presentedCallback = null,
 			Func<object, bool> canExecuteFunc = null) : 
 			base(PresentationMode.Default, canExecuteFunc, presentedCallback)
 		{
 		}	
 	}
 
-	public class PresentModalCommand<TViewModel> : BasePresentCommand<TViewModel>
+	public class NavigateModalCommand<TViewModel> : BaseNavigateCommand<TViewModel>
 		where TViewModel : BaseViewModel
 	{
-		public PresentModalCommand(Action<bool> presentedCallback = null,
+		public NavigateModalCommand(Action<bool> presentedCallback = null,
 			Func<object, bool> canExecuteFunc = null) : 
 			base(PresentationMode.Modal, canExecuteFunc, presentedCallback)
 		{
 		}	
 	}
 
-	public class PresentPopupCommand<TViewModel> : BasePresentCommand<TViewModel>
+	public class NavigatePopupCommand<TViewModel> : BaseNavigateCommand<TViewModel>
 		where TViewModel : BaseViewModel
 	{
-		public PresentPopupCommand(Action<bool> presentedCallback = null, 
+		public NavigatePopupCommand(Action<bool> presentedCallback = null, 
            Func<object, bool> canExecuteFunc = null) : 
 				base(PresentationMode.Popup, canExecuteFunc, presentedCallback)
 		{

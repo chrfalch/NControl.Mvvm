@@ -25,10 +25,10 @@ namespace MvvmDemo
 		public ObservableCollectionWithAddRange<Employee> Employees => GetValue(()=>
 					new ObservableCollectionWithAddRange<Employee> ());
 
-		public ICommand SelectEmployeeCommand => GetCommand(()=> new PresentCommand<EmployeeDetailsViewModel>(
+		public ICommand SelectEmployeeCommand => GetCommand(()=> new NavigateCommand<EmployeeDetailsViewModel>(
 			(b) => System.Diagnostics.Debug.WriteLine("EmployeeDetailsViewModel Closed.")));
 
-		public ICommand ShowAboutCommand => GetCommand(()=> new PresentModalCommand<AboutViewModel>());
+		public ICommand ShowAboutCommand => GetCommand(()=> new NavigateModalCommand<AboutViewModel>());
 		public ICommand ShowModalCommand => ShowAboutCommand;
 	}
 }
