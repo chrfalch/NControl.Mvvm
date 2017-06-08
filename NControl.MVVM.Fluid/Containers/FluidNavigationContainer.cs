@@ -367,15 +367,15 @@ namespace NControl.Mvvm
 
 		void Recognizer_Touched(object sender, GestureRecognizerEventArgs e)
 		{
-			var fromView = NavigationContext.Elements.Last();
-			var index = NavigationContext.Elements.ToList().IndexOf(fromView);
-			var toView = index > 0 ? NavigationContext.Elements.ElementAt(index - 1) : null;
-
-			if (toView == null)
+			var fromView = NavigationContext.Elements.First();
+			if (NavigationContext.Elements.Count == 1)
 			{
 				e.Cancel = true;
 				return;
 			}
+			
+			var toView = NavigationContext.Elements.ElementAt(1);
+
 
 			switch (e.TouchType)
 			{
@@ -389,7 +389,7 @@ namespace NControl.Mvvm
 					}
 
 					_start = e.FirstPoint;
-					_dismissAnimationPackage = CreateTransitionOutAnimation(fromView.Container);
+					_dismissAnimationPackage = CreateTransitionOutAnimation(toView.Container);
 					_pushAnimationPackage = CreateTransitionInAnimation(fromView.Container, false);
 
 					break;
@@ -489,7 +489,7 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Creates the animations for dismissing the current element
 		/// </summary>
-		IEnumerable<XAnimationPackage> CreateTransitionOutAnimation(INavigationContainer toContainer)
+		protected IEnumerable<XAnimationPackage> CreateTransitionOutAnimation(INavigationContainer toContainer)
 		{
 			var animations = new List<XAnimationPackage>();
 
@@ -508,7 +508,7 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Create the animations for pushing a new element
 		/// </summary>
-		IEnumerable<XAnimationPackage> CreateTransitionInAnimation(INavigationContainer fromContainer, 
+		protected IEnumerable<XAnimationPackage> CreateTransitionInAnimation(INavigationContainer fromContainer, 
 			bool includeSet = true)
 		{
 			var animations = new List<XAnimationPackage>();
