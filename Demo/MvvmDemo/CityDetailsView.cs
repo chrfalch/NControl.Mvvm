@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NControl.Mvvm;
 using NControl.XAnimation;
 using Xamarin.Forms;
@@ -13,21 +14,22 @@ namespace MvvmDemo
 			return new FluidTransitionNavigationContainer(true);
 		}
 
-		public XInterpolationPackage OverrideTransition(
+		public IEnumerable<XInterpolationPackage> OverrideTransition(
 			string transitionIdentifier, VisualElement fromElement, VisualElement toElement, 
 			Rectangle fromRect, Rectangle toRectangle, XInterpolationPackage package)
 		{
-			//if (transitionIdentifier == "image-details")
+			var list = new List<XInterpolationPackage>();
+			list.Add(package);
+
+			//if (transitionIdentifier == "name-details")
 			//{
 			//	// Create new package
-			//	return new XInterpolationPackage(toElement)
-			//		.Set((transform) => transform.SetRectangle(new Rectangle(fromRect.X, fromRect.Y, 
-			//		                                                         fromRect.Width, fromRect.Height - 80)))
-			//		.Add((transform) => transform.SetRectangle(toRectangle)) 
-			//		as XInterpolationPackage;
+			//	list.Add(new XInterpolationPackage(fromElement)
+			//         .Add((transform) => transform.SetTranslation(0, fromElement.Height)) 
+			//	         as XInterpolationPackage);
 			//}
 
-			return package;
+			return list;
 		}
 
 		protected override View CreateContents()

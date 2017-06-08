@@ -213,10 +213,11 @@ namespace NControl.Mvvm
 
 					// Let view override
 					if (_container.Content is IXViewTransitionable)
-						transformation = (_container.Content as IXViewTransitionable).OverrideTransition(
-							toTransitionCandidateKey, fromView, toView, fromRect, toRect, transformation);
+						transformationList.AddRange((_container.Content as IXViewTransitionable).OverrideTransition(
+							toTransitionCandidateKey, fromView, toView, fromRect, toRect, transformation));
 
-					transformationList.Add(transformation);
+					else
+						transformationList.Add(transformation);
 				}
 			}
 
