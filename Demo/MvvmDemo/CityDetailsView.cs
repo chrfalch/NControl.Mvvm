@@ -21,13 +21,14 @@ namespace MvvmDemo
 			var list = new List<XInterpolationPackage>();
 			list.Add(package);
 
-			//if (transitionIdentifier == "name-details")
-			//{
-			//	// Create new package
-			//	list.Add(new XInterpolationPackage(fromElement)
-			//         .Add((transform) => transform.SetTranslation(0, fromElement.Height)) 
-			//	         as XInterpolationPackage);
-			//}
+			if (transitionIdentifier == "name-details")
+			{
+				// Create new package
+				//list.Add(new XInterpolationPackage(fromElement.Parent as VisualElement)				         
+				//         .Add((transform) => transform.SetDuration(1).SetTranslation(0, (fromElement.Parent as VisualElement).Height))
+				//         .Add((transform) => transform.SetDuration(99).SetTranslation(0, 0)) 
+				//         as XInterpolationPackage);
+			}
 
 			return list;
 		}

@@ -9,7 +9,7 @@ namespace NControl.Mvvm
 {
 	public class FluidTransitionNavigationContainer : FluidNavigationContainer
 	{
-		public const uint TransitionDuration = 250;
+		public const uint TransitionDuration = 2250;
 		IViewHelperProvider _viewHelperProvider;
 		readonly List<XInterpolationPackage> _transformationList = 
 			new List<XInterpolationPackage>();
