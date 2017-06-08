@@ -16,6 +16,12 @@ namespace NControl.Mvvm.Droid
 				XAnimation.Droid.XAnimation.Init();
 		}
 
+		public override void Initialize()
+		{
+			base.Initialize();
+			Container.Register<IViewHelperProvider, DroidViewHelperProvider>();
+		}
+
 		public override void RegisterActivityIndicator()
 		{
 			using(PerformanceTimer.Current.BeginTimer(this))
