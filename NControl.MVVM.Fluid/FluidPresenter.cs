@@ -192,7 +192,7 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Internal show viewmodel method
 		/// </summary>
-		Task PresentViewAsync(IView view, Action<bool> dismissedCallback, PresentationMode presentationMode, bool animate)
+		async Task PresentViewAsync(IView view, Action<bool> dismissedCallback, PresentationMode presentationMode, bool animate)
 		{
 			var tcs = new TaskCompletionSource<bool>();
 
@@ -210,6 +210,13 @@ namespace NControl.Mvvm
 			// Animate or present regularly?
 			if (animate && navigationElement.Container is IXAnimatable)
 			{
+				if (Device.RuntimePlatform == Device.Android)
+				{
+					navigationElement.Container.GetBaseView().Opacity = 0.0;
+					await Task.Delay(50);				
+					navigationElement.Container.GetBaseView().Opacity = 1.0;
+				}
+
 				var animations = (navigationElement.Container as IXAnimatable).TransitionIn(
 					fromContainer, presentationMode);
 
@@ -237,7 +244,7 @@ namespace NControl.Mvvm
 				tcs.TrySetResult(true);
 			}
 
-			return tcs.Task;
+			await tcs.Task;
 		}
 
 		/// <summary>

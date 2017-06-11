@@ -51,11 +51,12 @@ namespace NControl.Mvvm
 			_transformationList.Clear();
 
 			// Try to find the thing we're clicking on in the from view
-			var fromTransitionCandidates = GetTransitionCandidates(fromContainer.GetBaseView(),
-			                                                       TransitionTarget.Source);
+			var fromTransitionCandidates = GetTransitionCandidates(
+				fromContainer.GetBaseView(), TransitionTarget.Source);
 
 			// Try to find the thing we're clicking on in the to view
-			var toTransitionCandidates = GetTransitionCandidates(GetBaseView(), TransitionTarget.Target);
+			var toTransitionCandidates = GetTransitionCandidates(
+				GetBaseView(), TransitionTarget.Target);
 
 			// We might have more than one candidate, lets ask the new view if
 			if (toTransitionCandidates.Any() && fromTransitionCandidates.Any())
@@ -76,11 +77,17 @@ namespace NControl.Mvvm
 
 			var animations = new List<XAnimationPackage>(
 				new XAnimationPackage[]{
-				new XAnimationPackage(_overlay)
-					.SetDuration(TransitionDuration)
-					.Set((transform) => transform.SetOpacity(0.0))
-					.Add((transform) => transform.SetOpacity(0.4))
-					as XAnimationPackage
+					new XAnimationPackage(_overlay)
+						.SetDuration(TransitionDuration)
+						.Set((transform) => transform.SetOpacity(0.0))
+						.Add((transform) => transform.SetOpacity(0.4))
+						as XAnimationPackage
+					,
+					new XAnimationPackage(_navigationBar)
+						.SetDuration(TransitionDuration)
+						.Set((transform) => transform.SetOpacity(0.0))
+						.Add((transform) => transform.SetOpacity(1.0))
+						as XAnimationPackage
 				}
 			);
 
@@ -109,7 +116,12 @@ namespace NControl.Mvvm
 				new XAnimationPackage[]{
 					new XAnimationPackage(_overlay)
 						.SetDuration(TransitionDuration)
-						.Add((transform) => transform.SetOpacity(0.0)) as XAnimationPackage
+						.Add((transform) => transform.SetOpacity(0.0)) 
+						as XAnimationPackage,
+					new XAnimationPackage(_navigationBar)
+						.SetDuration(TransitionDuration)
+						.Add((transform) => transform.SetOpacity(0.0))						
+						as XAnimationPackage
 					}
 			);
 
@@ -197,25 +209,24 @@ namespace NControl.Mvvm
 						continue;
 
 					// Now we can create a transition between these two items
-					var fromRect = GetScreenCoordinates(fromView);
-					var toRect = toView.Bounds;
+					var sourceRect = GetScreenCoordinates(fromView);
+					var targetRect = toView.Bounds;
 
-					if (toRect.Width.Equals(0)) toRect.Width = fromRect.Width;
-					if (toRect.Height.Equals(0)) toRect.Height = fromRect.Height;
+					if (targetRect.Width.Equals(0)) targetRect.Width = sourceRect.Width;
+					if (targetRect.Height.Equals(0)) targetRect.Height = sourceRect.Height;
 
-					var startRect = GetLocalCoordinates(toView, fromRect);
+					var startRect = GetLocalCoordinates(toView, sourceRect);
 
 					var transformation = new XInterpolationPackage(toView);
 					transformation.Set().SetRectangle(startRect);
 
-					//transformation.Add()
-					//			  .SetEasing(EasingFunctions.EaseInOut)
-					//			  .SetRectangle(toRect);
+					transformation.Add().SetEasing(EasingFunctions.EaseInOut)
+					              .SetRectangle(targetRect);
 
 					// Let view override
 					if (_container.Content is IXViewTransitionable)
 						transformationList.AddRange((_container.Content as IXViewTransitionable).OverrideTransition(
-							toTransitionCandidateKey, fromView, toView, startRect, toRect, transformation));
+							toTransitionCandidateKey, fromView, toView, startRect, targetRect, transformation));
 
 					else
 						transformationList.Add(transformation);

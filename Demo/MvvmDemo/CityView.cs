@@ -30,11 +30,14 @@ namespace MvvmDemo
 				0, 0)
 
 				.AddChildTo(new VerticalStackLayoutWithSmallPadding
-				{
+				{				
 					BackgroundColor = Color.Black.MultiplyAlpha(0.5),
 					VerticalOptions = LayoutOptions.EndAndExpand,
 					HorizontalOptions = LayoutOptions.FillAndExpand,
 					Children = {
+						new BoxView{
+							HeightRequest = 0,
+						}.SetTransitionIdentifier("name-details", TransitionTarget.Source),
 						new Label {
 							TextColor = Color.White,
 							FontAttributes = FontAttributes.Bold,
@@ -47,7 +50,7 @@ namespace MvvmDemo
 							FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
 						}.BindTo(Label.TextProperty, nameof(ViewModel.Name))
 						 .SetTransitionIdentifier("name", TransitionTarget.Target)
-					     .SetTransitionIdentifier("name-details", TransitionTarget.Source)
+					     
 					}
 				}, 0, 0);
 		}
