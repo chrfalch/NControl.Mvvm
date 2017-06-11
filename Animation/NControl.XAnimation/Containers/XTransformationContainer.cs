@@ -13,8 +13,7 @@ namespace NControl.XAnimation
         /// List of animation information
         /// </summary>
         protected readonly List<XTransform> _transforms = new List<XTransform>();
-
-        
+		        
         #endregion
 
         public XTransformationContainer(params VisualElement[] elements) : base(elements)
@@ -108,6 +107,13 @@ namespace NControl.XAnimation
 			_transforms.Add(new XTransform(null, false));
 
 			return this;
+		}
+
+		public int Count => _transforms.Count();
+
+		public XTransform GetTransform(int index)
+		{
+			return _transforms.ElementAt(index);
 		}
 		        
         #endregion

@@ -44,6 +44,8 @@ namespace NControl.XAnimation
 			return this;
 		}
 
+		public bool IsRunning => _runningState;
+
 		#endregion
 
 		#region Public Static Members
@@ -119,6 +121,8 @@ namespace NControl.XAnimation
 			RunAnimation(_transforms.Last(), true, completed);
         }
 
+		public bool HasViewsToAnimate => Provider.GetHasViewsToAnimate();
+
 		#endregion
 
 		#region Protected Members
@@ -161,8 +165,11 @@ namespace NControl.XAnimation
 		{
 			// If no views are live we can just return without calling completed,
 			// user interface is no longer available
-			if (!Provider.GetHasViewsToAnimate(currentTransform))
+			if (!Provider.GetHasViewsToAnimate())
+			{
+				_runningState = false;
 				return;
+			}
 
 			// Save state if no state is found
 			if (!HasInterpolationStart)
@@ -181,7 +188,9 @@ namespace NControl.XAnimation
 
 			// Find calculated duration
 			var calculatedDuration = GetCalculatedDuration(currentTransform, Duration);
-
+			if (!currentTransform.OnlyTransform)
+				System.Diagnostics.Debug.WriteLine(calculatedDuration);
+			
 			if (reverse)
 			{
 				// We are working in reverse - this means the the state we're in is
@@ -333,7 +342,8 @@ namespace NControl.XAnimation
 		/// Log
 		/// </summary>
 		void DoLog(Func<string> messageCallback)
-		{			
+		{
+			return;
 #if DEBUG
 			System.Diagnostics.Debug.WriteLine(
 				DateTime.Now.TimeOfDay + " - XAnimation: " + messageCallback());

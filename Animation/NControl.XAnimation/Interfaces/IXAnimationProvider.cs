@@ -8,7 +8,7 @@ namespace NControl.XAnimation
 	public interface IXAnimationProvider
 	{
         void Initialize(XTransformationContainer transformationContainer);
-		bool GetHasViewsToAnimate(XTransform animationinfo);
+		bool GetHasViewsToAnimate();
 		void Animate(XTransform animationInfo, Action completed, long duration);
 		void Set(XTransform animationInfo);
 		void Set(VisualElement element, XTransform animationInfo);

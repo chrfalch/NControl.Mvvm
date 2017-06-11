@@ -180,8 +180,8 @@ namespace NControl.XAnimation
 		/// <returns>The total animation time.</returns>
 		protected long GetTotalAnimationTime()
 		{
-			return _transforms.Sum((arg) => arg.Duration) +
-				_transforms.Sum((arg) => arg.Delay);
+			return _transforms.Sum((arg) => arg.OnlyTransform ? 0 : arg.Duration) +
+				_transforms.Sum((arg) => arg.OnlyTransform ? 0 : arg.Delay);
 		}
 
 		/// <summary>
@@ -198,6 +198,9 @@ namespace NControl.XAnimation
 
 				foreach (var info in _transforms)
 				{
+					if (info.OnlyTransform)
+						continue;
+					
 					if (timeInMilliseconds >= currentTime &&
 						timeInMilliseconds <= currentTime + info.Duration)
 						return info;
