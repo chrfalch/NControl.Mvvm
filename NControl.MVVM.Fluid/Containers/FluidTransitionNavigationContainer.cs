@@ -51,7 +51,8 @@ namespace NControl.Mvvm
 			_transformationList.Clear();
 
 			// Try to find the thing we're clicking on in the from view
-			var fromTransitionCandidates = GetTransitionCandidates(fromContainer.GetBaseView(), TransitionTarget.Source);
+			var fromTransitionCandidates = GetTransitionCandidates(fromContainer.GetBaseView(),
+			                                                       TransitionTarget.Source);
 
 			// Try to find the thing we're clicking on in the to view
 			var toTransitionCandidates = GetTransitionCandidates(GetBaseView(), TransitionTarget.Target);
@@ -202,19 +203,19 @@ namespace NControl.Mvvm
 					if (toRect.Width.Equals(0)) toRect.Width = fromRect.Width;
 					if (toRect.Height.Equals(0)) toRect.Height = fromRect.Height;
 
-					fromRect = GetLocalCoordinates(toView, fromRect);
+					var startRect = GetLocalCoordinates(toView, fromRect);
 
 					var transformation = new XInterpolationPackage(toView);
-					transformation.Set().SetRectangle(fromRect);
+					transformation.Set().SetRectangle(startRect);
 
-					transformation.Add()
-								  .SetEasing(EasingFunctions.EaseInOut)
-								  .SetRectangle(toRect);
+					//transformation.Add()
+					//			  .SetEasing(EasingFunctions.EaseInOut)
+					//			  .SetRectangle(toRect);
 
 					// Let view override
 					if (_container.Content is IXViewTransitionable)
 						transformationList.AddRange((_container.Content as IXViewTransitionable).OverrideTransition(
-							toTransitionCandidateKey, fromView, toView, fromRect, toRect, transformation));
+							toTransitionCandidateKey, fromView, toView, startRect, toRect, transformation));
 
 					else
 						transformationList.Add(transformation);

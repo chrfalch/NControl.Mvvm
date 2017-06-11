@@ -35,7 +35,7 @@ namespace MvvmDemo
 
 		protected override View CreateContents()
 		{
-			return new VerticalStackLayout
+			return new Grid().AddChildTo(new VerticalStackLayout
 			{
 				Spacing = 0,
 				HorizontalOptions = LayoutOptions.FillAndExpand,
@@ -52,15 +52,32 @@ namespace MvvmDemo
 
 					new ScrollView{
 						VerticalOptions = LayoutOptions.FillAndExpand,
+						HorizontalOptions = LayoutOptions.FillAndExpand,
 						BackgroundColor = Config.ViewBackgroundColor,
 						Content = new Label{
 							Margin = Config.DefaultPadding * 2,
 						}
 						.BindTo(Label.TextProperty, nameof(ViewModel.Description))
-					}
-					.SetTransitionIdentifier("name-details", TransitionTarget.Target)
+					}.SetTransitionIdentifier("name-details", TransitionTarget.Target),
 				}
-			};
+			}, 0, 0)
+             .AddChildTo(new VerticalStackLayoutWithSmallPadding{
+				 BackgroundColor = Color.Black.MultiplyAlpha(0.5),
+				 VerticalOptions = LayoutOptions.End,
+				 HorizontalOptions = LayoutOptions.FillAndExpand,
+				 Children = {
+					new Label {
+						TextColor = Color.White,
+						FontAttributes = FontAttributes.Bold,
+						FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
+					}.BindTo(Label.TextProperty, nameof(ViewModel.City)),
+
+					new Label {
+						TextColor = Color.White,
+						FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label)),
+					}.BindTo(Label.TextProperty, nameof(ViewModel.Name))
+				}
+			},0,0);
 		}
 	}
 }

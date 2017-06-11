@@ -11,9 +11,19 @@ namespace NControl.Mvvm
 		#region Abstract Members
 
 		/// <summary>
-		/// Implement this method to return the type of cell you want to use
+		/// Gets the data template.
 		/// </summary>
-		public abstract Type GetCellType();
+		/// <returns>The data template.</returns>
+		public abstract DataTemplate GetDataTemplate();
+
+		/// <summary>
+		/// Gets the height of the row.
+		/// </summary>
+		/// <returns>The row height.</returns>
+		public virtual int GetRowHeight()
+		{
+			return -1;
+		}
 
 		#endregion
 
@@ -23,12 +33,12 @@ namespace NControl.Mvvm
 		{
 			return new ListViewControl
 			{
-				ItemsSource = ViewModel.Items,
 				IsPullToRefreshEnabled = true,
-				RowHeight = 220,
-				ItemSelectedCommand = ViewModel.SelectItemCommand,
-				ItemTemplate = new DataTemplate(GetCellType()),
+				ItemTemplate = GetDataTemplate(),
+				RowHeight = GetRowHeight(),
 			}
+				.BindTo(ListViewControl.ItemsSourceProperty, nameof(ViewModel.Items))
+				.BindTo(ListViewControl.ItemSelectedCommandProperty, nameof(ViewModel.SelectItemCommand))
 				.BindTo(ListViewControl.RefreshCommandProperty, nameof(ViewModel.RefreshCommand))
 				.BindTo(ListViewControl.StateProperty, nameof(ViewModel.CollectionState));
 		}

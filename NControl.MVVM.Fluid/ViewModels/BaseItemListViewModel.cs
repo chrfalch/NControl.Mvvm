@@ -91,9 +91,10 @@ namespace NControl.Mvvm
 
 			try
 			{
+				await Task.Delay(275);
 				Items.Clear();
-
 				Items.AddRange(await LoadItemsAsync());
+				await Task.Delay(175);
 			}
 			finally
 			{

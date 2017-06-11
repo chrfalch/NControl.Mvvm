@@ -20,8 +20,8 @@ namespace NControl.Mvvm.Droid
 			rootView.GetLocationOnScreen(fromCoord);
 			nativeView.GetLocationOnScreen(toCoord);
 
-			var toPoint = new Point(Forms.Context.FromPixels(fromCoord[0] - toCoord[0] + point.X),
-			                        Forms.Context.FromPixels(fromCoord[1] - toCoord[1] + point.Y));
+			var toPoint = new Point(Forms.Context.FromPixels(fromCoord[0] - toCoord[0]) + point.X,
+			                        Forms.Context.FromPixels(fromCoord[1] - toCoord[1]) + point.Y);
 
 			return toPoint;
 		}

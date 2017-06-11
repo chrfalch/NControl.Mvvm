@@ -16,9 +16,9 @@ namespace MvvmDemo
 			});
 		}
 
-		public override Type GetCellType()
+		public override DataTemplate GetDataTemplate()
 		{
-			return typeof(FeedCell);
+			return new DataTemplate(typeof(FeedCell));
 		}
 	}
 }

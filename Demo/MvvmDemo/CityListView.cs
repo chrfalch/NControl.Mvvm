@@ -16,9 +16,14 @@ namespace MvvmDemo
 			});
 		}
 
-		public override Type GetCellType()
+		public override DataTemplate GetDataTemplate()
 		{
-			return typeof(CityCell);
+			return new DataTemplate(typeof(CityCell));
+		}
+
+		public override int GetRowHeight()
+		{
+			return 200;
 		}
 	}
 }

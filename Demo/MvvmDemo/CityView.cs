@@ -49,7 +49,7 @@ namespace MvvmDemo
 						 .SetTransitionIdentifier("name", TransitionTarget.Target)
 					     .SetTransitionIdentifier("name-details", TransitionTarget.Source)
 					}
-				} as VerticalStackLayout, 0, 0);
+				}, 0, 0);
 		}
 	}
 }

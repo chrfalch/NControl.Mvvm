@@ -3,10 +3,11 @@ using NControl.Mvvm;
 using Xamarin.Forms;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Collections.Generic;
 
 namespace MvvmDemo
 {
-	public class CompanyViewModel : BaseViewModel
+	public class CompanyViewModel : BaseItemListViewModel<Company>
 	{
 		public CompanyViewModel()
 		{
@@ -14,44 +15,21 @@ namespace MvvmDemo
 
 		}
 
-		public override async Task InitializeAsync()
-		{
-			await base.InitializeAsync();
+		public override Task<IEnumerable<Company>> LoadItemsAsync()
+		{			
+			return Task.FromResult(Company.CompanyRepository);
+		}
+
+		public override ICommand SelectItemCommand => GetCommand(() => new NavigateCommand<EmployeeViewModel>());
+
+		public ICommand RefreshEmptyCommand => GetOrCreateCommandAsync(async (arg) => {
 
 			CollectionState = CollectionState.Loading;
-			await Task.Delay(1550);
-			Companies.AddRange(Company.CompanyRepository);
+			Items.Clear();
+			await Task.Delay(100);
 			CollectionState = CollectionState.Loaded;
-		}
+		});
 
-		public ObservableCollectionWithAddRange<Company> Companies =>
-			GetValue(() => new ObservableCollectionWithAddRange<Company>());
-
-		public CollectionState CollectionState
-		{
-			get { return GetValue<CollectionState>(); }
-			set { SetValue(value); }
-		}
-
-		[DependsOn(nameof(CollectionState))]
-		public ICommand RefreshCommand => GetOrCreateCommandAsync(async _ =>
-		{
-			CollectionState = CollectionState.Loading;
-
-			try
-			{
-				await Task.Delay(1500);
-				Companies.Clear();
-			}
-			finally
-			{
-				CollectionState = CollectionState.Loaded;
-			}
-
-		}, _ => CollectionState != CollectionState.Loading);
-			
-
-		public ICommand SelectCompanyCommand => GetCommand(() => new NavigateCommand<EmployeeViewModel>());
 		public ICommand ShowAboutCommand => GetCommand(() => new NavigateModalCommand<AboutViewModel>());
 		public ICommand SearchCommand => GetCommand(() => new NavigateModalCommand<SearchViewModel>());
 		public ICommand ShowFeedCommand => GetCommand(() => new NavigateModalCommand<FeedViewModel>());

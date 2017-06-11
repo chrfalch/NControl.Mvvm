@@ -52,13 +52,13 @@ namespace NControl.Mvvm
 					ctrl.IsVisible = true;
 					var animation = new XAnimationPackage(ctrl);
 					animation.Add().SetOpacity(1.0);
-					animation.Animate();
+					animation.SetDuration(50).Animate();
 				}
 				else
 				{
 					var animation = new XAnimationPackage(ctrl);
-					animation.Add().SetOpacity(1.0);
-					animation.Animate(() => ctrl.IsVisible = false);
+					animation.Add().SetOpacity(0.0);
+					animation.SetDuration(50).Animate(() => ctrl.IsVisible = false);
 				}
 			});
 
