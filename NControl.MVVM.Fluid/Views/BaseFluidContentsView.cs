@@ -67,8 +67,7 @@ namespace NControl.Mvvm
 			// Bind title
 			this.SetBinding(Page.TitleProperty, NameOf(vm => vm.Title));
 
-			// Loading/Progress overlay
-
+			// Contents
 			var contents = CreateContents();
 			_layout.Children.Add(contents, () => _layout.Bounds);
 
@@ -81,17 +80,20 @@ namespace NControl.Mvvm
 			// Listen for changes to busy
 			ListenForPropertyChange(mn => mn.IsBusy, () =>
 			{
-				MvvmApp.Current.ActivityIndicator.UpdateProgress(ViewModel.IsBusy, ViewModel.IsBusyText, ViewModel.IsBusySubTitle);
+				MvvmApp.Current.ActivityIndicator.UpdateProgress(
+					ViewModel.IsBusy, ViewModel.IsBusyText, ViewModel.IsBusySubTitle);
 			});
 
 			ListenForPropertyChange(mn => mn.IsBusyText, () =>
 			{
-				MvvmApp.Current.ActivityIndicator.UpdateProgress(ViewModel.IsBusy, ViewModel.IsBusyText, ViewModel.IsBusySubTitle);
+				MvvmApp.Current.ActivityIndicator.UpdateProgress(
+					ViewModel.IsBusy, ViewModel.IsBusyText, ViewModel.IsBusySubTitle);
 			});
 
 			ListenForPropertyChange(mn => mn.IsBusySubTitle, () =>
 			{
-				MvvmApp.Current.ActivityIndicator.UpdateProgress(ViewModel.IsBusy, ViewModel.IsBusyText, ViewModel.IsBusySubTitle);
+				MvvmApp.Current.ActivityIndicator.UpdateProgress(
+					ViewModel.IsBusy, ViewModel.IsBusyText, ViewModel.IsBusySubTitle);
 			});
 		}
 

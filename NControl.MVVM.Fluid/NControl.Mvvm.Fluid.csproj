@@ -60,6 +60,7 @@
     <Compile Include="Extensions\TransitionExtensions.cs" />
     <Compile Include="Contracts\IViewHelperProvider.cs" />
     <Compile Include="Contracts\IXViewTransitionable.cs" />
+    <Compile Include="Controls\SpinningCircleControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NControl.MVVM\NControl.Mvvm.csproj">

@@ -173,31 +173,31 @@ namespace NControl.Mvvm
 		/// Returns the presenter.
 		/// </summary>
 		/// <value>The presenter.</value>
-		public IPresenter Presenter { get { return Get(() => Container.Resolve<IPresenter>()); } }
+		public IPresenter Presenter => Get(() => Container.Resolve<IPresenter>()); 
 
 		/// <summary>
 		/// Returns the presenter.
 		/// </summary>
 		/// <value>The presenter.</value>
-		public IViewContainer ViewContainer { get { return Get(() => Container.Resolve<IViewContainer>()); } }
+		public IViewContainer ViewContainer => Get(() => Container.Resolve<IViewContainer>());
 
 		/// <summary>
 		/// Gets the activity indicator.
 		/// </summary>
 		/// <value>The view container.</value>
-		public IActivityIndicator ActivityIndicator { get { return Get(() => Container.Resolve<IActivityIndicator>()); } }
+		public IActivityIndicator ActivityIndicator => Get(() => Container.Resolve<IActivityIndicator>());
 
 		/// <summary>
 		/// Gets the messaging service.
 		/// </summary>
 		/// <value>The messaging service.</value>
-		public IMessageHub MessageHub { get { return Get(() => Container.Resolve<IMessageHub>()); } }
+		public IMessageHub MessageHub => Get(() => Container.Resolve<IMessageHub>()); 
 
 		/// <summary>
 		/// Returns the environment information
 		/// </summary>
 		/// <value>The environment.</value>
-		public IEnvironmentProvider Environment { get { return Get(() => Container.Resolve<IEnvironmentProvider>()); } }
+		public IEnvironmentProvider Environment => Get(() => Container.Resolve<IEnvironmentProvider>()); 
 
 		#endregion
 
