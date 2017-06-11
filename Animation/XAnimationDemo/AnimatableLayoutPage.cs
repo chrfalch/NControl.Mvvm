@@ -24,40 +24,42 @@ namespace XAnimationDemo
 
 			layout.SetBinding(XAnimatableLayout.InterpolationProperty, nameof(slider.Value));
 
-			var box1 = new ContentView { BackgroundColor = Color.Gainsboro, Content = 
-				new BoxView { BackgroundColor = Color.Red, Margin=10 } };
-			
-			var easing = new EasingFunctionBezier(.36, .83, .49, 1.03);
+            layout.Children.Add(new ContentView
+			{
+				BackgroundColor = Color.Gainsboro,
+				Content =
+				new BoxView { BackgroundColor = Color.Red, Margin = 10 }
+				
+			}, (transformPackage, initialTransform, theLayout) =>
+            {
+				initialTransform.SetRectangle(0, 0, 60, 40);
+				transformPackage.Add().SetRectangle(0, 0, theLayout.Width, 150);
+            });
 
-            layout.Children.Add(box1, (animation, l) => 
-                animation.Frame(0, 0, 60, 40)
-					.Set()      
-					.Duration(500)
-					.Frame(0, 0, l.Width, 150));
+			layout.Children.Add(new ContentView
+			{
+				BackgroundColor = Color.Silver,
+				Content =
+					new Label
+					{
+						Text = "Hello world!",
+						LineBreakMode = LineBreakMode.MiddleTruncation,
+						BackgroundColor = Color.Tan,
+					}
 
-			var box2 = new ContentView { BackgroundColor = Color.Silver, 
-				Content = 
-					new Label { 
-					Text = "Hello world!", 
-					LineBreakMode = LineBreakMode.MiddleTruncation,
-					BackgroundColor = Color.Tan,
-				} 
-			};
+			}, (transformPackage, initialTransform, theLayout) =>
+            {
+				initialTransform.SetRectangle(70, 0, theLayout.Width - 70, 20);
+				transformPackage.Add().SetRectangle(0, 160, theLayout.Width, 60);
+            });
 
-			layout.Children.Add(box2, (animation, l) =>				  
-	                    animation.Frame(70, 0, l.Width-70, 20)
-	                    .Set()
-	                    .Duration(500)
-	                    .Frame(0, 160, l.Width, 60));
-
-			var box3 = new BoxView { BackgroundColor = Color.Silver };
-
-			layout.Children.Add(box3, (animation, l) =>
-				animation
-						.Frame(70, 30, l.Width-70, 10)
-	                    .Set()
-	                    .Frame(0, 210, l.Width, 0)
-	                    .Duration(500));                                		
+			layout.Children.Add(
+				new BoxView { BackgroundColor = Color.Silver }, 
+				(transformPackage, initialTransform, theLayout) =>
+            {
+				initialTransform.SetRectangle(70, 30, theLayout.Width - 70, 10);
+				transformPackage.Add().SetRectangle(0, 210, theLayout.Width, 0);
+            });
 
 			Content = new StackLayout
 			{
@@ -72,16 +74,12 @@ namespace XAnimationDemo
 						Children = {
 							new Button{
 								Text = "Animate",
-								Command = new Command((obj) => {
-                                    layout.Animate();
-								}),														
+								Command = new Command(_=> layout.Animate()),
 							},
 							new BoxView{WidthRequest = 50},
 							new Button{
 								Text = "Reverse",
-								Command = new Command((obj) => {
-                                    layout.Reverse();
-								}),
+								Command = new Command(_=> layout.Reverse()),
 							}
 						}
 					},

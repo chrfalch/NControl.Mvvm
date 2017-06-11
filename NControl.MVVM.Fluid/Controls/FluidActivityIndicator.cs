@@ -50,18 +50,15 @@ namespace NControl.Mvvm
 				if ((bool)newValue == true)
 				{
 					ctrl.IsVisible = true;
-
-					new XAnimationPackage(ctrl)
-						.Opacity(1.0)
-						.Then()
-						.Run();
+					var animation = new XAnimationPackage(ctrl);
+					animation.Add().SetOpacity(1.0);
+					animation.SetDuration(50).Animate();
 				}
 				else
 				{
-					new XAnimationPackage(ctrl)
-						.Opacity(0.0)
-						.Then()
-						.Run(() => ctrl.IsVisible = false);
+					var animation = new XAnimationPackage(ctrl);
+					animation.Add().SetOpacity(0.0);
+					animation.SetDuration(50).Animate(() => ctrl.IsVisible = false);
 				}
 			});
 
@@ -114,14 +111,12 @@ namespace NControl.Mvvm
 				var resetAngle = IsCounterClockWise ? -1 * Angle : Angle;
 
 				// Animate running
-				new XAnimationPackage(this)
-					.Rotate(firstAngle)
-					.Set()
-					.Duration(DurationMilliseconds)
-					.Easing(EasingFunction.Linear)
-					.Rotate(resetAngle)
-					.Then()
-					.Run(animationAction);				
+				var animation = new XAnimationPackage(this)
+					.SetDuration(DurationMilliseconds);
+				
+				animation.Add((transform) => transform.SetRotation(firstAngle));
+				animation.Set((transform) => transform.SetRotation(resetAngle));
+				animation.Animate(animationAction);
 			};
 
 			animationAction();

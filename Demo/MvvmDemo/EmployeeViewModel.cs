@@ -22,47 +22,14 @@ namespace MvvmDemo
 			Employees.AddRange (Employee.EmployeeRepository.Where(e => e.CompanyId == parameter.Id));
 		}
 
-		public ObservableCollectionWithAddRange<Employee> Employees {
-			get{
-				return GetValue(()=>
+		public ObservableCollectionWithAddRange<Employee> Employees => GetValue(()=>
 					new ObservableCollectionWithAddRange<Employee> ());
-			}
-		}
 
-		public ICommand SelectEmployeeCommand
-		{
-			get {
-				return GetOrCreateCommandAsync<Employee> (async (employee) => {
-					await MvvmApp.Current.Presenter.ShowViewModelAsync<EmployeeDetailsViewModel>(
-						PresentationMode.Popup, dismissedCallback: (b) =>
-					{
-						System.Diagnostics.Debug.WriteLine("EmployeeDetailsViewModel Closed.");
-					}, parameter: employee);
-				});
-			}
-		}
+		public ICommand SelectEmployeeCommand => GetCommand(()=> new NavigateCommand<EmployeeDetailsViewModel>(
+			(b) => System.Diagnostics.Debug.WriteLine("EmployeeDetailsViewModel Closed.")));
 
-		public ICommand ShowAboutCommand
-		{
-			get
-			{
-				return GetOrCreateCommandAsync(async _ =>
-				{
-
-					await MvvmApp.Current.Presenter.ShowViewModelAsync<AboutViewModel>(PresentationMode.Modal);
-
-				});
-			}
-		}
-
-		public ICommand ShowModalCommand
-		{
-			get {
-				return GetOrCreateCommandAsync (async _=> {
-					await MvvmApp.Current.Presenter.ShowViewModelAsync<AboutViewModel>(PresentationMode.Modal);
-				});
-			}
-		}
+		public ICommand ShowAboutCommand => GetCommand(()=> new NavigateModalCommand<AboutViewModel>());
+		public ICommand ShowModalCommand => ShowAboutCommand;
 	}
 }
 

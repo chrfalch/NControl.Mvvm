@@ -11,7 +11,13 @@ namespace NControl.Mvvm.iOS
 		{
 			XAnimation.iOS.XAnimation.Init();
 		}
-	
+
+		public override void Initialize()
+		{
+			base.Initialize();
+			Container.Register<IViewHelperProvider, TouchViewHelperProvider>();
+		}
+
 		public override void RegisterActivityIndicator()
 		{
 			Container.RegisterSingleton<IActivityIndicator, FluidActivityIndicatorView>();

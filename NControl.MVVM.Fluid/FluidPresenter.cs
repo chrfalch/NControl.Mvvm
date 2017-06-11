@@ -192,7 +192,7 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Internal show viewmodel method
 		/// </summary>
-		Task PresentViewAsync(IView view, Action<bool> dismissedCallback, PresentationMode presentationMode, bool animate)
+		async Task PresentViewAsync(IView view, Action<bool> dismissedCallback, PresentationMode presentationMode, bool animate)
 		{
 			var tcs = new TaskCompletionSource<bool>();
 
@@ -210,6 +210,13 @@ namespace NControl.Mvvm
 			// Animate or present regularly?
 			if (animate && navigationElement.Container is IXAnimatable)
 			{
+				if (Device.RuntimePlatform == Device.Android)
+				{
+					navigationElement.Container.GetBaseView().Opacity = 0.0;
+					await Task.Delay(50);				
+					navigationElement.Container.GetBaseView().Opacity = 1.0;
+				}
+
 				var animations = (navigationElement.Container as IXAnimatable).TransitionIn(
 					fromContainer, presentationMode);
 
@@ -227,12 +234,17 @@ namespace NControl.Mvvm
 			}
 			else
 			{
-				// No animation, just return straight await
+				// Call navigation container
+				navigationElement.Container.OnNavigatedTo(navigationElement);
+
+				// Notify appearing
 				view.OnAppearing();
+
+				// No animation, just return straight await
 				tcs.TrySetResult(true);
 			}
 
-			return tcs.Task;
+			await tcs.Task;
 		}
 
 		/// <summary>
@@ -241,8 +253,13 @@ namespace NControl.Mvvm
 		NavigationElement PresentView(View view, PresentationMode presentationMode, Action<bool> dismissedAction)
 		{
 			// Create container
-			var container = _navigationContainerProvider.CreateNavigationContainer(
-				presentationMode);
+			INavigationContainer container = null;
+			if (view is INavigationContainerProvider)
+				container = (view as INavigationContainerProvider).CreateNavigationContainer(
+					presentationMode);
+			else
+				container = _navigationContainerProvider.CreateNavigationContainer(
+					presentationMode);
 
 			// Add contents view to container's content area
 			container.SetContent(view);

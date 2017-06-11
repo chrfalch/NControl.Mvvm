@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using NControl.XAnimation;
 using NControl.Mvvm;
+using System.Threading.Tasks;
 
 namespace NControl.Mvvm
 {
@@ -25,20 +26,23 @@ namespace NControl.Mvvm
 		readonly ContentView _loadingView;
 		readonly Command _refreshCommand;
 		readonly FluidActivityIndicator _activityIndicator;
+		readonly List<XAnimationPackage> _animationQueue = new List<XAnimationPackage>();
 
+		Action _animationDoneCallback;
 		#endregion
 
+		/// <summary>
+		/// Constructor
+		/// </summary>
 		public ListViewControl()
 		{
-			VerticalOptions = LayoutOptions.FillAndExpand;
-			HorizontalOptions = LayoutOptions.FillAndExpand;
-
 			// Create refresh command
 			_refreshCommand = new Command((arg) =>
 			{
 				if (State != CollectionState.Loading &&
 					RefreshCommand != null &&
 					RefreshCommand.CanExecute(null))
+					// Execute command!
 					RefreshCommand.Execute(null);
 
 			}, (arg) => State != CollectionState.Loading);
@@ -59,22 +63,21 @@ namespace NControl.Mvvm
 				.BindTo(ListView.SeparatorVisibilityProperty, nameof(SeparatorVisibility));
 
 			// Setup default empty message view
-			_emptyMessageView = new ContentView
+			_emptyMessageView = new ContentView()
 			{
-				Opacity = 0.0,
 			};
 
+			_activityIndicator = new FluidActivityIndicator();
+
 			// Setup default loading view
-			_loadingView = new ContentView { };
-
-			_activityIndicator = new FluidActivityIndicator { };
-
-			// Add default values to the loading view and empty view
-			_loadingView.Content = new VerticalStackLayoutWithPadding
+			_loadingView = new ContentView
 			{
-				VerticalOptions = LayoutOptions.CenterAndExpand,
-				Children = {
-					_activityIndicator
+				InputTransparent = true,
+				BackgroundColor = Color.Transparent,
+				Content = new VerticalStackLayoutWithPadding
+				{
+					VerticalOptions = LayoutOptions.CenterAndExpand,
+					Children =  { _activityIndicator }
 				}
 			};
 
@@ -93,11 +96,10 @@ namespace NControl.Mvvm
 					new ExtendedButton{
 						BindingContext = this,
 						Command = new Command((obj) => {
-							if (State != CollectionState.Loading &&
+							if (State != CollectionState.Loading &&							    
 								RefreshCommand != null &&
 								RefreshCommand.CanExecute(null))
-							{
-								ShowLoadingView(true);
+							{								
 								RefreshCommand.Execute(null);
 							}
 						}),
@@ -109,6 +111,8 @@ namespace NControl.Mvvm
 			Children.Add(_listView);
 			Children.Add(_emptyMessageView);
 			Children.Add(_loadingView);
+
+			UpdateVisibleControls();
 		}
 
 		#region Properties
@@ -243,12 +247,13 @@ namespace NControl.Mvvm
 		/// The CollectionState property.
 		/// </summary>
 		public static BindableProperty StateProperty = BindableProperty.Create(
-			nameof(State), typeof(CollectionState), typeof(ListViewControl), CollectionState.Loading,
-			BindingMode.OneWay, null, propertyChanged: (bindable, oldValue, newValue) =>
-			{
+			nameof(State), typeof(CollectionState), typeof(ListViewControl), 
+			CollectionState.NotLoaded, BindingMode.OneWay, null, (bindable, oldValue, newValue) =>
+			{				
 				var ctrl = (ListViewControl)bindable;
 				ctrl.UpdateState((CollectionState)oldValue, (CollectionState)newValue);
-			});
+			}
+		);
 
 		/// <summary>
 		/// Gets or sets the CollectionState of the ListViewControl instance.
@@ -258,48 +263,16 @@ namespace NControl.Mvvm
 			get { return (CollectionState)GetValue(StateProperty); }
 			set { SetValue(StateProperty, value); }
 		}
-		#endregion
-
-		#region Private Members
 
 		/// <summary>
-		/// Update collection state
+		/// Updates the state and waits for any animations and 
+		/// transitions.
 		/// </summary>
-		void UpdateState(CollectionState oldValue, CollectionState newValue)
+		public Task SetCollectionStateAsync(CollectionState state)
 		{
-			if (oldValue == newValue)
-				return;
-
-			switch (newValue)
-			{
-				case CollectionState.NotLoaded:
-					ShowEmptyListView(false, () => ShowLoadingView(true));
-					break;
-
-				case CollectionState.Loaded:
-
-					ShowLoadingView(false, () => ShowEmptyListView(
-						ItemsSource == null ||
-						(ItemsSource is ICollection && (ItemsSource as ICollection).Count == 0)));
-
-					IsRefreshing = false;
-					_refreshCommand.ChangeCanExecute();
-
-					break;
-
-				case CollectionState.Loading:
-					ShowEmptyListView(false, () => ShowLoadingView(!IsRefreshing));
-
-					break;
-
-				case CollectionState.Reloading:
-					break;
-
-			}
+			State = state;
+			return Task.FromResult(true);
 		}
-		#endregion
-
-		#region Private Properties
 
 		public static readonly BindableProperty IsRefreshingProperty = BindableProperty.Create(
 			nameof(IsRefreshing), typeof(bool), typeof(ListViewControl), false, BindingMode.TwoWay);
@@ -310,41 +283,161 @@ namespace NControl.Mvvm
 			set { SetValue(IsRefreshingProperty, value); }
 		}
 
-		void AnimateVisibility(bool setVisibleTo, VisualElement element, Action callback = null)
+		#endregion
+
+		#region Private Members
+
+		/// <summary>
+		/// Update collection state
+		/// </summary>
+		void UpdateState(CollectionState oldValue, CollectionState newValue)
 		{
+			System.Diagnostics.Debug.WriteLine($"State {oldValue} to {newValue}");
+			if (oldValue == newValue)
+				return;
+
+			UpdateVisibleControls();
+		}
+
+		void UpdateVisibleControls()
+		{
+			switch (State)
+			{
+				case CollectionState.NotLoaded:
+
+					// Show nothing
+					_activityIndicator.IsRunning =  false;
+					SetVisibility(_emptyMessageView, false);
+					break;
+
+				case CollectionState.Loading:
+
+					_activityIndicator.IsRunning = !IsRefreshing;
+					AnimateVisibility(_emptyMessageView, false);
+
+					break;
+					
+				case CollectionState.Loaded:
+
+					// Do we have any items in the list?
+					var listIsEmpty = ItemsSource == null ||
+						(ItemsSource is ICollection &&
+						(ItemsSource as ICollection).Count == 0);
+
+					_activityIndicator.IsRunning = false;
+					AnimateVisibility(_emptyMessageView, listIsEmpty);
+
+					IsRefreshing = false;
+					_refreshCommand.ChangeCanExecute();
+
+					break;
+					
+				case CollectionState.Reloading:
+					break;
+
+			}
+		}
+		#endregion
+
+		#region Private Properties
+
+		void SetVisibility(VisualElement element, bool setVisibleTo)
+		{
+			element.IsVisible = setVisibleTo;
+			element.Opacity = setVisibleTo ? 1.0 : 0.0;
+		}
+
+		void AnimateVisibility(VisualElement element, bool setVisibleTo)
+		{
+			var animation = new XAnimationPackage(element);
+
 			if (setVisibleTo)
-			{
-				new XAnimationPackage(element)
-					.Duration(150)
-					.Opacity(1.0)
-					.Then()
-					.Run(callback);
-			}
-			else if (!setVisibleTo)
-			{
-				new XAnimationPackage(element)
-					.Duration(150)
-					.Opacity(0.0)
-					.Then()
-					.Run(callback);
-			}
+				animation.Add((transform) => transform.SetOpacity(1.0));
+			else 
+				animation.Add((transform) => transform.SetOpacity(0.0));
+
+			ProcessQueue(animation);
 		}
 		#endregion
 
 		#region Private Members
 
-		void ShowLoadingView(bool show, Action callback = null)
+		void ProcessQueue(XAnimationPackage animation = null)
 		{
-			_activityIndicator.IsRunning = show;
-			_listView.IsVisible = !show;			 
-			AnimateVisibility(show, _loadingView, callback);
+			XAnimationPackage nextAnimation = null;
+
+			lock (_animationQueue)
+			{
+				if (animation != null)
+					_animationQueue.Add(animation);
+
+				// Any animations running?
+				if (_animationQueue.Any(a => a.IsRunning))
+				{
+					return;
+				}
+				// Any animation in list?
+				if (!_animationQueue.Any())
+				{
+					if (_animationDoneCallback != null)
+					{
+						var tmp = _animationDoneCallback;
+						_animationDoneCallback = null;
+						tmp?.Invoke();
+					}
+					return;
+				}
+
+				// Nope, none running, one or more waiting. Lets start first in list
+				nextAnimation = _animationQueue.First();
+			}
+
+			var el = nextAnimation.GetElement(0);
+			var op = nextAnimation.GetTransform(0).Opacity;
+
+			var elName = el == _listView ? "listview" :
+				el == _loadingView ? "loadingview" :
+				el == _emptyMessageView ? "emptymessage" : "unknown";
+
+			System.Diagnostics.Debug.WriteLine(
+				(op.Equals(1.0) ? "Swow" : "Hide") + " " + elName);
+
+			if (nextAnimation.HasViewsToAnimate)
+			{
+				if (op.Equals(1.0) && el.Opacity.Equals(0.0))
+					el.IsVisible = true;
+				
+				// Start it
+				nextAnimation.SetDuration(150).Animate(() =>
+				{
+					lock (_animationQueue)
+					{
+						el.IsVisible = op.Equals(1.0);
+
+						// Remove the animation 
+						_animationQueue.Remove(nextAnimation);
+
+						// Process
+						ProcessQueue();
+					}
+				});
+			}
+			else
+			{
+				el.Opacity = op;
+				el.IsVisible = op.Equals(1.0);
+
+				lock (_animationQueue)
+				{
+					// Remove the animation 
+					_animationQueue.Remove(nextAnimation);
+
+					// Process
+					ProcessQueue();
+				}
+			}
 		}
 
-		void ShowEmptyListView(bool show, Action callback = null)
-		{
-			_listView.IsVisible = !show;
-			AnimateVisibility(show, _emptyMessageView, callback);
-		}
 		#endregion
 	}
 }

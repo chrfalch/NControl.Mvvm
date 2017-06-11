@@ -25,64 +25,65 @@ namespace NControl.XAnimation.iOS
 		/// <summary>
 		/// Parent animation
 		/// </summary>
-        IXPackage _animation;
+		XTransformationContainer _container;
 
 		#endregion
 
-		public void Initialize(IXPackage animation)
+		public void Initialize(XTransformationContainer container)
 		{
-			_animation = animation;
+			_container = container;
 		}
 
-		public bool GetHasViewsToAnimate(XAnimationInfo animationinfo)
+		public bool GetHasViewsToAnimate()
 		{
 			var numberofLiveViews = 0;
-			for (var i = 0; i < _animation.ElementCount; i++)
+			for (var i = 0; i < _container.ElementCount; i++)
 			{
-				var element = _animation.GetElement(i);
+				var element = _container.GetElement(i);
 				var view = GetView(element);
-				if (view.Superview != null)
+				if (view != null && view.Superview != null)
 					numberofLiveViews++;
 			}
 
 			return numberofLiveViews > 0;
 		}
 
-		public void Animate(XAnimationInfo animationInfo, Action completed)
+		public void Animate(XTransform transform, Action completed, long duration)
 		{
-			if (animationInfo.OnlyTransform)
+			if (transform.OnlyTransform)
 			{
-				Set(animationInfo);
+				Set(transform);
 				return;
 			}
 
 			var viewAnimations = new Dictionary<UIView, IEnumerable<CAAnimation>>();
 
-			for (var i = 0; i < _animation.ElementCount; i++)
+			for (var i = 0; i < _container.ElementCount; i++)
 			{
-				var element = _animation.GetElement(i);
+				var element = _container.GetElement(i);
 				var view = GetView(element);
-				var animations = GetAnimationsForElement(element, view, animationInfo);
+				var animations = GetAnimationsForElement(element, view, transform);
 
 				if (animations.Any())
 				{
 					// Update platform values for presentation model
 					viewAnimations.Add(view, animations);
 
-					if (animationInfo.AnimateRectangle)
+					if (transform.AnimateRectangle)
 					{
 						// Get animation info for target after layout has been updated
-						var childHierarchyInfo = GetChildHierarchyInfo(element, animationInfo);
+						var childHierarchyInfo = GetChildHierarchyInfo(element, transform);
 
 						// Update platform values for presentation model
-						SetPlatformElementFromAnimationInfo(element, animationInfo);
+						SetPlatformElementFromAnimationInfo(element, transform);
 
 						// Add animations for all
 						foreach (var childElement in childHierarchyInfo.Keys)
 						{
 							// Get child details
 							var childView = GetView(childElement);
-							var childAnimations = GetRectangleAnimations(childElement, childView, childHierarchyInfo[childElement]);
+							var childAnimations = GetRectangleAnimations(
+								childElement, childView, childHierarchyInfo[childElement]);
 
 							viewAnimations.Add(childView, childAnimations);
 						}
@@ -90,11 +91,17 @@ namespace NControl.XAnimation.iOS
 				}
 			}
 
+			if (!viewAnimations.Values.Any())
+			{
+				completed?.Invoke();
+				return;
+			}
+
 			// Start animation with transaction
 			CATransaction.Begin();
 			CATransaction.DisableActions = true;
-			CATransaction.AnimationTimingFunction = GetTimingFunctionFromAnimationInfo(animationInfo);
-			CATransaction.AnimationDuration = GetTime(animationInfo.Duration);
+			CATransaction.AnimationTimingFunction = GetTimingFunction(transform.Easing);
+			CATransaction.AnimationDuration = GetTime(duration);
 			CATransaction.CompletionBlock = completed;
 
 			// Add animations
@@ -102,32 +109,39 @@ namespace NControl.XAnimation.iOS
 				for (var i = 0; i < viewAnimations[view].Count(); i++)
 					view.Layer.AddAnimation(viewAnimations[view].ElementAt(i), "animinfo-anims-" + i.ToString());
 
-			// Set end values
-			Set(animationInfo);
+			SetInternal(transform, false);
 
 			// Commit transaction
 			CATransaction.Commit();
 		}
 
-		public void Set(XAnimationInfo animationInfo)
+		public void Set(XTransform animationInfo)
 		{
-			for (var i = 0; i < _animation.ElementCount; i++)
-			{
-				var element = _animation.GetElement(i);
-				SetElementFromAnimationInfo(element, animationInfo);
-			}
+			SetInternal(animationInfo);
 		}
 
-		public void Set(VisualElement element, XAnimationInfo animationInfo)
+		public void Set(VisualElement element, XTransform animationInfo)
 		{
             SetElementFromAnimationInfo(element, animationInfo);
 		}
 
 		#region Private Members
 
-		Dictionary<VisualElement, XAnimationInfo> GetChildHierarchyInfoInt(VisualElement element, XAnimationInfo animationInfo)
+		void SetInternal(XTransform transform, bool waitIfSlowSet = true)
 		{
-			var retVal = new Dictionary<VisualElement, XAnimationInfo>();
+			for (var i = 0; i < _container.ElementCount; i++)
+			{
+				var element = _container.GetElement(i);
+				SetElementFromAnimationInfo(element, transform);
+			}
+
+			if (waitIfSlowSet && XElementContainer.ShowSetTransforms)
+				NSThread.SleepFor(0.5);
+		}
+
+		Dictionary<VisualElement, XTransform> GetChildHierarchyInfoInt(VisualElement element, XTransform animationInfo)
+		{
+			var retVal = new Dictionary<VisualElement, XTransform>();
 
 			if (element is ContentView)
 			{
@@ -158,7 +172,7 @@ namespace NControl.XAnimation.iOS
 			return retVal;
 		}
 
-		Dictionary<VisualElement, XAnimationInfo> GetChildHierarchyInfo(VisualElement element, XAnimationInfo animationInfo)
+		Dictionary<VisualElement, XTransform> GetChildHierarchyInfo(VisualElement element, XTransform animationInfo)
 		{
 			var originalState = GetAnimationInfoFromElement(element, animationInfo);
 		
@@ -169,42 +183,19 @@ namespace NControl.XAnimation.iOS
 			return toValues;
 		}
 
-		CAAnimationGroup GetAnimationGroup(IEnumerable<CAAnimation> animations, XAnimationInfo animationInfo)
+		CAMediaTimingFunction GetTimingFunction(EasingFunctionBezier easingFunction)
 		{
-			// Create group of animations
-			var group = new CAAnimationGroup();
-			group.Duration = GetTime(animationInfo.Duration);
-			group.BeginTime = CAAnimation.CurrentMediaTime() + (GetTime(animationInfo.Delay));
-			group.Animations = animations.ToArray();
-			group.TimingFunction = GetTimingFunctionFromAnimationInfo(animationInfo);
-			return group;
-		}
-
-		CAMediaTimingFunction GetTimingFunctionFromAnimationInfo(XAnimationInfo animationInfo)
-		{
-			switch (animationInfo.Easing)
-			{
-				case EasingFunction.EaseIn:
-					return CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseIn);					
-				case EasingFunction.EaseOut:
-					return CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseOut);					
-				case EasingFunction.EaseInOut:
-					return CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseInEaseOut);					
-				case EasingFunction.Custom:
-					return CAMediaTimingFunction.FromControlPoints(
-						(float)animationInfo.EasingBezier.Start.X, (float)animationInfo.EasingBezier.Start.Y,
-						(float)animationInfo.EasingBezier.End.X, (float)animationInfo.EasingBezier.End.Y);
-				default:
-					return CAMediaTimingFunction.FromName(CAMediaTimingFunction.Linear);					
-			}
+			return CAMediaTimingFunction.FromControlPoints(
+						(float)easingFunction.Start.X, (float)easingFunction.Start.Y,
+						(float)easingFunction.End.X, (float)easingFunction.End.Y);			           
 		}
 
 		float GetTime(long time)
 		{
-			return (float)(time * (XAnimationPackage.SlowAnimations ? 5 : 1) / 1000.0);
+			return (float)(time * (XElementContainer.SlowAnimations ? 2.5 : 1) / 1000.0);
 		}
 
-		List<CAAnimation> GetAnimationsForElement(VisualElement element, UIView view, XAnimationInfo animationInfo)
+		List<CAAnimation> GetAnimationsForElement(VisualElement element, UIView view, XTransform animationInfo)
 		{
 			var animations = new List<CAAnimation>();
 
@@ -248,12 +239,12 @@ namespace NControl.XAnimation.iOS
 			}
 
 			// Set up rotation
-			if (!element.Rotation.Equals(animationInfo.Rotate))
+			if (!element.Rotation.Equals(animationInfo.Rotation))
 			{
 				var rotateAnimation = new CABasicAnimation();
 				rotateAnimation.KeyPath = "transform.rotation";
 				rotateAnimation.From = new NSNumber((element.Rotation * Math.PI) / 180.0);
-				rotateAnimation.To = new NSNumber((animationInfo.Rotate * Math.PI) / 180.0);
+				rotateAnimation.To = new NSNumber((animationInfo.Rotation * Math.PI) / 180.0);
 				animations.Add(rotateAnimation);
 			}
 
@@ -279,7 +270,7 @@ namespace NControl.XAnimation.iOS
 			return animations;
 		}
 
-		IEnumerable<CAAnimation> GetRectangleAnimations(VisualElement element, UIView view, XAnimationInfo animationInfo)
+		IEnumerable<CAAnimation> GetRectangleAnimations(VisualElement element, UIView view, XTransform animationInfo)
 		{
 			var animations = new List<CAAnimation>();
 
@@ -288,40 +279,48 @@ namespace NControl.XAnimation.iOS
 			toBounds.Size = new CGSize(animationInfo.Rectangle.Width, animationInfo.Rectangle.Height);
 
 			var boundsAnimation = new CABasicAnimation();
-			boundsAnimation.KeyPath = "bounds";
-			boundsAnimation.From = NSValue.FromCGRect(fromBounds);
-			boundsAnimation.To = NSValue.FromCGRect(toBounds);
+			boundsAnimation.KeyPath = "size";
+			boundsAnimation.From = NSValue.FromCGSize(fromBounds.Size);
+			boundsAnimation.To = NSValue.FromCGSize(toBounds.Size);
 
 			animations.Add(boundsAnimation);
 
-			var fromPos = view.Layer.ValueForKey(new NSString("position"));
-			var toPos = new CGPoint(
-				(nfloat)animationInfo.Rectangle.X + (view.Layer.AnchorPoint.X * toBounds.Width),
-				(nfloat)animationInfo.Rectangle.Y + (view.Layer.AnchorPoint.Y * toBounds.Height));
+			if (animationInfo.Rectangle.X != double.MinValue &&
+			   animationInfo.Rectangle.Y != double.MaxValue)
+			{
+				var toPos = new CGPoint(
+					(nfloat)animationInfo.Rectangle.X + (view.Layer.AnchorPoint.X * toBounds.Width),
+					(nfloat)animationInfo.Rectangle.Y + (view.Layer.AnchorPoint.Y * toBounds.Height));
 
-			var posAnimation = new CABasicAnimation();
-			posAnimation.KeyPath = "position";
-			posAnimation.From = fromPos;
-			posAnimation.To = NSValue.FromCGPoint(toPos);
+				if (view.Layer.Position.X.Equals(toPos.X) && view.Layer.Position.Y.Equals(toPos.Y))
+					return animations;
 
-			animations.Add(posAnimation);
+				var fromPos = view.Layer.ValueForKey(new NSString("position"));
+
+				var posAnimation = new CABasicAnimation();
+				posAnimation.KeyPath = "position";
+				posAnimation.From = fromPos;
+				posAnimation.To = NSValue.FromCGPoint(toPos);
+
+				animations.Add(posAnimation);
+			}
 
 			return animations;
 		}
 
-		void SetPlatformElementFromAnimationInfo(VisualElement element, XAnimationInfo animationInfo)
+		void SetPlatformElementFromAnimationInfo(VisualElement element, XTransform animationInfo)
 		{
 			var view = GetView(element);
 			SetPlatformElementFromAnimationInfo(view, animationInfo);
 		}
 
-		void SetPlatformElementFromAnimationInfo(UIView view, XAnimationInfo animationInfo)
+		void SetPlatformElementFromAnimationInfo(UIView view, XTransform animationInfo)
 		{
 			view.Layer.Transform = CATransform3D.Identity; 
 			view.Layer.SetValueForKey(new NSNumber((float)animationInfo.Scale), new NSString("transform.scale"));
 			view.Layer.SetValueForKey(new NSNumber((float)animationInfo.TranslationX), new NSString("transform.translation.x"));
 			view.Layer.SetValueForKey(new NSNumber((float)animationInfo.TranslationY), new NSString("transform.translation.y"));
-			view.Layer.SetValueForKey(new NSNumber((animationInfo.Rotate * Math.PI) / 180.0), new NSString("transform.rotate"));
+			view.Layer.SetValueForKey(new NSNumber((animationInfo.Rotation * Math.PI) / 180.0), new NSString("transform.rotate"));
 
 			view.Layer.Opacity = (float)animationInfo.Opacity;
 
@@ -335,7 +334,10 @@ namespace NControl.XAnimation.iOS
 					(nfloat)animationInfo.Rectangle.Y + (view.Layer.AnchorPoint.Y * toBounds.Height));
 
 				view.Layer.Position = toPos;
-				view.Layer.Bounds = toBounds;
+
+				if(animationInfo.Rectangle.X != double.MinValue &&
+				   animationInfo.Rectangle.Y != double.MinValue)
+					view.Layer.Bounds = toBounds;
 			}
 
 			if (animationInfo.AnimateColor)
@@ -344,37 +346,28 @@ namespace NControl.XAnimation.iOS
 			}
 		}
 
-		XAnimationInfo GetAnimationInfoFromElement(VisualElement element, XAnimationInfo animationInfo)
+		XTransform GetAnimationInfoFromElement(VisualElement element, XTransform animationInfo)
 		{
-			return new XAnimationInfo
-			{
-				Duration = animationInfo.Duration,
-				Delay = animationInfo.Delay,
-				Easing = animationInfo.Easing,
-				EasingBezier = animationInfo.EasingBezier,
-				OnlyTransform = animationInfo.OnlyTransform,
-				Rotate = element.Rotation,
-				TranslationX = element.TranslationX,
-				TranslationY = element.TranslationY,
-				Scale = element.Scale,
-				Opacity = element.Opacity,
-				AnimateColor = animationInfo.AnimateColor,
-				Color = element.BackgroundColor,
-				AnimateRectangle = animationInfo.AnimateRectangle,
-				Rectangle = new Xamarin.Forms.Rectangle(element.X, element.Y, element.Width, element.Height),
-			};
+            return XTransform.FromAnimationInfoAndElement(element, animationInfo);
 		}
 
-		void SetElementFromAnimationInfo(VisualElement element, XAnimationInfo animationInfo)
+		void SetElementFromAnimationInfo(VisualElement element, XTransform animationInfo)
 		{
-			element.Rotation = animationInfo.Rotate;
+			element.Rotation = animationInfo.Rotation;
 			element.TranslationX = animationInfo.TranslationX;
 			element.TranslationY = animationInfo.TranslationY;
 			element.Scale = animationInfo.Scale;
 			element.Opacity = animationInfo.Opacity;
 
 			if (animationInfo.AnimateRectangle)
-				element.Layout(animationInfo.Rectangle);
+			{
+				if (animationInfo.Rectangle.X != double.MinValue &&
+				   animationInfo.Rectangle.Y != double.MinValue)
+					element.Layout(animationInfo.Rectangle);
+				else
+					element.Layout(new Xamarin.Forms.Rectangle(
+						element.X, element.Y, animationInfo.Rectangle.Width, animationInfo.Rectangle.Height));
+			}
 
 			if (animationInfo.AnimateColor)
 				element.BackgroundColor = animationInfo.Color;
@@ -389,10 +382,7 @@ namespace NControl.XAnimation.iOS
 		{
 			var renderer = Platform.GetRenderer(element);
 			if (renderer == null)
-			{
-				renderer = Platform.CreateRenderer(element);
-				Platform.SetRenderer(element, renderer);
-			}
+				return null;
 
 			return renderer.NativeView;
 		}

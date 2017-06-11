@@ -16,12 +16,13 @@ namespace MvvmDemo
 		/// <param name="platform">Platform.</param>
 		public DemoMvvmApp (IMvvmPlatform platform): base(platform)
 		{
-			XAnimationPackage.SlowAnimations = false;
+			//XElementContainer.SlowAnimations = true;
+			//XElementContainer.ShowSetTransforms = true;
 		}
 
 		public override Type GetMainViewType()
 		{
-			return typeof(CompanyView);
+			return typeof(CityListView);
 		}
 
 		/// <summary>
@@ -35,7 +36,9 @@ namespace MvvmDemo
 			ViewContainer.RegisterView<EmployeeDetailsViewModel, EmployeeDetailsView> ();
 			ViewContainer.RegisterView<SearchViewModel, SearchView> ();
 			ViewContainer.RegisterView<FeedViewModel, FeedView>();
-			ViewContainer.RegisterView<MenuViewModel, MenuView>();
+			ViewContainer.RegisterView<CityListViewModel, CityListView>();
+			ViewContainer.RegisterView<CityViewModel, CityView>();
+			ViewContainer.RegisterView<CityDetailsViewModel, CityDetailsView>();
 		}
 	}
 }

@@ -20,4 +20,13 @@ namespace NControl.Mvvm
 			Padding = new Thickness(Config.DefaultPadding, Config.DefaultPadding * 2);
 		}
 	}
+
+	public class HorizontalStackLayoutWithSmallPadding : HorizontalStackLayout
+	{
+		public HorizontalStackLayoutWithSmallPadding()
+		{
+			Padding = Config.DefaultPadding;
+			Spacing = Config.DefaultSpacing * 0.5;
+		}	
+	}
 }

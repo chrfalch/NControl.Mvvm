@@ -20,9 +20,13 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Sets up a binding
 		/// </summary>
-		/// <param name="bindableObject">Bindable object.</param>
+		/// <returns>The to.</returns>
+		/// <param name="view">View.</param>
 		/// <param name="bindableProperty">Bindable property.</param>
-		/// <param name="viewModelProperty">View model property.</param>
+		/// <param name="propertyName">Property name.</param>
+		/// <param name="converter">Converter.</param>
+		/// <param name="stringFormat">String format.</param>
+		/// <typeparam name="T">The 1st type parameter.</typeparam>
 		public static T BindTo<T>(this T view, BindableProperty bindableProperty, string propertyName, 
 			IValueConverter converter = null, string stringFormat = null) where T : View
 		{
@@ -31,13 +35,14 @@ namespace NControl.Mvvm
 		}
 
 		/// <summary>
-		/// Binds to.
+		/// Sets up a binding
 		/// </summary>
 		/// <returns>The to.</returns>
 		/// <param name="template">Template.</param>
 		/// <param name="bindableProperty">Bindable property.</param>
 		/// <param name="propertyName">Property name.</param>
 		/// <param name="converter">Converter.</param>
+		/// <param name="stringFormat">String format.</param>
 		public static DataTemplate BindTo(this DataTemplate template, BindableProperty bindableProperty, 
 			string propertyName, IValueConverter converter = null, string stringFormat = null){
 			template.SetBinding(bindableProperty, new Binding(propertyName, converter: converter, stringFormat:stringFormat));

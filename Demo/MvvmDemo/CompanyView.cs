@@ -5,13 +5,14 @@ using Xamarin.Forms;
 
 namespace MvvmDemo
 {
-	public class CompanyView: BaseFluidContentsView<CompanyViewModel>
+	public class CompanyView: BaseFluidItemListView<CompanyViewModel, Company>
 	{
 		public CompanyView ()
 		{
-			ToolbarItems.Add (new ToolbarItemEx {
+			ToolbarItems.Add(new ToolbarItemEx
+			{
 				MaterialDesignIcon = FontMaterialDesignLabel.MDRefresh,
-				Command = ViewModel.RefreshCommand,
+				Command = ViewModel.RefreshEmptyCommand,
 			});
 
 			ToolbarItems.Add (new ToolbarItemEx {
@@ -22,63 +23,35 @@ namespace MvvmDemo
 
 		protected override View CreateContents()
 		{
+			return new Grid()
+				.AddChildTo(base.CreateContents(), 0, 0)
+				.AddChildTo(new ExpandingButtonPanel{
 
-			return new Grid
-			{				
-				Children = {
-					new VerticalStackLayout
-					{				
+					VerticalOptions =LayoutOptions.End,
+				  	Buttons = {
+						new ButtonBarItem{
+							Icon = FontMaterialDesignLabel.MDInformationVariant,
+							Command = ViewModel.ShowAboutCommand,
+						},
+
+						new ButtonBarItem{
+							Command = ViewModel.ShowFeedCommand,
+							Icon = FontMaterialDesignLabel.MDPot,
+						},
+
+						new ButtonBarItem{
+							Icon = FontMaterialDesignLabel.MDMenu,
+							Command = ViewModel.ShowCityListCommand
 						
-						Children = {
-							new ListViewControl{								
-								
-								ItemsSource = ViewModel.Companies,
-								IsPullToRefreshEnabled = true,
-								ItemSelectedCommand = ViewModel.SelectCompanyCommand,
-								ItemTemplate = new DataTemplate(typeof(TextCell))
-									.BindTo(TextCell.TextProperty, NameOf<Company>(cw => cw.Name)),
-
-								EmptyListView = new VerticalWizardStackLayout{
-									Children = {
-										new FontMaterialDesignLabel{
-											Text = FontMaterialDesignLabel.MDNaturePeople,
-											FontSize = 66,
-											TextColor = Config.LightTextColor,
-										},
-
-										new Label{
-											Text = "No Items Found",
-											HorizontalTextAlignment = TextAlignment.Center,
-										}
-									},
-								},
-							}
-							.BindTo(ListViewControl.RefreshCommandProperty, NameOf(vm => vm.RefreshCommand))
-							.BindTo(ListViewControl.StateProperty, NameOf(vm => vm.CollectionState)),
-
-							new ExpandingButtonPanel{
-								VerticalOptions = LayoutOptions.End,
-								Buttons = {
-									new ButtonBarItem{
-										Icon = FontMaterialDesignLabel.MDInformationVariant,
-										Command = ViewModel.ShowAboutCommand,
-									},
-
-									new ButtonBarItem{
-										Command = ViewModel.ShowFeedCommand,
-										Icon = FontMaterialDesignLabel.MDPot,
-									},
-
-									new ButtonBarItem{
-										Icon = FontMaterialDesignLabel.MDMenu,
-										Command = ViewModel.ShowMenuCommand
-									}
-								}
-							}
-						}
-					},
+					}
 				}
-			};
+			}, 0, 0);
+		}
+			
+		public override DataTemplate GetDataTemplate()
+		{
+			return new DataTemplate(typeof(TextCell)).BindTo(
+				TextCell.TextProperty, NameOf<Company>(c => c.Name));
 		}
 	}
 }

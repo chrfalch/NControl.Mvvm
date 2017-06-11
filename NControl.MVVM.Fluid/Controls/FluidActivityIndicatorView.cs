@@ -81,13 +81,16 @@ namespace NControl.Mvvm
 				if (!visible && _overlay.Parent != null)
 				{
 					// Hide
-					new XAnimationPackage(_overlay).Duration(150).Opacity(0.0).Run(() =>
-					   {
-						   _provider.RemoveFromParent(_overlay);
-							_titleLabel.Text = title;
-						   _subTitleLabel.Text = subtitle;
-						   _spinner.IsRunning = false;
-						});
+					var animation = new XAnimationPackage(_overlay);
+					animation.SetDuration(150).Add(
+						(transform) => transform.SetOpacity(0.0));
+
+					animation.Animate(() => {
+					   _provider.RemoveFromParent(_overlay);
+						_titleLabel.Text = title;
+					   _subTitleLabel.Text = subtitle;
+					   _spinner.IsRunning = false;
+					});
 				}
 				else if (visible && _overlay.Parent == null)
 				{		
@@ -95,7 +98,9 @@ namespace NControl.Mvvm
 					_spinner.IsRunning = true;
 					_overlay.Opacity = 0.0;
 					_provider.AddToParent(_overlay);
-					new XAnimationPackage(_overlay).Duration(150).Opacity(1.0).Run();
+					var animation = new XAnimationPackage(_overlay);
+					animation.SetDuration(150).Add().SetOpacity(1.0);
+					animation.Animate();
 				}
 			});
 		}

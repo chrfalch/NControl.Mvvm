@@ -5,7 +5,7 @@ using Xamarin.Forms;
 
 namespace MvvmDemo
 {
-	public class FeedView : BaseFluidContentsView<FeedViewModel>
+	public class FeedView : BaseFluidItemListView<FeedViewModel, FeedItem>
 	{
 		public FeedView()
 		{
@@ -16,18 +16,9 @@ namespace MvvmDemo
 			});
 		}
 
-		protected override View CreateContents()
+		public override DataTemplate GetDataTemplate()
 		{
-			return new ListViewControl
-			{
-				ItemsSource = ViewModel.FeedItems,
-				IsPullToRefreshEnabled = true,
-				RowHeight = 220,
-				ItemSelectedCommand = ViewModel.SelectItemCommand,
-				ItemTemplate = new DataTemplate(typeof(FeedCell)),
-			}
-				.BindTo(ListViewControl.RefreshCommandProperty, nameof(ViewModel.RefreshCommand))
-				.BindTo(ListViewControl.StateProperty, nameof(ViewModel.CollectionState));
+			return new DataTemplate(typeof(FeedCell));
 		}
 	}
 }

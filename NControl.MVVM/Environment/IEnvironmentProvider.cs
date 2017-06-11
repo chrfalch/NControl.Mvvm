@@ -1,4 +1,6 @@
 ﻿using System;
+using Xamarin.Forms;
+
 namespace NControl.Mvvm
 {
 	public interface IEnvironmentProvider

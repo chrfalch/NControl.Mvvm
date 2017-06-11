@@ -89,30 +89,34 @@ namespace MvvmDemo
 				_container.IsVisible = true;
 			}
 
-			var easing = animateOut ? EasingFunction.EaseIn : EasingFunction.EaseOut;
+			var easing = animateOut ? EasingFunctions.EaseIn : EasingFunctions.EaseOut;
 
-			new XAnimationPackage(_container)
-				.Translate(0, animateOut ? Height - (circleSize * 0.8) : 0)
-				.Set()
-				.Easing(easing)
-				.Translate(0, animateOut ? 0 : Height - (circleSize * 0.8))
-				.Run(() =>
-				{
-					if (!animateOut)
-						_container.IsVisible = false;
-				});
+			var animation = new XAnimationPackage(_container)
+				.Set((t) => t.SetTranslation(0, animateOut ? Height - (circleSize * 0.8) : 0))
+				.Add((t) => t
+					 .SetEasing(easing)
+				     .SetTranslation(0, animateOut ? 0 : Height - (circleSize * 0.8))) as XAnimationPackage;
+			
+			animation.Animate(() =>
+			{
+				if (!animateOut)
+					_container.IsVisible = false;
+			});
 
-			new XAnimationPackage(_button)
-				.Easing(easing)
-				.Rotate(animateOut ? 180 : 0.0)
-				.Translate(0, animateOut ? -(circleSize - 8) : 0)
-				.Then()
-				.Run();
+			animation = new XAnimationPackage(_button)
+				.Add((t) => t
+					.SetEasing(easing)
+					.SetRotation(animateOut ? 180 : 0.0)
+				    .SetTranslation(0, animateOut ? -(circleSize - 8) : 0)) as XAnimationPackage;
 
-			new XAnimationPackage(_circleControl)
-				.Easing(easing)
-				.Scale(animateOut ? 20 : 1.0)
-				.Run();
+			animation.Animate();
+
+			animation = new XAnimationPackage(_circleControl)
+				.Add((t) => t
+					.SetEasing(easing)
+					.SetScale(animateOut ? 20 : 1.0)) as XAnimationPackage;
+			
+			animation.Animate();
 		}
 
 		/// <summary>
