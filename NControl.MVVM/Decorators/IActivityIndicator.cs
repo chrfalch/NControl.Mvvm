@@ -8,6 +8,7 @@ EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 \***************************************************************************/
 using System;
+using Xamarin.Forms;
 
 namespace NControl.Mvvm
 {
@@ -23,6 +24,8 @@ namespace NControl.Mvvm
 		/// <param name="title">Title.</param>
 		/// <param name="subtitle">Subtitle.</param>
 		void UpdateProgress(bool visible, string title = "", string subtitle = "");
+
+		View CreateActivityIndicator();
 	}
 }
 

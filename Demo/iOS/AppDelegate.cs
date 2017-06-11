@@ -8,6 +8,7 @@ using NControl.Controls.iOS;
 using Xamarin.Forms.Platform.iOS;
 using Xamarin.Forms;
 using NControl.Mvvm;
+using Lottie.Forms.iOS.Renderers;
 
 namespace MvvmDemo.iOS
 {
@@ -18,10 +19,12 @@ namespace MvvmDemo.iOS
 		{
 			PerformanceTimer.Init();
 
+			AnimationViewRenderer.Init();
+
 			using (PerformanceTimer.Current.BeginTimer(this))
 			{
 				global::Xamarin.Forms.Forms.Init();
-				LoadApplication(new DemoMvvmApp(new FluidTouchPlatform()));
+				LoadApplication(new DemoMvvmApp(new DemoFluidTouchPlatform()));
 			}
 
 			var retVal = base.FinishedLaunching(uiApplication, launchOptions);

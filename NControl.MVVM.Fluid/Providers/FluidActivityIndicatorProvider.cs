@@ -7,16 +7,16 @@ using Xamarin.Forms;
 
 namespace NControl.Mvvm
 {
-	public class FluidActivityIndicatorView<TActivityIndicator>: IActivityIndicator
+	public class FluidActivityIndicatorProvider<TActivityIndicator>: IActivityIndicator
 		where TActivityIndicator : BaseFluidActivityIndicator, new()
 	{
 		readonly IActivityIndicatorViewProvider _provider;
 		readonly View _overlay;
 		readonly Label _titleLabel;
 		readonly Label _subTitleLabel;
-		readonly TActivityIndicator _spinner;
+		readonly BaseFluidActivityIndicator _activityIndicator;
 
-		public FluidActivityIndicatorView(IActivityIndicatorViewProvider provider)
+		public FluidActivityIndicatorProvider(IActivityIndicatorViewProvider provider)
 		{
 			_provider = provider;
 
@@ -32,10 +32,7 @@ namespace NControl.Mvvm
                 TextColor = Config.NegativeTextColor,
 			};
 
-			_spinner = new TActivityIndicator
-			{
-				HeightRequest = 38,
-			};
+			_activityIndicator = CreateActivityIndicator() as BaseFluidActivityIndicator;
 
 			_overlay = new ContentView
 			{
@@ -53,7 +50,7 @@ namespace NControl.Mvvm
 							HeightRequest = 38,
 							WidthRequest = 38,
 							Children = {
-								_spinner
+								_activityIndicator
 							}
 						},
 						new VerticalStackLayout{
@@ -67,6 +64,11 @@ namespace NControl.Mvvm
 					}
 				},
 			};
+		}
+
+		public View CreateActivityIndicator()
+		{
+			return new TActivityIndicator();
 		}
 
 		public void UpdateProgress(bool visible, string title = "", string subtitle = "")
@@ -90,13 +92,13 @@ namespace NControl.Mvvm
 					   _provider.RemoveFromParent(_overlay);
 						_titleLabel.Text = title;
 					   _subTitleLabel.Text = subtitle;
-					   _spinner.IsRunning = false;
+					   _activityIndicator.IsRunning = false;
 					});
 				}
 				else if (visible && _overlay.Parent == null)
 				{		
 					// Show
-					_spinner.IsRunning = true;
+					_activityIndicator.IsRunning = true;
 					_overlay.Opacity = 0.0;
 					_provider.AddToParent(_overlay);
 					var animation = new XAnimationPackage(_overlay);

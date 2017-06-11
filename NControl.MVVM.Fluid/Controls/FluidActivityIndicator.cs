@@ -14,6 +14,8 @@ namespace NControl.Mvvm
 			return new ActivityIndicator
 			{
 				BindingContext = this,
+				HeightRequest = Config.DefaultActivityIndicatorSize,
+				WidthRequest = Config.DefaultActivityIndicatorSize,
 			}
 			.BindTo(ActivityIndicator.ColorProperty, nameof(Color))
 			.BindTo(ActivityIndicator.IsRunningProperty, nameof(IsRunning));
@@ -22,20 +24,11 @@ namespace NControl.Mvvm
 
 	public abstract class BaseFluidActivityIndicator : ContentView
 	{
-		readonly RelativeLayout _layout;
-
 		public BaseFluidActivityIndicator()
 		{
-			HeightRequest = Config.DefaultActivityIndicatorSize;
-			WidthRequest = Config.DefaultActivityIndicatorSize;
-
-			Content = _layout = new RelativeLayout();
+			Content = InternalCreateActivityControl();
 			Opacity = 0.0;
 			IsVisible = false;
-		
-			// add spinners
-			_layout.Children.Add(InternalCreateActivityControl(),
-			() => new Rectangle(0, 0, Width, Height));
 		}
 
 		View InternalCreateActivityControl()
@@ -44,15 +37,16 @@ namespace NControl.Mvvm
 		}
 
 		protected abstract View CreateActivityControl();
+		protected virtual void RunningChanged(bool isRunning) { }
 
 		/// <summary>
 		/// The IsRunning property.
 		/// </summary>
 		public static BindableProperty IsRunningProperty = BindableProperty.Create(
-			nameof(IsRunning), typeof(bool), typeof(FluidActivityIndicator), false,
+			nameof(IsRunning), typeof(bool), typeof(BaseFluidActivityIndicator), true,
 			BindingMode.OneWay, null, propertyChanged: (bindable, oldValue, newValue) =>
 			{
-				var ctrl = (FluidActivityIndicator)bindable;
+				var ctrl = (BaseFluidActivityIndicator)bindable;
 				if (oldValue == newValue)
 					return;
 
@@ -61,15 +55,21 @@ namespace NControl.Mvvm
 					ctrl.IsVisible = true;
 					var animation = new XAnimationPackage(ctrl);
 					animation.Add().SetOpacity(1.0);
-					animation.SetDuration(50).Animate();
+					animation.SetDuration(50).Animate(() => {
+						ctrl.RunningChanged(true);
+					});
 				}
 				else
 				{
 					var animation = new XAnimationPackage(ctrl);
 					animation.Add().SetOpacity(0.0);
-					animation.SetDuration(50).Animate(() => ctrl.IsVisible = false);
+					animation.SetDuration(50).Animate(() =>
+					{
+						ctrl.IsVisible = false;
+						ctrl.RunningChanged(false);
+					});
 				}
-			});
+		});
 
 		/// <summary>
 		/// Gets or sets the IsRunning of the CustomActivityIndicator instance.
@@ -84,7 +84,7 @@ namespace NControl.Mvvm
 		/// The Color property.
 		/// </summary>
 		public static BindableProperty ColorProperty = BindableProperty.Create(
-			nameof(Color), typeof(Color), typeof(FluidActivityIndicator),
+			nameof(Color), typeof(Color), typeof(BaseFluidActivityIndicator),
 			Config.PrimaryColor, BindingMode.OneWay);
 
 		/// <summary>

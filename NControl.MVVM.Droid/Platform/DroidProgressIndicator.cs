@@ -21,6 +21,11 @@ namespace NControl.Mvvm
 
 		#region IActivityIndicator implementation
 
+		public View CreateActivityIndicator()
+		{
+			return new ActivityIndicator();
+		}
+
 		/// <summary>
 		/// Updates the progress.
 		/// </summary>

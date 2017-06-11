@@ -10,6 +10,7 @@ using Android.OS;
 using NControl.Mvvm.Droid;
 using NControl.Controls.Droid;
 using NControl.Mvvm;
+using Lottie.Forms.Droid;
 
 namespace MvvmDemo.Droid
 {
@@ -19,6 +20,8 @@ namespace MvvmDemo.Droid
 		protected override void OnCreate(Bundle bundle)
 		{
 			PerformanceTimer.Init();
+
+			AnimationViewRenderer.Init();
 
 			using (PerformanceTimer.Current.BeginTimer(this))
 			{
@@ -32,7 +35,7 @@ namespace MvvmDemo.Droid
 
 
 				using (PerformanceTimer.Current.BeginTimer(this, "Call LoadApplication"))
-					LoadApplication(new DemoMvvmApp(new FluidDroidPlatform(this)));
+					LoadApplication(new DemoMvvmApp(new DemoFluidDroidPlatform(this)));
 			}
 
 			// Results

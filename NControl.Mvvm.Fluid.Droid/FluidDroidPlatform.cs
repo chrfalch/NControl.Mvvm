@@ -26,7 +26,7 @@ namespace NControl.Mvvm.Droid
 		{
 			using(PerformanceTimer.Current.BeginTimer(this))
 				Container.RegisterSingleton<IActivityIndicator, 
-				FluidActivityIndicatorView<FluidActivityIndicator>>();
+				FluidActivityIndicatorProvider<FluidActivityIndicator>>();
 		}
 	}
 }

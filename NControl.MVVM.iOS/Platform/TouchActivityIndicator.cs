@@ -9,8 +9,13 @@ namespace NControl.Mvvm.iOS
 	/// Touch activity indicator.
 	/// </summary>
 	public class TouchActivityIndicator: IActivityIndicator
-	{
+	{		
 		#region IActivityIndicator implementation
+
+		public View CreateActivityIndicator()
+		{
+			return new ActivityIndicator();
+		}
 
 		/// <summary>
 		/// Updates the progress.

@@ -25,7 +25,7 @@ namespace NControl.Mvvm
 		readonly ContentView _emptyMessageView;
 		readonly ContentView _loadingView;
 		readonly Command _refreshCommand;
-		readonly FluidActivityIndicator _activityIndicator;
+		readonly BaseFluidActivityIndicator _activityIndicator;
 		readonly List<XAnimationPackage> _animationQueue = new List<XAnimationPackage>();
 
 		Action _animationDoneCallback;
@@ -67,7 +67,8 @@ namespace NControl.Mvvm
 			{
 			};
 
-			_activityIndicator = new FluidActivityIndicator();
+			_activityIndicator = Container.Resolve<IActivityIndicator>()
+			                              .CreateActivityIndicator() as BaseFluidActivityIndicator;
 
 			// Setup default loading view
 			_loadingView = new ContentView
