@@ -34,14 +34,14 @@ namespace NControl.XAnimation.iOS
 			_container = container;
 		}
 
-		public bool GetHasViewsToAnimate(XTransform animationinfo)
+		public bool GetHasViewsToAnimate()
 		{
 			var numberofLiveViews = 0;
 			for (var i = 0; i < _container.ElementCount; i++)
 			{
 				var element = _container.GetElement(i);
 				var view = GetView(element);
-				if (view.Superview != null)
+				if (view != null && view.Superview != null)
 					numberofLiveViews++;
 			}
 
@@ -382,10 +382,7 @@ namespace NControl.XAnimation.iOS
 		{
 			var renderer = Platform.GetRenderer(element);
 			if (renderer == null)
-			{
-				renderer = Platform.CreateRenderer(element);
-				Platform.SetRenderer(element, renderer);
-			}
+				return null;
 
 			return renderer.NativeView;
 		}

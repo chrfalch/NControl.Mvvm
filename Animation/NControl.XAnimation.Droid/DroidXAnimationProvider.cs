@@ -31,14 +31,16 @@ namespace NControl.XAnimation.Droid
 				_displayDensity = metrics.Density;
 		}
 
-		public bool GetHasViewsToAnimate(XTransform animationinfo)
+		public bool HasViewsToAnimate => GetHasViewsToAnimate();
+
+		public bool GetHasViewsToAnimate()
 		{
 			var numberofLiveViews = 0;
 			for (var i = 0; i < _container.ElementCount; i++)
 			{
 				var element = _container.GetElement(i);
 				var viewGroup = GetViewGroup(element);
-				if (viewGroup.Parent != null)
+				if (viewGroup != null && viewGroup.Parent != null)
 					numberofLiveViews++;
 			}
 
@@ -254,14 +256,11 @@ namespace NControl.XAnimation.Droid
 		{
 			var renderer = Platform.GetRenderer(element);
 			if (renderer == null)
-			{
-				renderer = Platform.CreateRenderer(element);
-				Platform.SetRenderer(element, renderer);
-			}
+				return null;
 
 			return renderer.ViewGroup;
-
 		}
+
 		#endregion
 
 		IInterpolator GetInterpolator(EasingFunctionBezier easing)
