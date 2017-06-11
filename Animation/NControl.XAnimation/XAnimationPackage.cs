@@ -188,9 +188,7 @@ namespace NControl.XAnimation
 
 			// Find calculated duration
 			var calculatedDuration = GetCalculatedDuration(currentTransform, Duration);
-			if (!currentTransform.OnlyTransform)
-				System.Diagnostics.Debug.WriteLine(calculatedDuration);
-			
+
 			if (reverse)
 			{
 				// We are working in reverse - this means the the state we're in is
@@ -270,7 +268,7 @@ namespace NControl.XAnimation
 					HandleRunCompleted(currentTransform, reverse, completed);
 				}
 				else
-				{
+				{					
 					// Run transformation
 					Provider.Animate(currentTransform, () =>
 						HandleRunCompleted(currentTransform, reverse, completed),

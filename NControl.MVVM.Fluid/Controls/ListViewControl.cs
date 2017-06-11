@@ -291,8 +291,7 @@ namespace NControl.Mvvm
 		/// Update collection state
 		/// </summary>
 		void UpdateState(CollectionState oldValue, CollectionState newValue)
-		{
-			System.Diagnostics.Debug.WriteLine($"State {oldValue} to {newValue}");
+		{			
 			if (oldValue == newValue)
 				return;
 
@@ -398,9 +397,6 @@ namespace NControl.Mvvm
 			var elName = el == _listView ? "listview" :
 				el == _loadingView ? "loadingview" :
 				el == _emptyMessageView ? "emptymessage" : "unknown";
-
-			System.Diagnostics.Debug.WriteLine(
-				(op.Equals(1.0) ? "Swow" : "Hide") + " " + elName);
 
 			if (nextAnimation.HasViewsToAnimate)
 			{

@@ -107,8 +107,8 @@ namespace NControl.XAnimation.iOS
 			// Add animations
 			foreach (var view in viewAnimations.Keys)
 				for (var i = 0; i < viewAnimations[view].Count(); i++)
-					view.Layer.AddAnimation(viewAnimations[view].ElementAt(i), "animinfo-anims-" + i.ToString());
-
+					view.Layer.AddAnimation(viewAnimations[view].ElementAt(i), null);
+			
 			SetInternal(transform, false);
 
 			// Commit transaction

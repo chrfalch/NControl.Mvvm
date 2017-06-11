@@ -25,15 +25,15 @@ namespace NControl.Mvvm
 			animationAction = () =>
 			{
 				if (_isDisposed || !IsRunning)
-					return;
-								
+					return;				
+
 				var firstAngle = IsCounterClockWise ? -1 * (Angle + 360) : Angle + 360;
 				var resetAngle = IsCounterClockWise ? -1 * Angle : Angle;
 
 				// Animate running
 				var animation = new XAnimationPackage(this)
 					.SetDuration(DurationMilliseconds);
-				
+
 				animation.Add((transform) => transform.SetRotation(firstAngle));
 				animation.Set((transform) => transform.SetRotation(resetAngle));
 				animation.Animate(animationAction);

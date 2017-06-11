@@ -22,7 +22,7 @@ namespace MvvmDemo
 
 		public override Type GetMainViewType()
 		{
-			return typeof(CompanyView);
+			return typeof(AboutView);
 		}
 
 		/// <summary>

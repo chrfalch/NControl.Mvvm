@@ -35,8 +35,7 @@ namespace MvvmDemo
 			new MyMessage("This is the message")));
 
 		public ICommand CountAsyncCommand => GetOrCreateCommandAsync(async (arg) =>
-		{
-
+		{			
 			IsRunningAsyncCommand = true;
 
 			for (var i = 0; i < 10; i++)
@@ -46,6 +45,7 @@ namespace MvvmDemo
 			}
 
 			IsRunningAsyncCommand = false;
+
 		});
 
 		[OnMessage(typeof(MyMessage))]
