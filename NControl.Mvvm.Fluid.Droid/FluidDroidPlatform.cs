@@ -25,7 +25,8 @@ namespace NControl.Mvvm.Droid
 		public override void RegisterActivityIndicator()
 		{
 			using(PerformanceTimer.Current.BeginTimer(this))
-				Container.RegisterSingleton<IActivityIndicator, FluidActivityIndicatorView>();
+				Container.RegisterSingleton<IActivityIndicator, 
+				FluidActivityIndicatorView<FluidActivityIndicator>>();
 		}
 	}
 }

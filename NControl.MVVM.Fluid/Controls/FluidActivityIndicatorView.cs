@@ -7,13 +7,14 @@ using Xamarin.Forms;
 
 namespace NControl.Mvvm
 {
-	public class FluidActivityIndicatorView: IActivityIndicator
+	public class FluidActivityIndicatorView<TActivityIndicator>: IActivityIndicator
+		where TActivityIndicator : BaseFluidActivityIndicator, new()
 	{
 		readonly IActivityIndicatorViewProvider _provider;
 		readonly View _overlay;
 		readonly Label _titleLabel;
 		readonly Label _subTitleLabel;
-		readonly FluidActivityIndicator _spinner;
+		readonly TActivityIndicator _spinner;
 
 		public FluidActivityIndicatorView(IActivityIndicatorViewProvider provider)
 		{
@@ -31,7 +32,7 @@ namespace NControl.Mvvm
                 TextColor = Config.NegativeTextColor,
 			};
 
-			_spinner = new FluidActivityIndicator
+			_spinner = new TActivityIndicator
 			{
 				HeightRequest = 38,
 			};

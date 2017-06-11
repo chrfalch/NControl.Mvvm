@@ -7,11 +7,24 @@ using Xamarin.Forms;
 
 namespace NControl.Mvvm
 {
-	public class FluidActivityIndicator : ContentView
+	public class FluidActivityIndicator : BaseFluidActivityIndicator
+	{
+		protected override View CreateActivityControl()
+		{
+			return new ActivityIndicator
+			{
+				BindingContext = this,
+			}
+			.BindTo(ActivityIndicator.ColorProperty, nameof(Color))
+			.BindTo(ActivityIndicator.IsRunningProperty, nameof(IsRunning));
+		}
+	}
+
+	public abstract class BaseFluidActivityIndicator : ContentView
 	{
 		readonly RelativeLayout _layout;
 
-		public FluidActivityIndicator()
+		public BaseFluidActivityIndicator()
 		{
 			HeightRequest = Config.DefaultActivityIndicatorSize;
 			WidthRequest = Config.DefaultActivityIndicatorSize;
@@ -20,20 +33,17 @@ namespace NControl.Mvvm
 			Opacity = 0.0;
 			IsVisible = false;
 		
-			// var random = new Random();
-
 			// add spinners
-			_layout.Children.Add(new SpinningCircleControl
-			{
-				BindingContext = this,
-				Angle = 0.0, //random.Next(0, 360),
-				DurationMilliseconds = 1500
-			}
-				.BindTo(SpinningCircleControl.ColorProperty, nameof(Color))
-                .BindTo(SpinningCircleControl.IsRunningProperty, nameof(IsRunning)),
-				() => new Rectangle(0, 0, Width, Height));
-
+			_layout.Children.Add(InternalCreateActivityControl(),
+			() => new Rectangle(0, 0, Width, Height));
 		}
+
+		View InternalCreateActivityControl()
+		{
+			return CreateActivityControl();
+		}
+
+		protected abstract View CreateActivityControl();
 
 		/// <summary>
 		/// The IsRunning property.
