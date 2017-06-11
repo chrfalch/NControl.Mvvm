@@ -489,7 +489,8 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Creates the animations for dismissing the current element
 		/// </summary>
-		protected IEnumerable<XAnimationPackage> CreateTransitionOutAnimation(INavigationContainer toContainer)
+		protected IEnumerable<XAnimationPackage> CreateTransitionOutAnimation(
+			INavigationContainer toContainer)
 		{
 			var animations = new List<XAnimationPackage>();
 
@@ -508,8 +509,8 @@ namespace NControl.Mvvm
 		/// <summary>
 		/// Create the animations for pushing a new element
 		/// </summary>
-		protected IEnumerable<XAnimationPackage> CreateTransitionInAnimation(INavigationContainer fromContainer, 
-			bool includeSet = true)
+		protected IEnumerable<XAnimationPackage> CreateTransitionInAnimation(
+			INavigationContainer fromContainer, bool includeSet = true)
 		{
 			var animations = new List<XAnimationPackage>();
 
@@ -526,11 +527,6 @@ namespace NControl.Mvvm
 				animation.Add().SetTranslation(0, 0);
 				animations.Add(animation);
 			}
-
-			// Move previous a litle bit out
-			var animation2 = new XAnimationPackage(fromContainer.GetBaseView());
-			animation2.Add().SetTranslation(-(Width * 0.25), 0);
-			animations.Add(animation2);
 
 			return animations;
 		}
