@@ -10,11 +10,5 @@ namespace MvvmDemo.Droid
 		public DemoFluidDroidPlatform(Activity activity) : base(activity)
 		{			
 		}
-
-		public override void RegisterActivityIndicator()
-		{
-			Container.RegisterSingleton<IActivityIndicator,
-				FluidActivityIndicatorProvider<DemoActivityIndicator>>();
-		}
 	}
 }

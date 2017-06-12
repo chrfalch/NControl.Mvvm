@@ -8,7 +8,6 @@ using NControl.Controls.iOS;
 using Xamarin.Forms.Platform.iOS;
 using Xamarin.Forms;
 using NControl.Mvvm;
-using Lottie.Forms.iOS.Renderers;
 
 namespace MvvmDemo.iOS
 {
@@ -18,8 +17,6 @@ namespace MvvmDemo.iOS
 		public override bool FinishedLaunching (UIApplication uiApplication, NSDictionary launchOptions)
 		{
 			PerformanceTimer.Init();
-
-			AnimationViewRenderer.Init();
 
 			using (PerformanceTimer.Current.BeginTimer(this))
 			{

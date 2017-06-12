@@ -7,10 +7,6 @@ namespace MvvmDemo.iOS
 {
 	public class DemoFluidTouchPlatform : FluidTouchPlatform
 	{
-		public override void RegisterActivityIndicator()
-		{
-			Container.RegisterSingleton<IActivityIndicator,
-				FluidActivityIndicatorProvider<DemoActivityIndicator>>();
-		}
+		
 	}
 }
