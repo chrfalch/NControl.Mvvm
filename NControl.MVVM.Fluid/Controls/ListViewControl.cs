@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using NControl.XAnimation;
 using NControl.Mvvm;
 using System.Threading.Tasks;
+using NControl.Controls;
 
 namespace NControl.Mvvm
 {
@@ -86,6 +87,14 @@ namespace NControl.Mvvm
 			_emptyMessageView.Content = new VerticalWizardStackLayout
 			{
 				Children = {
+					new FontAwesomeLabel{
+						BindingContext = this,
+						FontSize = 56,
+						TextColor = Config.LightTextColor,
+						HorizontalTextAlignment = TextAlignment.Center,
+						VerticalTextAlignment = TextAlignment.Center,
+					}.BindTo(Label.TextProperty, nameof(EmptyMessageIcon)),
+
 					new Label
 					{
 						BindingContext = this,
@@ -232,6 +241,17 @@ namespace NControl.Mvvm
 		{
 			get { return (string)GetValue(EmptyMessageTextProperty); }
 			set { SetValue(EmptyMessageTextProperty, value); }
+		}
+
+		public static BindableProperty EmptyMessageIconProperty =
+			BindableProperty.Create(nameof(EmptyMessageIcon), typeof(string), typeof(ListViewControl), 
+			                        FontAwesomeLabel.FAFrownO,
+				BindingMode.OneWay);
+
+		public string EmptyMessageIcon
+		{
+			get { return (string)GetValue(EmptyMessageIconProperty); }
+			set { SetValue(EmptyMessageIconProperty, value); }
 		}
 
 		public static BindableProperty ReloadButtonTextProperty =
