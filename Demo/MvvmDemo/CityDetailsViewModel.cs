@@ -9,7 +9,7 @@ namespace MvvmDemo
 		public override Task InitializeAsync(FeedItem parameter)
 		{
 			CityModel = parameter;
-			Title = parameter.City;
+			Title = parameter.City + " details";
 			return base.InitializeAsync(parameter);
 		}
 

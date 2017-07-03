@@ -18,5 +18,8 @@ namespace MvvmDemo
 		{
 			return Task.FromResult(FeedItem.FeedRepository);
 		}
+
+		public override ICommand SelectItemCommand => GetCommand(
+			() => new NavigateCommand<FeedDetailsViewModel>());
 	}
 }

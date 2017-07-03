@@ -1,4 +1,5 @@
 ﻿using System;
+using NControl.Controls;
 using NControl.Mvvm;
 using Xamarin.Forms;
 
@@ -53,7 +54,12 @@ namespace MvvmDemo
 				Content = new FluidRoundCornerView
 				{
 					BorderRadius = 2,
-					Content = new Grid()
+					Content = new Grid { BackgroundColor = Config.ViewBackgroundColor }
+						.AddChildTo(new ActivityIndicator { 
+							HorizontalOptions = LayoutOptions.Center,
+							VerticalOptions= LayoutOptions.Center,
+							IsRunning = true,
+						}, 0, 0)
 						.AddChildTo(_image, 0, 0)
 						.AddChildTo(_contents, 0, 0),
 				}

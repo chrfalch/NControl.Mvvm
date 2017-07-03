@@ -15,10 +15,26 @@ namespace MvvmDemo
 				Command = ViewModel.CloseCommand,
 			});
 		}
+		public override int GetRowHeight()
+		{
+			return 180;
+		}
+
+		protected override void CustomizeListView(ListViewEx listView)
+		{
+			base.CustomizeListView(listView);
+
+			listView.BackgroundColor = Color.Silver;
+		}
 
 		public override DataTemplate GetDataTemplate()
 		{
-			return new DataTemplate(typeof(FeedCell));
+			return new DataTemplateSelectorEx((obj) => {
+				if ((ViewModel.Items.IndexOf(obj as FeedItem) % 2 == 0))
+				   return new DataTemplate(typeof(FeedCell));
+
+				return new DataTemplate(typeof(OddFeedCell));
+			});
 		}
 	}
 }

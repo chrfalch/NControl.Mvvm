@@ -284,6 +284,8 @@ namespace NControl.Mvvm
 			set { SetValue(IsRefreshingProperty, value); }
 		}
 
+		public ListViewEx InternalListView => _listView;
+
 		#endregion
 
 		#region Private Members

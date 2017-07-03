@@ -25,13 +25,20 @@ namespace NControl.Mvvm
 			return -1;
 		}
 
+		/// <summary>
+		/// Override to customize listview
+		/// </summary>
+		protected virtual void CustomizeListView(ListViewEx listView)
+		{ 
+		}
+
 		#endregion
 
 		#region Overridden Members
 
 		protected override View CreateContents()
 		{
-			return new ListViewControl
+			var retVal = new ListViewControl
 			{
 				IsPullToRefreshEnabled = true,
 				ItemTemplate = GetDataTemplate(),
@@ -41,6 +48,10 @@ namespace NControl.Mvvm
 				.BindTo(ListViewControl.ItemSelectedCommandProperty, nameof(ViewModel.SelectItemCommand))
 				.BindTo(ListViewControl.RefreshCommandProperty, nameof(ViewModel.RefreshCommand))
 				.BindTo(ListViewControl.StateProperty, nameof(ViewModel.CollectionState));
+
+			CustomizeListView(retVal.InternalListView);
+
+			return retVal;
 		}
 		#endregion
 	}

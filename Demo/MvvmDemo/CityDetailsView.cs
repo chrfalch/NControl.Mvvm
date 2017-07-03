@@ -16,14 +16,21 @@ namespace MvvmDemo
 			return new FluidTransitionNavigationContainer(true);
 		}
 
-		public IEnumerable<XInterpolationPackage> OverrideTransition(
+		public void BeforeOverrideTransition(
 			string transitionIdentifier, VisualElement fromElement, VisualElement toElement, 
-			Rectangle fromRect, Rectangle toRectangle, XInterpolationPackage package)
+			ref Rectangle fromRect, ref Rectangle toRectangle)
 		{
-			return new XInterpolationPackage[] { package };
 		}
 
-		protected override IEnumerable<XAnimationPackage> DefaultTransitionIn(INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		public IEnumerable<XInterpolationPackage> OverrideTransition(
+			string transitionIdentifier, VisualElement fromElement, VisualElement toElement, 
+			Rectangle fromRect, Rectangle toRectangle, IEnumerable<XInterpolationPackage> packages)
+		{
+			return packages;
+		}
+
+		protected override IEnumerable<XAnimationPackage> DefaultTransitionIn(
+			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
 		{
 			var retVal = new List<XAnimationPackage>(base.DefaultTransitionIn(container, animations));
 
@@ -33,7 +40,8 @@ namespace MvvmDemo
 			return retVal;
 		}
 
-		protected override IEnumerable<XAnimationPackage> DefaultTransitionOut(INavigationContainer container, IEnumerable<XAnimationPackage> animations)
+		protected override IEnumerable<XAnimationPackage> DefaultTransitionOut(
+			INavigationContainer container, IEnumerable<XAnimationPackage> animations)
 		{
 			var retVal = new List<XAnimationPackage>(base.DefaultTransitionOut(container, animations));
 

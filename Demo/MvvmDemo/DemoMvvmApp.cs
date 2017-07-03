@@ -39,6 +39,7 @@ namespace MvvmDemo
 			ViewContainer.RegisterView<CityListViewModel, CityListView>();
 			ViewContainer.RegisterView<CityViewModel, CityView>();
 			ViewContainer.RegisterView<CityDetailsViewModel, CityDetailsView>();
+			ViewContainer.RegisterView<FeedDetailsViewModel, FeedDetailsView>();
 		}
 	}
 }

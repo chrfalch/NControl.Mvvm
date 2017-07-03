@@ -82,12 +82,6 @@ namespace NControl.Mvvm
 						.Set((transform) => transform.SetOpacity(0.0))
 						.Add((transform) => transform.SetOpacity(0.4))
 						as XAnimationPackage
-					,
-					new XAnimationPackage(_navigationBar)
-						.SetDuration(TransitionDuration)
-						.Set((transform) => transform.SetOpacity(0.0))
-						.Add((transform) => transform.SetOpacity(1.0))
-						as XAnimationPackage
 				}
 			);
 
@@ -117,10 +111,6 @@ namespace NControl.Mvvm
 					new XAnimationPackage(_overlay)
 						.SetDuration(TransitionDuration)
 						.Add((transform) => transform.SetOpacity(0.0)) 
-						as XAnimationPackage,
-					new XAnimationPackage(_navigationBar)
-						.SetDuration(TransitionDuration)
-						.Add((transform) => transform.SetOpacity(0.0))						
 						as XAnimationPackage
 					}
 			);
@@ -217,16 +207,21 @@ namespace NControl.Mvvm
 
 					var startRect = GetLocalCoordinates(toView, sourceRect);
 
+					if (_container.Content is IXViewTransitionable)
+						(_container.Content as IXViewTransitionable).BeforeOverrideTransition(
+							toTransitionCandidateKey, fromView, toView, ref startRect, ref targetRect);
+
 					var transformation = new XInterpolationPackage(toView);
 					transformation.Set().SetRectangle(startRect);
 
 					transformation.Add().SetEasing(EasingFunctions.EaseInOut)
-					              .SetRectangle(targetRect);
+		            	.SetRectangle(targetRect);
 
 					// Let view override
 					if (_container.Content is IXViewTransitionable)
 						transformationList.AddRange((_container.Content as IXViewTransitionable).OverrideTransition(
-							toTransitionCandidateKey, fromView, toView, startRect, targetRect, transformation));
+							toTransitionCandidateKey, fromView, toView, startRect, targetRect,
+							new XInterpolationPackage[] { transformation }));
 
 					else
 						transformationList.Add(transformation);
