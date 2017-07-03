@@ -28,11 +28,6 @@ namespace NControl.Mvvm
 		/// </summary>
 		readonly Dictionary<string, object> _storage = new Dictionary<string, object>();
 
-		/// <summary>
-		/// The persistent storage provider.
-		/// </summary>
-		readonly IStorageProvider _persistentStorage;
-
 		#endregion
 
 		/// <summary>
